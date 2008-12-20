@@ -246,9 +246,7 @@ loop {
         print_board_view(@layers, @colors, @heights);
 
         repeat {
-            # RAKUDO: No flushing of STDOUT yet.
-            say;
-            say $player, ':';
+            print "\n", $player, ': '
         } until my $move = input_valid_move(@heights, @colors, $color);
 
         make_move($move, $color, @layers, @colors, @heights);
