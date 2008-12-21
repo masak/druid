@@ -126,18 +126,11 @@ sub print_board_view(@layers, @colors, @heights) {
                 my $move
                     = chr($column + ord('a')) ~ ($row+1) ~ '-' ~ $height;
 
-                $board = [ { $board },
-                           { put( $v_piece, $board, $move ) },
-                           { put( $h_piece, $board, $move ) },
-                         ].[$cell].();
-
-                # RAKUDO: The above could be written like this, but for
-                #         [perl #57652]
-#                $board = do given $cell {
-#                    when 1  { put( $v_piece, $board, $move ) }
-#                    when 2  { put( $h_piece, $board, $move ) }
-#                    default { $board }
-#                };
+                $board = do given $cell {
+                    when 1  { put( $v_piece, $board, $move ) }
+                    when 2  { put( $h_piece, $board, $move ) }
+                    default { $board }
+                };
             }
         }
     }
