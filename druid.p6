@@ -150,25 +150,30 @@ sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
 
     my @pieces_to_put;
 
-    if $move ~~ $sarsen_move {
-        my $row = $move.substr(1, 1) - 1;
-        my $column = ord($move.substr(0, 1)) - ord('a');
-        my $height = @heights[$row][$column];
+    given $move {
+        when $sarsen_move {
+            my $row = $move.substr(1, 1) - 1;
+            my $column = ord($move.substr(0, 1)) - ord('a');
+            my $height = @heights[$row][$column];
 
-        @pieces_to_put = $height, $row, $column;
-    }
-    else { # it's a lintel move
-        my $row_1    = $move.substr(1, 1) - 1;
-        my $column_1 = ord($move.substr(0, 1)) - ord('a');
-        my $height   = @heights[$row_1][$column_1];
-        my $row_2    = $move.substr(4, 1) - 1;
-        my $column_2 = ord($move.substr(3, 1)) - ord('a');
-        my $row_m    = ($row_1    + $row_2   ) / 2;
-        my $column_m = ($column_1 + $column_2) / 2;
+            @pieces_to_put = $height, $row, $column;
+        }
 
-        @pieces_to_put = $height, $row_1, $column_1,
-                         $height, $row_m, $column_m,
-                         $height, $row_2, $column_2;
+        when $lintel_move {
+            my $row_1    = $move.substr(1, 1) - 1;
+            my $column_1 = ord($move.substr(0, 1)) - ord('a');
+            my $height   = @heights[$row_1][$column_1];
+            my $row_2    = $move.substr(4, 1) - 1;
+            my $column_2 = ord($move.substr(3, 1)) - ord('a');
+            my $row_m    = ($row_1    + $row_2   ) / 2;
+            my $column_m = ($column_1 + $column_2) / 2;
+
+            @pieces_to_put = $height, $row_1, $column_1,
+                             $height, $row_m, $column_m,
+                             $height, $row_2, $column_2;
+        }
+
+        default { die "Nasty syntax."; }
     }
 
     for @pieces_to_put -> $height, $row, $column {
