@@ -64,52 +64,58 @@ sub input_valid_move(@heights, @colors, $color) {
     my $move = =$*IN;
     exit(1) if $*IN.eof;
 
-    flunk_move 'Nasty syntax'
-        unless $move ~~ $sarsen_move || $move ~~ $lintel_move;
+    given $move {
+        when $sarsen_move {
+            my $row = $move.substr(1, 1) - 1;
+            my $column = ord($move.substr(0, 1)) - ord('a');
 
-    if $move ~~ $sarsen_move {
-        my $row = $move.substr(1, 1) - 1;
-        my $column = ord($move.substr(0, 1)) - ord('a');
-
-        flunk_move 'Not your spot'
-            unless @colors[$row][$column] == 0|$color;
-    }
-    else {
-        my $row_1    = $move.substr(1, 1) - 1;
-        my $column_1 = ord($move.substr(0, 1)) - ord('a');
-        my $row_2    = $move.substr(4, 1) - 1;
-        my $column_2 = ord($move.substr(3, 1)) - ord('a');
-
-        my $row_diff    = abs($row_1 - $row_2);
-        my $column_diff = abs($column_1 - $column_2);
-
-        flunk_move 'Must be exactly two cells apart'
-            unless $row_diff == 2 && $column_diff == 0
-                || $row_diff == 0 && $column_diff == 2;
-
-        flunk_move 'Must be supported at both ends'
-            unless @heights[$row_1][$column_1] == @heights[$row_2][$column_2];
-
-        my $row_m    = ($row_1    + $row_2   ) / 2;
-        my $column_m = ($column_1 + $column_2) / 2;
-    
-        flunk_move 'There is a piece in the way in the middle'
-            unless @heights[$row_m][$column_m] <= @heights[$row_1][$column_1];
-
-        flunk_move 'No lintels on the ground'
-            unless @heights[$row_1][$column_1];
-
-        my $number_of_samecolor_supporting_pieces
-            = (@colors[$row_1][$column_1] == $color ?? 1 !! 0)
-            + (@colors[$row_2][$column_2] == $color ?? 1 !! 0);
-
-        if @heights[$row_m][$column_m] == @heights[$row_1][$column_1] { 
-            $number_of_samecolor_supporting_pieces
-                += @colors[$row_m][$column_m] == $color ?? 1 !! 0;
+            flunk_move 'Not your spot'
+                unless @colors[$row][$column] == 0|$color;
         }
 
-        flunk_move 'Must be at least two same-colored pieces under a lintel'
-            if $number_of_samecolor_supporting_pieces < 2;
+        when $lintel_move {
+            my $row_1    = $move.substr(1, 1) - 1;
+            my $column_1 = ord($move.substr(0, 1)) - ord('a');
+            my $row_2    = $move.substr(4, 1) - 1;
+            my $column_2 = ord($move.substr(3, 1)) - ord('a');
+
+            my $row_diff    = abs($row_1 - $row_2);
+            my $column_diff = abs($column_1 - $column_2);
+
+            flunk_move 'Must be exactly two cells apart'
+                unless $row_diff == 2 && $column_diff == 0
+                    || $row_diff == 0 && $column_diff == 2;
+
+            flunk_move 'Must be supported at both ends'
+                unless @heights[$row_1][$column_1]
+                    == @heights[$row_2][$column_2];
+
+            my $row_m    = ($row_1    + $row_2   ) / 2;
+            my $column_m = ($column_1 + $column_2) / 2;
+        
+            flunk_move 'There is a piece in the way in the middle'
+                unless @heights[$row_m][$column_m]
+                    <= @heights[$row_1][$column_1];
+
+            flunk_move 'No lintels on the ground'
+                unless @heights[$row_1][$column_1];
+
+            my $number_of_samecolor_supporting_pieces
+                = (@colors[$row_1][$column_1] == $color ?? 1 !! 0)
+                + (@colors[$row_2][$column_2] == $color ?? 1 !! 0);
+
+            if @heights[$row_m][$column_m] == @heights[$row_1][$column_1] { 
+                $number_of_samecolor_supporting_pieces
+                    += @colors[$row_m][$column_m] == $color ?? 1 !! 0;
+            }
+
+            flunk_move 'Must be at least two of your pieces under a lintel'
+                if $number_of_samecolor_supporting_pieces < 2;
+        }
+
+        default {
+            flunk_move 'Nasty syntax';
+        }
     }
 
     return $move;
