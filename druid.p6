@@ -243,16 +243,36 @@ my @layers;
 my @heights = map { [map { 0 }, ^8] }, ^8;
 my @colors = map { [map { 0 }, ^8] }, ^8;
 
+.say for '(0) Human versus human',
+         '(1) Computer versus human',
+         '(2) Human versus computer';
+repeat {
+    print '> ';
+} until (my $play_mode = =$*IN) == any(0..2);
+
 loop {
     for <Vertical Horizontal> Z $v_piece, $h_piece Z 1, 2 -> $player,
                                                              $piece,
                                                              $color {
 
-        print_board_view(@layers, @colors, @heights);
+        my $move;
+        if $color +& $play_mode { # This player is controlled by the computer
+            my ($row, $column);
+            repeat {
+                $row    = (^8).pick[0];
+                $column = (^8).pick[0];
+            } until @colors[$row][$column] == 0 | $color;
+            $move = chr(ord('a')+$column) ~ ($row+1);
 
-        repeat {
-            print "\n", $player, ': '
-        } until my $move = input_valid_move(@heights, @colors, $color);
+            say "Computer moves $move";
+        }
+        else {
+            print_board_view(@layers, @colors, @heights);
+
+            repeat {
+                print "\n", $player, ': '
+            } until $move = input_valid_move(@heights, @colors, $color);
+        }
 
         make_move($move, $color, @layers, @colors, @heights);
     }
