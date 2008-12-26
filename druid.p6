@@ -351,3 +351,5 @@ loop {
         }
     }
 }
+
+# vim: filetype=perl6
