@@ -189,6 +189,75 @@ sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
     }
 }
 
+class Pos {
+    has $.row    is rw;
+    has $.column is rw;
+    method Str { join ',', $.row, $.column }
+}
+
+# Starting from the last move made, traces the chains to determine whether
+# the two sides have been connected.
+sub move_was_winning($move, @colors) {
+
+    my $row    = $move.substr(1, 1) - 1;
+    my $column = ord($move.substr(0, 1)) - ord('a');
+
+    # Yes, there are lintel moves, but we don't have to special-case those.
+    my @pos_queue = Pos.new( :row($row), :column($column) );
+
+    my $last_color = @colors[$row][$column];
+    my $size = +@colors;
+
+    my &above = { .row    < $size - 1 && .clone( :row(.row + 1)       ) };
+    my &below = { .row    > 0         && .clone( :row(.row - 1)       ) };
+    my &right = { .column < $size - 1 && .clone( :column(.column + 1) ) };
+    my &left  = { .column > 0         && .clone( :column(.column - 1) ) };
+
+    my %visited;
+    my $reached_one_end   = False;
+    my $reached_other_end = False;
+
+    # I can't quite figure out why, but debug statements reveal that the
+    # loops test the initial position twice, despite the fact that it's only
+    # added to the array once.
+    while shift @pos_queue -> $pos {
+        ++%visited{~$pos};
+
+        for &above, &below, &right, &left -> &direction {
+            my $r = $pos.row;
+            my $c = $pos.column;
+            if direction($pos) -> $neighbor {
+
+                if !%visited.exists(~$neighbor)
+                   && @colors[$neighbor.row][$neighbor.column] == $last_color {
+
+                    push @pos_queue, Pos.new( :row($neighbor.row),
+                                              :column($neighbor.column) );
+                }
+            }
+            # RAKUDO: Need to restore the values of $pos this way as long as
+            # the .clone bug persists.
+            $pos.row = $r;
+            $pos.column = $c;
+        }
+
+        if    $last_color == 1 && !above($pos)
+           || $last_color == 2 && !right($pos) {
+
+            $reached_one_end   = True;
+        }
+        elsif    $last_color == 1 && !below($pos)
+              || $last_color == 2 &&  !left($pos) {
+
+            $reached_other_end = True;
+        }
+
+        return True if $reached_one_end && $reached_other_end;
+    }
+
+    return False;
+}
+
 my $empty_board = '
       A     B     C     D     E     F     G     H
    +-----+-----+-----+-----+-----+-----+-----+-----+
@@ -275,5 +344,10 @@ loop {
         }
 
         make_move($move, $color, @layers, @colors, @heights);
+
+        if move_was_winning($move, @colors) {
+            say "$player won.";
+            exit(0);
+        }
     }
 }
