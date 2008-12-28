@@ -284,35 +284,39 @@ sub move_was_winning($move, @colors) {
     return False;
 }
 
-my $empty_board = '
-      A     B     C     D     E     F     G     H
-   +-----+-----+-----+-----+-----+-----+-----+-----+
- 8 |                                               | 8
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 7 |                                               | 7
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 6 |                                               | 6
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 5 |                                               | 5
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 4 |                                               | 4
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 3 |                                               | 3
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 2 |                                               | 2
-   |                                               |
-   +     +     +     +     +     +     +     +     +
- 1 |                                               | 1
-   |                                               |
-   +-----+-----+-----+-----+-----+-----+-----+-----+
-      A     B     C     D     E     F     G     H
-';
+# Returns a string containing an ASCII picture of an empty druid board of the
+# given size.
+sub make_empty_board($size) {
+    return join "\n", gather {
+        take '';
+        take my $heading
+            = join '',
+              '   ',
+              map { "   $_  " },
+              map { chr($_+ord('A')) },
+              ^$size;
+        take my $line
+            = join '', '   ', '+-----' x $size, '+';
+        for (1..$size).reverse -> $r {
+            # NB: This will not work for sizes >= 10
+            take join '',
+                 (sprintf '%2d |', $r),
+                 '      ' x ($size) - 1,
+                 "     | $r";
+            take join '', '   |', '      ' x ($size) - 1,  '     |';
+            if $r > 1 {
+                take join '', '   +', '     +' x $size;
+            }
+        }
+        take $line;
+        take $heading;
+        take '';
+    };
+}
+        
+
+my $board_size = 8;
+my $empty_board = make_empty_board($board_size);
 
 my $v_piece = '
  +-----+
