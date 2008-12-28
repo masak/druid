@@ -1,5 +1,11 @@
 #!perl6
 
+# Given a string (assumed to contain no newlines), replaces a section of that
+# string, starting from $column, with the contents of $new_section. When
+# replacing characters, two excpetions are made: (1) spaces in $new_section
+# are treated as 'transparent', so that they don't replace the old character,
+# (2) octothorpes '#' insert actual spaces, i.e. act as a sort of escape
+# character for spaces.
 sub merge($old_line, $new_section, $column) {
     my $old_line_filled
       = $old_line ~ ' ' x ($column + $new_section.chars - $old_line.chars);
@@ -16,6 +22,10 @@ sub merge($old_line, $new_section, $column) {
            ~ $old_line_filled.substr($column + $new_section.chars);
 }
 
+# Given a string representing a piece and one representing the board, returns
+# a new board with the piece inserted into some coordinates. This sub assumes
+# that pieces are drawn in an order that makes sense, so that pieces in front
+# cover those behind.
 sub put($piece, $board, $coords) {
     my @lines = $board.split("\n");
 
@@ -38,6 +48,8 @@ sub put($piece, $board, $coords) {
     return @lines.join("\n");
 }
 
+# Prints two smaller boards representing (1) who owns each location, and
+# (2) how many stones have been piled on each location.
 sub print_colors_and_heights(@colors, @heights) {
     my &from_pretty    = { $^pretty.trans( ['#','.'] => ['%d','%s'] ) };
     my &format_colors  = { <. v h>[$^color] };
@@ -58,6 +70,13 @@ sub print_colors_and_heights(@colors, @heights) {
     print $footer;
 }
 
+# Reads a string from STDIN, and checks it for validity in various ways.
+# As a first check, the move syntax is checked to be either a sarsen move
+# or a lintel move. A valid sarsen move must be placed on the ground or on
+# stones of the same color. A valid lintel move must cover exactly three
+# locations in a row, and the lintel itself must have stones under both
+# ends, and two of the maximally three supporting stones must be of the
+# placed lintel's color.
 sub input_valid_move(@heights, @colors, $color) {
 
     my &flunk_move = { say $^reason; return };
@@ -122,6 +141,8 @@ sub input_valid_move(@heights, @colors, $color) {
     return $move;
 }
 
+# Prints the 3D game board and the two smaller sub boards, reflecting the
+# current state of the game.
 sub print_board_view(@layers, @colors, @heights) {
 
     my $board = $empty_board;
@@ -147,6 +168,9 @@ sub print_board_view(@layers, @colors, @heights) {
     print_colors_and_heights(@colors, @heights);
 }
 
+# Analyzes a given move of a piece of a given color, and makes the appropriate
+# changes to the given game state data structures. This sub assumes that the
+# move is valid.
 sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
 
     my @pieces_to_put;
@@ -307,9 +331,16 @@ my $h_piece = '
 my $sarsen_move = /^ <[a..h]><[1..8]> $/;
 my $lintel_move = /^ <[a..h]><[1..8]> '-' <[a..h]><[1..8]> $/;
 
+# A three-dimensional array. Each item is a layer in on the board, starting
+# from the ground. The number of elements in this array always corresponds to
+# the height of a highest stone on the board.
 my @layers;
+# A two-dimensional array. Records the height of the highest stone on each
+# location.
 # RAKUDO: 0 xx 8 doesn't clone value types
 my @heights = map { [map { 0 }, ^8] }, ^8;
+# A two-dimensional array. Records the color of the highest stone on each
+# location.
 my @colors = map { [map { 0 }, ^8] }, ^8;
 
 .say for '(0) Human versus human',
