@@ -213,6 +213,8 @@ sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
     }
 }
 
+# RAKUDO: Would like to make this class local to move_was_winning, using
+# 'my class', but that is not implemented yet.
 class Pos {
     has $.row    is rw;
     has $.column is rw;
