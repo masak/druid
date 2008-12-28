@@ -384,6 +384,7 @@ loop {
 
         if move_was_winning($move, @colors) {
             print_board_view(@layers, @colors, @heights);
+            print "\n";
 
             say "$player won.";
             exit(0);
