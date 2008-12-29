@@ -129,8 +129,8 @@ sub input_valid_move(@heights, @colors, $color) {
                     += @colors[$row_m][$column_m] == $color ?? 1 !! 0;
             }
 
-            flunk_move 'Must be at least two of your pieces under a lintel'
-                if $number_of_samecolor_supporting_pieces < 2;
+            flunk_move 'Must be exactly two of your pieces under a lintel'
+                if $number_of_samecolor_supporting_pieces != 2;
         }
 
         default {
