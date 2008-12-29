@@ -6,21 +6,16 @@
 # are treated as 'transparent', so that they don't replace the old character,
 # (2) octothorpes '#' insert actual spaces, i.e. act as a sort of escape
 # character for spaces.
-sub merge($old_line, $new_section, $column) {
-    my $old_line_filled
-      = $old_line ~ ' ' x ($column + $new_section.chars - $old_line.chars);
-    my $old_section = $old_line_filled.substr($column, $new_section.chars);
-    my $merged_section;
-    for $old_section.split('').kv -> $char_no, $old_char {
-        my $new_char = $new_section.substr($char_no, 1);
-        $merged_section ~= $new_char eq ' ' ?? $old_char
-                           !! $new_char eq '#' ?? ' ' !! $new_char;
-    }
-
-    return $old_line_filled.substr(0, $column)
-           ~ $merged_section
-           ~ $old_line_filled.substr($column + $new_section.chars);
+sub merge($old, $new, $start) {
+   my @old = $old.split('');
+   my @new = $new.split('');
+   for @new.kv -> $i, $char {
+      @old[$start + $i] = @new[$i] unless $char eq ' ';
+      @old[$start + $i] = ' ' if $char eq '#'
+   }
+   return @old.join('');
 }
+
 
 # Given a string representing a piece and one representing the board, returns
 # a new board with the piece inserted into some coordinates. This sub assumes
