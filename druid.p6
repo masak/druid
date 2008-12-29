@@ -298,7 +298,6 @@ sub make_empty_board($size) {
         take my $line
             = join '', '   ', '+-----' x $size, '+';
         for (1..$size).reverse -> $r {
-            # NB: This will not work for sizes >= 10
             take join '',
                  (sprintf '%2d |', $r),
                  '      ' x ($size) - 1,
