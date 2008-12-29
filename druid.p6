@@ -290,21 +290,21 @@ sub make_empty_board($size) {
     return join "\n", gather {
         take '';
         take my $heading
-            = join '',
+            = [~]
               '   ',
               map { "   $_  " },
               map { chr($_+ord('A')) },
               ^$size;
         take my $line
-            = join '', '   ', '+-----' x $size, '+';
+            = [~] '   ', '+-----' x $size, '+';
         for (1..$size).reverse -> $r {
-            take join '',
+            take [~]
                  (sprintf '%2d |', $r),
                  '      ' x ($size) - 1,
                  "     | $r";
-            take join '', '   |', '      ' x ($size) - 1,  '     |';
+            take [~] '   |', '      ' x ($size) - 1,  '     |';
             if $r > 1 {
-                take join '', '   +', '     +' x $size;
+                take [~] '   +', '     +' x $size;
             }
         }
         take $line;
