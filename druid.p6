@@ -46,17 +46,29 @@ sub put($piece, $board, $coords) {
 # Prints two smaller boards representing (1) who owns each location, and
 # (2) how many stones have been piled on each location.
 sub print_colors_and_heights(@colors, @heights) {
-    my &from_pretty    = { $^pretty.trans( ['#','.'] => ['%d','%s'] ) };
+
+    my $size = +@colors;
+
+    my &from_pretty    = { $^pretty.trans( ['>>',   '<<', '.']
+                                        => ['%2d','%-2d','%s'] ) };
+
     my &format_colors  = { <. v h>[$^color] };
     my &format_heights = { $^height || '.' };
 
-    my $footer = "\n      A B C D E F G H             A B C D E F G H\n";
+    my $letters = 'A'..chr(ord('A') + $size - 1);
+
+    my $inter_board_space = ' ' x (1 + 6*$size - 2*$size - 2*($size-1) - 14);
+    my $footer = [~] "\n      ", $letters.join(' '),
+                     ' ' x 8, $inter_board_space,
+                     $letters.join(' '), "\n";
     my $header = "$footer\n";
 
+    my $board_line = [~] '>>  ', ('.' xx $size).join(' '), '  <<';
+
     print $header;
-    for (1..8).reverse -> $row {
+    for (1..$size).reverse -> $row {
         say sprintf from_pretty(
-            '   #  . . . . . . . .  #       #  . . . . . . . .  #'
+                [~] '  ', $board_line, $inter_board_space, $board_line
             ),
             $row, (map &format_colors,  @colors[$row-1].values),  $row,
             $row, (map &format_heights, @heights[$row-1].values), $row;
@@ -334,13 +346,14 @@ my $lintel_move = /^ <[a..h]><[1..8]> '-' <[a..h]><[1..8]> $/;
 # from the ground. The number of elements in this array always corresponds to
 # the height of a highest stone on the board.
 my @layers;
+
 # A two-dimensional array. Records the height of the highest stone on each
 # location.
-# RAKUDO: 0 xx 8 doesn't clone value types
-my @heights = map { [map { 0 }, ^8] }, ^8;
+my @heights = map { [ 0 xx $board_size] }, ^$board_size;
+
 # A two-dimensional array. Records the color of the highest stone on each
 # location.
-my @colors = map { [map { 0 }, ^8] }, ^8;
+my @colors = map { [ 0 xx $board_size] }, ^$board_size;
 
 .say for '(0) Human versus human',
          '(1) Computer versus human',
@@ -358,8 +371,8 @@ loop {
         if $color +& $play_mode { # This player is controlled by the computer
             my ($row, $column);
             repeat {
-                $row    = (^8).pick[0];
-                $column = (^8).pick[0];
+                $row    = (^$board_size).pick[0];
+                $column = (^$board_size).pick[0];
             } until @colors[$row][$column] == 0 | $color;
             $move = chr(ord('a')+$column) ~ ($row+1);
 
