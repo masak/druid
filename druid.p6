@@ -54,8 +54,7 @@ sub print_colors_and_heights(@colors, @heights) {
     my $header = "$footer\n";
 
     print $header;
-    # RAKUDO: (1..8).reverse stopped working [perl #61644]
-    for (1..8).list.reverse -> $row {
+    for (1..8).reverse -> $row {
         say sprintf from_pretty(
             '   #  . . . . . . . .  #       #  . . . . . . . .  #'
             ),
