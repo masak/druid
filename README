@@ -3,5 +3,11 @@ Druid is a connection-oriented board game created by Cameron Browne.
 Rules and a bit of strategy can be found at
 <http://www.cameronius.com/games/druid/>.
 
+Quick instructions on getting Druid running: you need Rakudo -- instructions
+here: <http://www.perlfoundation.org/perl6/index.cgi?rakudo>. Make sure you
+can run 'perl6' from anywhere -- makes things easier. Then, just type:
+
+% perl6 druid.p6
+
 This Druid implementation is released under Artistic 2.0. See LICENSE.
 Permission to release the game graciously given by the game author.
