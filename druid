@@ -139,6 +139,10 @@ sub input_valid_move(@heights, @colors, $color) {
                 if $number_of_samecolor_supporting_pieces != 2;
         }
 
+        when $pass {
+            # Nothing to do; it's a pass
+        }
+
         default {
             flunk_move 'Nasty syntax';
         }
@@ -353,6 +357,7 @@ my $coords = $col_letter ~ $row_number;
 # Note that the dollar sign has to be backwhacked.
 my $sarsen_move = eval("/^ $coords \$/");
 my $lintel_move = eval("/^ $coords '-' $coords \$/");
+my $pass = /^ 'pass' | 'p' $/;
 
 # A three-dimensional array. Each item is a layer in on the board, starting
 # from the ground. The number of elements in this array always corresponds to
@@ -374,6 +379,7 @@ repeat {
     print '> ';
 } until (my $play_mode = =$*IN) == any(0..2);
 
+my $passes_in_a_row = 0;
 loop {
     for <Vertical Horizontal> Z $v_piece, $h_piece Z 1, 2 -> $player,
                                                              $piece,
@@ -396,6 +402,17 @@ loop {
             repeat {
                 print "\n", $player, ': '
             } until $move = input_valid_move(@heights, @colors, $color);
+        }
+
+        if $move ~~ $pass {
+            if ++$passes_in_a_row >= 2 {
+                say "It's a draw.";
+                exit(0);
+            }
+            next;
+        }
+        elsif $move !~~ $pass {
+            $passes_in_a_row = 0;
         }
 
         make_move($move, $color, @layers, @colors, @heights);
