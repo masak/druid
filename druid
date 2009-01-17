@@ -7,13 +7,18 @@ use v6;
 # (2) octothorpes '#' insert actual spaces, i.e. act as a sort of escape
 # character for spaces.
 sub merge($old, $new, $start) {
-   my @old = $old.split('');
-   my @new = $new.split('');
-   for @new.kv -> $i, $char {
-      @old[$start + $i] = @new[$i] unless $char eq ' ';
-      @old[$start + $i] = ' ' if $char eq '#'
-   }
-   return @old.join('');
+    my @old = $old.split('');
+    my @new = $new.split('');
+
+    # RAKUDO: xx and push don't seem to work as advertised.
+    push @old, ' ' for ^($start + $new.chars - $old.chars);
+
+    for @new.kv -> $i, $char {
+        @old[$start + $i] = $char unless $char eq ' ';
+        @old[$start + $i] = ' ' if $char eq '#'
+    }
+
+    return @old.join('');
 }
 
 
