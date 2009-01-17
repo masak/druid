@@ -218,8 +218,9 @@ sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
 
     for @pieces_to_put -> $height, $row, $column {
 
+        my $size = +@colors;
         if $height >= @layers {
-            push @layers, [map { [map { 0 }, ^8] }, ^8];
+            push @layers, [map { [0 xx $size] }, ^$size];
         }
         @layers[$height][$row][$column]
             = @colors[$row][$column]
@@ -321,9 +322,6 @@ sub make_empty_board($size) {
 }
         
 
-my $board_size = 8;
-my $empty_board = make_empty_board($board_size);
-
 my $v_piece = '
  +-----+
 /|#v#v#|
@@ -339,6 +337,25 @@ my $h_piece = '
 |+-----+
 /-----/
 ';
+
+my $board_size = 8;
+for @*ARGS -> $argument {
+    if $argument ~~ / '--size=' (\d+) / {
+        if $0 < (my $MIN_SIZE = 3) {
+            say "The board size may not be smaller than $MIN_SIZE.";
+            exit(1);
+        }
+        # TODO: This can be raised to 26, with not much modification to other
+        # code. (Things which assume one digit will need to be rewritten.)
+        elsif $0 > (my $MAX_SIZE = 9) {
+            say "The board size may not be larger than $MAX_SIZE.";
+            exit(1);
+        }
+        $board_size = +$0;
+    }
+}
+
+my $empty_board = make_empty_board($board_size);
 
 # This didn't come out at all the way I wanted it to. I thought I'd use
 # assertions to check for the board limits, but that didn't work; I wanted
@@ -377,6 +394,7 @@ if any(@*ARGS) eq '--help' {
     Usage:
         % perl6 druid [switches]
 
+        --size=<size>       Give the board a size between 3 and 26.
         --computer=[1|2]    The computer controls player one or two.
         --help              Display this help text.
     '.split("\n");
