@@ -364,8 +364,8 @@ my @heights = map { [ 0 xx $board_size] }, ^$board_size;
 # location.
 my @colors = map { [ 0 xx $board_size] }, ^$board_size;
 
-my $play_mode =  (?(any(@*ARGS) eq '--player1comp') && 1)
-              ?| (?(any(@*ARGS) eq '--player2comp') && 2);
+my $play_mode =    (?(any(@*ARGS) eq '--computer=1') && 1)
+                +| (?(any(@*ARGS) eq '--computer=2') && 2);
 
 die 'Druid currently does not support computer-vs-computer play.'
     if $play_mode == 3;
