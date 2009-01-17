@@ -93,7 +93,7 @@ sub input_valid_move(@heights, @colors, $color) {
     my &flunk_move = { say $^reason; return };
 
     my $move = =$*IN;
-    exit(1) if $*IN.eof;
+    say '' and exit(1) if $*IN.eof;
 
     given $move {
         when $sarsen_move {
