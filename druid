@@ -149,7 +149,9 @@ sub input_valid_move(@heights, @colors, $color) {
         }
 
         default {
-            flunk_move 'Nasty syntax';
+            flunk_move '
+The move does not conform to the accepted move syntax, which is either
+something like "b2" or something like "c1-c3".'.substr(1);
         }
     }
 
