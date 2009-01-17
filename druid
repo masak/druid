@@ -364,12 +364,11 @@ my @heights = map { [ 0 xx $board_size] }, ^$board_size;
 # location.
 my @colors = map { [ 0 xx $board_size] }, ^$board_size;
 
-.say for '(0) Human versus human',
-         '(1) Computer versus human',
-         '(2) Human versus computer';
-repeat {
-    print '> ';
-} until (my $play_mode = =$*IN) == any(0..2);
+my $play_mode =  (?(any(@*ARGS) eq '--player1comp') && 1)
+              ?| (?(any(@*ARGS) eq '--player2comp') && 2);
+
+die 'Druid currently does not support computer-vs-computer play.'
+    if $play_mode == 3;
 
 my $passes_in_a_row = 0;
 loop {
