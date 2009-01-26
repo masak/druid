@@ -259,8 +259,21 @@ class Pos {
 # the two sides have been connected.
 sub move_was_winning($move, @colors) {
 
-    my $row    = $move.substr(1, 1) - 1;
-    my $column = ord($move.substr(0, 1)) - ord('a');
+    # BUG: There is something wrong with this algorithm for board size 3
+    # and the move sequence c1, b2, c3, b2, c1-c3. The last move should
+    # register as a winning move, but it doesn't.
+    my ($row, $column);
+    given $move {
+        when $sarsen_move {
+            $row    = $<coords><row_number> - 1;
+            $column = ord($<coords><col_letter>) - ord('a');
+        }
+        when $lintel_move {
+            $row    = $<coords>[0]<row_number> - 1;
+            $column = ord($<coords>[0]<col_letter>) - ord('a');
+        }
+        default { return False; } # unknown move type
+    }
 
     # Yes, there are lintel moves, but we don't have to special-case those.
     my @pos_queue = Pos.new( :row($row), :column($column) );
