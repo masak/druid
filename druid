@@ -95,20 +95,36 @@ sub input_valid_move(@heights, @colors, $color) {
     my $move = =$*IN;
     say '' and exit(1) if $*IN.eof;
 
+    my $size = +@colors;
+
     given $move {
         when $sarsen_move {
-            my $row = $move.substr(1, 1) - 1;
-            my $column = ord($move.substr(0, 1)) - ord('a');
+            my $row = $<coords><row_number> - 1;
+            my $column = ord($<coords><col_letter>) - ord('a');
+
+            flunk_move "The highest column is '{chr(ord('A')+$size-1)}'"
+                if $column >= $size;
+            flunk_move 'There is no row 0'
+                if $row == -1;
+            flunk_move "There are only $size rows"
+                if $row >= $size;
 
             flunk_move 'Not your spot'
                 unless @colors[$row][$column] == 0|$color;
         }
 
         when $lintel_move {
-            my $row_1    = $move.substr(1, 1) - 1;
-            my $column_1 = ord($move.substr(0, 1)) - ord('a');
-            my $row_2    = $move.substr(4, 1) - 1;
-            my $column_2 = ord($move.substr(3, 1)) - ord('a');
+            my $row_1    = $<coords>[0]<row_number> - 1;
+            my $row_2    = $<coords>[1]<row_number> - 1;
+            my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
+            my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
+
+            flunk_move "The highest column is '{chr(ord('A')+$size-1)}'"
+                if $column_1|$column_2 >= $size;
+            flunk_move 'There is no row 0'
+                if $row_1|$row_2 == -1;
+            flunk_move "There are only $size rows"
+                if $row_1|$row_2 >= $size;
 
             my $row_diff    = abs($row_1 - $row_2);
             my $column_diff = abs($column_1 - $column_2);
@@ -194,19 +210,19 @@ sub make_move($move, $color, @layers is rw, @colors is rw, @heights is rw) {
 
     given $move {
         when $sarsen_move {
-            my $row = $move.substr(1, 1) - 1;
-            my $column = ord($move.substr(0, 1)) - ord('a');
+            my $row = $<coords><row_number> - 1;
+            my $column = ord($<coords><col_letter>) - ord('a');
             my $height = @heights[$row][$column];
 
             @pieces_to_put = $height, $row, $column;
         }
 
         when $lintel_move {
-            my $row_1    = $move.substr(1, 1) - 1;
-            my $column_1 = ord($move.substr(0, 1)) - ord('a');
+            my $row_1    = $<coords>[0]<row_number> - 1;
+            my $row_2    = $<coords>[1]<row_number> - 1;
+            my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
+            my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
             my $height   = @heights[$row_1][$column_1];
-            my $row_2    = $move.substr(4, 1) - 1;
-            my $column_2 = ord($move.substr(3, 1)) - ord('a');
             my $row_m    = ($row_1    + $row_2   ) / 2;
             my $column_m = ($column_1 + $column_2) / 2;
 
@@ -347,9 +363,7 @@ for @*ARGS -> $argument {
             say "The board size may not be smaller than $MIN_SIZE.";
             exit(1);
         }
-        # TODO: This can be raised to 26, with not much modification to other
-        # code. (Things which assume one digit will need to be rewritten.)
-        elsif $0 > (my $MAX_SIZE = 9) {
+        elsif $0 > (my $MAX_SIZE = 26) {
             say "The board size may not be larger than $MAX_SIZE.";
             exit(1);
         }
@@ -359,20 +373,12 @@ for @*ARGS -> $argument {
 
 my $empty_board = make_empty_board($board_size);
 
-# This didn't come out at all the way I wanted it to. I thought I'd use
-# assertions to check for the board limits, but that didn't work; I wanted
-# to declare the letter, number and coords things as regexes, but that didn't
-# work; I thought I'd call the regexes in the variables from the regexes in
-# $sarsen_move and $lintel_move, but that didn't work. Finally I had to
-# settle for the following: creating strings and eval'ing them.
-my $max_l = chr(ord('a') + $board_size - 1);
-my $col_letter = "<[a..$max_l]>";
-my $row_number = '[' ~ (1..$board_size).join('|') ~ ']';
-my $coords = $col_letter ~ $row_number;
+regex col_letter { <[a..z]> }
+regex row_number { \d+ }
+regex coords { <col_letter><row_number> }
 
-# Note that the dollar sign has to be backwhacked.
-my $sarsen_move = eval("/^ $coords \$/");
-my $lintel_move = eval("/^ $coords '-' $coords \$/");
+my $sarsen_move = /^ <coords> $/;
+my $lintel_move = /^ <coords> '-' <coords> $/;
 my $pass = /^ 'pass' | 'p' $/;
 
 # A three-dimensional array. Each item is a layer in on the board, starting
