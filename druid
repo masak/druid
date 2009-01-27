@@ -275,7 +275,6 @@ sub move_was_winning($move, @colors) {
         default { return False; } # unknown move type
     }
 
-    # Yes, there are lintel moves, but we don't have to special-case those.
     my @pos_queue = Pos.new( :row($row), :column($column) );
 
     my $last_color = @colors[$row][$column];
@@ -409,7 +408,7 @@ my @colors = map { [ 0 xx $board_size] }, ^$board_size;
 
 if any(@*ARGS) eq '--help' {
     # RAKUDO: Heredocs.
-    say .substr(4) for '
+    say .substr(4) for split "\n", '
     Druid. Implementation © Carl Mäsak 2008-2009. Rules © Cameron Browne.
 
     Usage:
@@ -418,7 +417,7 @@ if any(@*ARGS) eq '--help' {
         --size=<size>       Give the board a size between 3 and 26.
         --computer=[1|2]    The computer controls player one or two.
         --help              Display this help text.
-    '.split("\n");
+    ';
 
     exit(0);
 }
