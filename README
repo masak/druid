@@ -42,6 +42,15 @@ Yup, you're ready to go.
 % perl6 druid --size=10 --computer=1
 % perl6 druid --help
 
+== For those who want to compile things
+
+% perl Makefile.PL
+% make
+
+Remember that you still need to set $PERL6LIB and $PARROT_DIR as above. The
+file Makefile.PL will complain if you don't. The 'make' process will not
+complain, just fail.
+
 == License
 
 This Druid implementation is released under Artistic 2.0. See LICENSE.

@@ -1,0 +1,17 @@
+PARROT_DIR=<PARROT_DIR>
+
+SOURCES=lib/Druid/Game/Observer.pm lib/Druid/Game/Subject.pm \
+        lib/Druid/Game.pm lib/Druid/Board.pm lib/Druid/Board/Text.pm
+
+PIRS=$(SOURCES:.pm=.pir)
+
+all: $(PIRS)
+
+%.pir: %.pm
+	$(PARROT_DIR)/parrot \
+        $(PARROT_DIR)/languages/perl6/perl6.pbc \
+        --target=pir --output=$@ \
+        $<
+
+clean:
+	rm -f $(PIRS)
