@@ -1,5 +1,7 @@
 use v6;
 
+use Druid::Game::Subject;
+
 # RAKUDO: Would like to make this class local to move_was_winning, using
 # 'my class', but that is not implemented yet.
 class Pos {
@@ -8,11 +10,13 @@ class Pos {
     method Str { join ',', $.row, $.column }
 }
 
-class Druid::Game {
-    has $!size is readonly;
-    has @!layers;
-    has @!heights;
-    has @!colors;
+# RAKUDO: Cannot declare class after use-ing Druid::Game::Subject.
+# [perl #62898]
+class Druid::Game_ does Druid::Game::Subject {
+    has $.size;
+    has @.layers;
+    has @.heights;
+    has @.colors;
 
     has $!last_move;
 
@@ -36,9 +40,6 @@ class Druid::Game {
     # appropriate changes to the given game state data structures. This sub
     # assumes that the move is valid.
     method make_move($move, $color) {
-
-        # RAKUDO: BUILD
-        $!last_move // self.init();
 
         my @pieces_to_put;
 

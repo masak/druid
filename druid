@@ -11,7 +11,7 @@ use Druid::Board::Text;
 # locations in a row, and the lintel itself must have stones under both
 # ends, and two of the maximally three supporting stones must be of the
 # placed lintel's color.
-sub input_valid_move(@heights, @colors, $color) {
+sub input_valid_move($game, $color) {
 
     regex col_letter { <[a..z]> }
     regex row_number { \d+ }
@@ -25,22 +25,20 @@ sub input_valid_move(@heights, @colors, $color) {
     my $move = =$*IN;
     say '' and exit(1) if $*IN.eof;
 
-    my $size = +@colors;
-
     given $move {
         when $sarsen_move {
             my $row = $<coords><row_number> - 1;
             my $column = ord($<coords><col_letter>) - ord('a');
 
-            flunk_move "The highest column is '{chr(ord('A')+$size-1)}'"
-                if $column >= $size;
+            flunk_move "The highest column is '{chr(ord('A')+$game.size-1)}'"
+                if $column >= $game.size;
             flunk_move 'There is no row 0'
                 if $row == -1;
-            flunk_move "There are only $size rows"
-                if $row >= $size;
+            flunk_move "There are only {$game.size} rows"
+                if $row >= $game.size;
 
             flunk_move 'Not your spot'
-                unless @colors[$row][$column] == 0|$color;
+                unless $game.colors[$row][$column] == 0|$color;
         }
 
         when $lintel_move {
@@ -49,12 +47,12 @@ sub input_valid_move(@heights, @colors, $color) {
             my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
             my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
 
-            flunk_move "The highest column is '{chr(ord('A')+$size-1)}'"
-                if $column_1|$column_2 >= $size;
+            flunk_move "The highest column is '{chr(ord('A')+{$game.size}-1)}'"
+                if $column_1|$column_2 >= $game.size;
             flunk_move 'There is no row 0'
                 if $row_1|$row_2 == -1;
-            flunk_move "There are only $size rows"
-                if $row_1|$row_2 >= $size;
+            flunk_move "There are only {$game.size} rows"
+                if $row_1|$row_2 >= $game.size;
 
             my $row_diff    = abs($row_1 - $row_2);
             my $column_diff = abs($column_1 - $column_2);
@@ -64,26 +62,28 @@ sub input_valid_move(@heights, @colors, $color) {
                     || $row_diff == 0 && $column_diff == 2;
 
             flunk_move 'Must be supported at both ends'
-                unless @heights[$row_1][$column_1]
-                    == @heights[$row_2][$column_2];
+                unless $game.heights[$row_1][$column_1]
+                    == $game.heights[$row_2][$column_2];
 
             my $row_m    = ($row_1    + $row_2   ) / 2;
             my $column_m = ($column_1 + $column_2) / 2;
         
             flunk_move 'There is a piece in the way in the middle'
-                unless @heights[$row_m][$column_m]
-                    <= @heights[$row_1][$column_1];
+                unless $game.heights[$row_m][$column_m]
+                    <= $game.heights[$row_1][$column_1];
 
             flunk_move 'No lintels on the ground'
-                unless @heights[$row_1][$column_1];
+                unless $game.heights[$row_1][$column_1];
 
             my $number_of_samecolor_supporting_pieces
-                = (@colors[$row_1][$column_1] == $color ?? 1 !! 0)
-                + (@colors[$row_2][$column_2] == $color ?? 1 !! 0);
+                = ($game.colors[$row_1][$column_1] == $color ?? 1 !! 0)
+                + ($game.colors[$row_2][$column_2] == $color ?? 1 !! 0);
 
-            if @heights[$row_m][$column_m] == @heights[$row_1][$column_1] { 
+            if    $game.heights[$row_m][$column_m]
+               == $game.heights[$row_1][$column_1] { 
+
                 $number_of_samecolor_supporting_pieces
-                    += @colors[$row_m][$column_m] == $color ?? 1 !! 0;
+                    += $game.colors[$row_m][$column_m] == $color ?? 1 !! 0;
             }
 
             flunk_move 'Must be exactly two of your pieces under a lintel'
@@ -119,21 +119,12 @@ for @*ARGS -> $argument {
     }
 }
 
-my Druid::Game $game .= new(:size($board_size));
-my Druid::Board $board = Druid::Board::Text.new(:size($board_size));
-
-# A three-dimensional array. Each item is a layer in on the board, starting
-# from the ground. The number of elements in this array always corresponds to
-# the height of a highest stone on the board.
-my @layers;
-
-# A two-dimensional array. Records the height of the highest stone on each
-# location.
-my @heights = map { [ 0 xx $board_size ] }, ^$board_size;
-
-# A two-dimensional array. Records the color of the highest stone on each
-# location.
-my @colors = map { [ 0 xx $board_size ] }, ^$board_size;
+my Druid::Game_ $game .= new(:size($board_size));
+# RAKUDO: BUILD
+$game.init();
+my Druid::Board $board = Druid::Board::Text.new(:$game);
+# RAKUDO: [perl #62894]
+#$board.init();
 
 if any(@*ARGS) eq '--help' {
     # RAKUDO: Heredocs.
@@ -169,7 +160,7 @@ loop {
             repeat {
                 $row    = (^$board_size).pick[0];
                 $column = (^$board_size).pick[0];
-            } until @colors[$row][$column] == 0 | $color;
+            } until $game.colors[$row][$column] == 0 | $color;
             $move = chr(ord('a')+$column) ~ ($row+1);
 
             say "Computer moves $move";
@@ -179,7 +170,7 @@ loop {
 
             repeat {
                 print "\n", $player, ': '
-            } until $move = input_valid_move(@heights, @colors, $color);
+            } until $move = input_valid_move($game, $color);
         }
 
         if $move ~~ $pass {
@@ -194,7 +185,6 @@ loop {
         }
 
         $game.make_move($move, $color);
-        $board.make_move($move, $color);
 
         if $game.move_was_winning() {
             $board.show();

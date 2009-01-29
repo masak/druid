@@ -1,13 +1,9 @@
 use v6;
 
+use Druid::Game;
 use Druid::Board;
 
 class Druid::Board::Text is Druid::Board {
-
-    has $!size is readonly; # if you want a new size, make a new object
-    has @!layers;
-    has @!colors;
-    has @!heights;
 
     has $!empty_board is rw;
 
@@ -34,6 +30,22 @@ class Druid::Board::Text is Druid::Board {
 /-----/
 ';
 
+    method size() {
+        return $!game.size();
+    }
+
+    method layers() {
+        return $!game.layers();
+    }
+
+    method colors() {
+        return $!game.colors();
+    }
+
+    method heights() {
+        return $!game.heights();
+    }
+
     # Returns a string containing an ASCII picture of an empty druid board of
     # the given size. 
     sub make_empty_board($size) { 
@@ -58,12 +70,14 @@ class Druid::Board::Text is Druid::Board {
     } 
 
     method init() {
-        die "Forbidden size: $!size"
-            unless 3 <= $!size <= 26;
+#        die 'Must be tied to a game'
+# RAKUDO: Protoobjects shouldn't be defined [perl #62894]
+#            unless $!game.defined;
+# RAKUDO: This doesn't match here [perl #62902]
+#            if $!game === Druid::Game_;
 
-        $!empty_board = make_empty_board($!size);
-        @!heights = map { [ 0 xx $!size ] }, ^$!size;
-        @!colors  = map { [ 0 xx $!size ] }, ^$!size;
+        $!game.attach(self);
+        $!empty_board = make_empty_board($.size);
     }
 
     # Prints the 3D game board and the two smaller sub boards, reflecting the
@@ -74,7 +88,7 @@ class Druid::Board::Text is Druid::Board {
         $!empty_board // self.init();
         my $board = $!empty_board;
 
-        for @!layers.kv -> $height, $layer {
+        for @.layers.kv -> $height, $layer {
             for $layer.kv.reverse -> $line, $row {
                 for $line.kv.reverse -> $cell, $column {
 
@@ -153,11 +167,11 @@ class Druid::Board::Text is Druid::Board {
         my &format_colors  = { <. v h>[$^color] };
         my &format_heights = { $^height || '.' };
 
-        my $letters = 'A'..chr(ord('A') + $!size - 1);
+        my $letters = 'A'..chr(ord('A') + $.size - 1);
 
         my $inter_board_space
-            = ' ' x (1 + 6*$!size - 2*$!size - 2*($!size-1) - 14);
-        my $board_line = [~] '>>  ', ('.' xx $!size).join(' '), '  <<';
+            = ' ' x (1 + 6*$.size - 2*$.size - 2*($.size-1) - 14);
+        my $board_line = [~] '>>  ', ('.' xx $.size).join(' '), '  <<';
 
         my $footer = [~] "\n      ", $letters.join(' '),
                          ' ' x 8, $inter_board_space,
@@ -165,58 +179,16 @@ class Druid::Board::Text is Druid::Board {
         my $header = "$footer\n";
 
         print $header;
-        for (1..$!size).reverse -> $row {
+        for (1..$.size).reverse -> $row {
             say sprintf from_pretty(
                     [~] '  ', $board_line, $inter_board_space, $board_line
                 ),
-                $row, (map &format_colors,  @!colors[$row-1].values),  $row,
-                $row, (map &format_heights, @!heights[$row-1].values), $row;
+                $row, (map &format_colors,  @.colors[$row-1].values),  $row,
+                $row, (map &format_heights, @.heights[$row-1].values), $row;
         }
         print $footer;
     }
 
-    # Analyzes a given move of a piece of a given color, and makes the
-    # appropriate changes to the given game state data structures. This method
-    # assumes that the move is valid and within boundaries.
-    method make_move($move, $color) {
-        my @pieces_to_put;
-
-        given $move {
-            when $sarsen_move {
-                my $row = $<coords><row_number> - 1;
-                my $column = ord($<coords><col_letter>) - ord('a');
-                my $height = @!heights[$row][$column];
-
-                @pieces_to_put = $height, $row, $column;
-            }
-
-            when $lintel_move {
-                my $row_1    = $<coords>[0]<row_number> - 1;
-                my $row_2    = $<coords>[1]<row_number> - 1;
-                my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
-                my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
-                my $height   = @!heights[$row_1][$column_1];
-                my $row_m    = ($row_1    + $row_2   ) / 2;
-                my $column_m = ($column_1 + $column_2) / 2;
-
-                @pieces_to_put = $height, $row_1, $column_1,
-                                 $height, $row_m, $column_m,
-                                 $height, $row_2, $column_2;
-            }
-
-            default { die "Nasty syntax."; }
-        }
-
-        for @pieces_to_put -> $height, $row, $column {
-
-            if $height >= @!layers {
-                push @!layers, [map { [0 xx $!size] }, ^$!size];
-            }
-            @!layers[$height][$row][$column]
-                = @!colors[$row][$column]
-                = $color;
-            @!heights[$row][$column] = $height + 1;
-        }
+    method add_piece($height, $row, $column, $color) {
     }
-
 }
