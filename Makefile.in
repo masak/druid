@@ -1,7 +1,7 @@
 PARROT_DIR=<PARROT_DIR>
 
 SOURCES=lib/Druid/Game/Observer.pm lib/Druid/Game/Subject.pm \
-        lib/Druid/Game.pm lib/Druid/Board.pm lib/Druid/Board/Text.pm
+        lib/Druid/Game.pm lib/Druid/View.pm lib/Druid/View/Text.pm
 
 PIRS=$(SOURCES:.pm=.pir)
 

@@ -1,9 +1,9 @@
 use v6;
 
 use Druid::Game;
-use Druid::Board;
+use Druid::View;
 
-class Druid::Board::Text is Druid::Board {
+class Druid::View::Text is Druid::View {
 
     has $!empty_board is rw;
 

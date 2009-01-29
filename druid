@@ -1,8 +1,8 @@
 use v6;
 
 use Druid::Game;
-use Druid::Board;
-use Druid::Board::Text;
+use Druid::View;
+use Druid::View::Text;
 
 # Reads a string from STDIN, and checks it for validity in various ways.
 # As a first check, the move syntax is checked to be either a sarsen move
@@ -122,9 +122,9 @@ for @*ARGS -> $argument {
 my Druid::Game_ $game .= new(:size($board_size));
 # RAKUDO: BUILD
 $game.init();
-my Druid::Board $board = Druid::Board::Text.new(:$game);
+my Druid::View $view = Druid::View::Text.new(:$game);
 # RAKUDO: [perl #62894]
-#$board.init();
+#$view.init();
 
 if any(@*ARGS) eq '--help' {
     # RAKUDO: Heredocs.
@@ -166,7 +166,7 @@ loop {
             say "Computer moves $move";
         }
         else {
-            $board.show();
+            $view.show();
 
             repeat {
                 print "\n", $player, ': '
@@ -187,7 +187,7 @@ loop {
         $game.make_move($move, $color);
 
         if $game.move_was_winning() {
-            $board.show();
+            $view.show();
             print "\n";
 
             say "$player won.";
