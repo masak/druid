@@ -1,24 +1,17 @@
 use v6;
 
+use Druid::Base;
 use Druid::Game::Subject;
 
 # RAKUDO: Cannot declare class after use-ing Druid::Game::Subject.
 # [perl #62898]
-class Druid::Game_ does Druid::Game::Subject {
+class Druid::Game_ is Druid::Base does Druid::Game::Subject {
     has $.size;
     has @.layers;
     has @.heights;
     has @.colors;
 
     has $!last_move;
-
-    regex col_letter { <[a..z]> }
-    regex row_number { \d+ }
-    regex coords { <col_letter><row_number> }
-
-    my $sarsen_move = /^ <coords> $/;
-    my $lintel_move = /^ <coords> '-' <coords> $/;
-    my $pass = /^ 'pass' | 'p' $/;
 
     method init() {
         die "Forbidden size: $!size"
@@ -36,7 +29,7 @@ class Druid::Game_ does Druid::Game::Subject {
         my @pieces_to_put;
 
         given $move {
-            when $sarsen_move {
+            when $.sarsen_move {
                 my $row = $<coords><row_number> - 1;
                 my $column = ord($<coords><col_letter>) - ord('a');
                 my $height = @!heights[$row][$column];
@@ -44,7 +37,7 @@ class Druid::Game_ does Druid::Game::Subject {
                 @pieces_to_put = $height, $row, $column;
             }
 
-            when $lintel_move {
+            when $.lintel_move {
                 my $row_1    = $<coords>[0]<row_number> - 1;
                 my $row_2    = $<coords>[1]<row_number> - 1;
                 my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
@@ -58,7 +51,8 @@ class Druid::Game_ does Druid::Game::Subject {
                                  $height, $row_2, $column_2;
             }
 
-            when $pass {
+            when $.pass {
+                # Nothing happens
             }
 
             default { die "Nasty syntax."; }
@@ -82,23 +76,20 @@ class Druid::Game_ does Druid::Game::Subject {
     # the two sides have been connected.
     method move_was_winning() {
 
-        return False
-            if $!last_move ~~ $pass;
-
         # BUG: There is something wrong with this algorithm for board size 3
         # and the move sequence c1, b2, c3, b2, c1-c3. The last move should
         # register as a winning move, but it doesn't.
         my ($row, $column);
         given $!last_move {
-            when $sarsen_move {
+            when $.sarsen_move {
                 $row    = $<coords><row_number> - 1;
                 $column = ord($<coords><col_letter>) - ord('a');
             }
-            when $lintel_move {
+            when $.lintel_move {
                 $row    = $<coords>[0]<row_number> - 1;
                 $column = ord($<coords>[0]<col_letter>) - ord('a');
             }
-            default { return False; } # unknown move type
+            default { return False; } # pass or unknown move type
         }
 
         my @pos_queue = { :$row, :$column };

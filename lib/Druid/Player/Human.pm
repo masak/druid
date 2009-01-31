@@ -18,22 +18,13 @@ class Druid::Player::Human is Druid::Player {
     # placed lintel's color.
     submethod input_valid_move() {
 
-        regex col_letter { <[a..z]> }
-        regex row_number { \d+ }
-        regex coords { <col_letter><row_number> }
-
-        my $sarsen_move = /^ <coords> $/;
-        my $lintel_move = /^ <coords> '-' <coords> $/;
-
-        my $pass = /^ 'pass' | 'p' $/;
-
         my &flunk_move = { say $^reason; return };
 
         my $move = =$*IN;
         say '' and exit(1) if $*IN.eof;
 
         given $move {
-            when $sarsen_move {
+            when $.sarsen_move {
                 my $row    = $<coords><row_number> - 1;
                 my $column = ord($<coords><col_letter>) - ord('a');
 
@@ -49,7 +40,7 @@ class Druid::Player::Human is Druid::Player {
                     unless $.colors[$row][$column] == 0|$!color;
             }
 
-            when $lintel_move {
+            when $.lintel_move {
                 my $row_1    = $<coords>[0]<row_number> - 1;
                 my $row_2    = $<coords>[1]<row_number> - 1;
                 my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
@@ -100,7 +91,7 @@ class Druid::Player::Human is Druid::Player {
                     if $number_of_samecolor_supporting_pieces != 2;
             }
 
-            when $pass {
+            when $.pass {
                 # Nothing to do; it's a pass
             }
 

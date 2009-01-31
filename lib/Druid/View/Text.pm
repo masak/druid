@@ -7,13 +7,6 @@ class Druid::View::Text is Druid::View {
 
     has $!empty_board is rw;
 
-    regex col_letter { <[a..z]> }
-    regex row_number { \d+ }
-    regex coords { <col_letter><row_number> }
-
-    my $sarsen_move = /^ <coords> $/;
-    my $lintel_move = /^ <coords> '-' <coords> $/;
-
     my $v_piece = '
  +-----+
 /|#v#v#|
