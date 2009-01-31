@@ -2,14 +2,6 @@ use v6;
 
 use Druid::Game::Subject;
 
-# RAKUDO: Would like to make this class local to move_was_winning, using
-# 'my class', but that is not implemented yet.
-class Pos {
-    has $.row    is rw;
-    has $.column is rw;
-    method Str { join ',', $.row, $.column }
-}
-
 # RAKUDO: Cannot declare class after use-ing Druid::Game::Subject.
 # [perl #62898]
 class Druid::Game_ does Druid::Game::Subject {
@@ -109,42 +101,37 @@ class Druid::Game_ does Druid::Game::Subject {
             default { return False; } # unknown move type
         }
 
-        my @pos_queue = Pos.new( :row($row), :column($column) );
+        my @pos_queue = { :$row, :$column };
 
         my $last_color = @!colors[$row][$column];
 
-        my &above = { .row    < $!size - 1 && .clone( :row(.row + 1)       ) };
-        my &below = { .row    > 0          && .clone( :row(.row - 1)       ) };
-        my &right = { .column < $!size - 1 && .clone( :column(.column + 1) ) };
-        my &left  = { .column > 0          && .clone( :column(.column - 1) ) };
+        my &above = { .<row>    < $!size - 1 && { :row(.<row> + 1),
+                                                  :column(.<column>) } };
+        my &below = { .<row>    > 0          && { :row(.<row> - 1),
+                                                  :column(.<column>) } };
+        my &right = { .<column> < $!size - 1 && { :row(.<row>),
+                                                  :column(.<column> + 1) } };
+        my &left  = { .<column> > 0          && { :row(.<row>),
+                                                  :column(.<column> - 1) } };
 
         my %visited;
         my $reached_one_end   = False;
         my $reached_other_end = False;
 
-        # I can't quite figure out why, but debug statements reveal that the
-        # loops test the initial position twice, despite the fact that it's only
-        # added to the array once.
         while shift @pos_queue -> $pos {
             ++%visited{~$pos};
 
             for &above, &below, &right, &left -> &direction {
-                my $r = $pos.row;
-                my $c = $pos.column;
+                my ($r, $c) = .<row>, .<column> given $pos;
                 if direction($pos) -> $neighbor {
 
                     if !%visited.exists(~$neighbor)
-                       && @!colors[$neighbor.row][$neighbor.column]
-                            == $last_color {
+                       && @!colors[$neighbor<row>][$neighbor<column>]
+                          == $last_color {
 
-                        push @pos_queue, Pos.new( :row($neighbor.row),
-                                                  :column($neighbor.column) );
+                        push @pos_queue, $neighbor;
                     }
                 }
-                # RAKUDO: Need to restore the values of $pos this way as long as
-                # the .clone bug persists.
-                $pos.row = $r;
-                $pos.column = $c;
             }
 
             if    $last_color == 1 && !above($pos)
