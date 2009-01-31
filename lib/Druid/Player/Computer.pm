@@ -1,4 +1,5 @@
 use v6;
+use Druid::Player;
 
 class Druid::Player::Computer is Druid::Player {
     method choose_move() {
