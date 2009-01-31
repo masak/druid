@@ -11,3 +11,5 @@ class Druid::Player is Druid::Base {
 
     method Str() { return <Vertical Horizontal>[$!color-1] }
 }
+
+# vim: filetype=perl6

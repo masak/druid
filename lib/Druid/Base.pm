@@ -9,3 +9,5 @@ class Druid::Base {
     our $.lintel_move = /^ <coords> '-' <coords> $/;
     our $.pass = /^ 'pass' | 'p' $/;
 }
+
+# vim: filetype=perl6

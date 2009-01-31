@@ -105,3 +105,5 @@ something like "b2" or something like "c1-c3".'.substr(1);
         return $move;
     }
 }
+
+# vim: filetype=perl6

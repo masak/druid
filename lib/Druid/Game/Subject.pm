@@ -11,3 +11,5 @@ role Druid::Game::Subject {
         }
     }
 }
+
+# vim: filetype=perl6

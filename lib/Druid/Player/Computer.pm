@@ -16,3 +16,5 @@ class Druid::Player::Computer is Druid::Player {
         return $move;
     }
 }
+
+# vim: filetype=perl6

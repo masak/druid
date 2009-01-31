@@ -142,3 +142,5 @@ class Druid::Game_ is Druid::Base does Druid::Game::Subject {
         return False;
     }
 }
+
+# vim: filetype=perl6

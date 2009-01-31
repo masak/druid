@@ -172,3 +172,5 @@ class Druid::View::Text is Druid::View {
     method add_piece($height, $row, $column, $color) {
     }
 }
+
+# vim: filetype=perl6
