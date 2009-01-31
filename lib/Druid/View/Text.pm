@@ -33,6 +33,9 @@ class Druid::View::Text is Druid::View {
     # Returns a string containing an ASCII picture of an empty druid board of
     # the given size. 
     sub make_empty_board($size) { 
+        # The 'join $sep, gather { ... }' pattern makes us put a long string
+        # together, without having to refer to the same variable over and
+        # over.
         return join "\n", gather { 
             take ''; 
             take my $heading 
