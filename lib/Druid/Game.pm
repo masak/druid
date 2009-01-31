@@ -66,6 +66,9 @@ class Druid::Game_ does Druid::Game::Subject {
                                  $height, $row_2, $column_2;
             }
 
+            when $pass {
+            }
+
             default { die "Nasty syntax."; }
         }
 
@@ -86,6 +89,9 @@ class Druid::Game_ does Druid::Game::Subject {
     # Starting from the last move made, traces the chains to determine whether
     # the two sides have been connected.
     method move_was_winning() {
+
+        return False
+            if $!last_move ~~ $pass;
 
         # BUG: There is something wrong with this algorithm for board size 3
         # and the move sequence c1, b2, c3, b2, c1-c3. The last move should

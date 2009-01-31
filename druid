@@ -3,105 +3,24 @@ use v6;
 use Druid::Game;
 use Druid::View;
 use Druid::View::Text;
+use Druid::Player;
+use Druid::Player::Human;
+use Druid::Player::Computer;
 
-# Reads a string from STDIN, and checks it for validity in various ways.
-# As a first check, the move syntax is checked to be either a sarsen move
-# or a lintel move. A valid sarsen move must be placed on the ground or on
-# stones of the same color. A valid lintel move must cover exactly three
-# locations in a row, and the lintel itself must have stones under both
-# ends, and two of the maximally three supporting stones must be of the
-# placed lintel's color.
-sub input_valid_move($game, $color) {
+if any(@*ARGS) eq '--help' {
+    # RAKUDO: Heredocs.
+    say .substr(4) for split "\n", '
+    Druid. Implementation © Carl Mäsak 2008-2009. Rules © Cameron Browne.
 
-    regex col_letter { <[a..z]> }
-    regex row_number { \d+ }
-    regex coords { <col_letter><row_number> }
+    Usage:
+        % perl6 druid [switches]
 
-    my $sarsen_move = /^ <coords> $/;
-    my $lintel_move = /^ <coords> '-' <coords> $/;
+        --size=<size>       Give the board a size between 3 and 26.
+        --computer=[1|2]    The computer controls player one or two.
+        --help              Display this help text.
+    ';
 
-    my &flunk_move = { say $^reason; return };
-
-    my $move = =$*IN;
-    say '' and exit(1) if $*IN.eof;
-
-    given $move {
-        when $sarsen_move {
-            my $row = $<coords><row_number> - 1;
-            my $column = ord($<coords><col_letter>) - ord('a');
-
-            flunk_move "The highest column is '{chr(ord('A')+$game.size-1)}'"
-                if $column >= $game.size;
-            flunk_move 'There is no row 0'
-                if $row == -1;
-            flunk_move "There are only {$game.size} rows"
-                if $row >= $game.size;
-
-            flunk_move 'Not your spot'
-                unless $game.colors[$row][$column] == 0|$color;
-        }
-
-        when $lintel_move {
-            my $row_1    = $<coords>[0]<row_number> - 1;
-            my $row_2    = $<coords>[1]<row_number> - 1;
-            my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
-            my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
-
-            flunk_move "The highest column is '{chr(ord('A')+{$game.size}-1)}'"
-                if $column_1|$column_2 >= $game.size;
-            flunk_move 'There is no row 0'
-                if $row_1|$row_2 == -1;
-            flunk_move "There are only {$game.size} rows"
-                if $row_1|$row_2 >= $game.size;
-
-            my $row_diff    = abs($row_1 - $row_2);
-            my $column_diff = abs($column_1 - $column_2);
-
-            flunk_move 'Must be exactly two cells apart'
-                unless $row_diff == 2 && $column_diff == 0
-                    || $row_diff == 0 && $column_diff == 2;
-
-            flunk_move 'Must be supported at both ends'
-                unless $game.heights[$row_1][$column_1]
-                    == $game.heights[$row_2][$column_2];
-
-            my $row_m    = ($row_1    + $row_2   ) / 2;
-            my $column_m = ($column_1 + $column_2) / 2;
-        
-            flunk_move 'There is a piece in the way in the middle'
-                unless $game.heights[$row_m][$column_m]
-                    <= $game.heights[$row_1][$column_1];
-
-            flunk_move 'No lintels on the ground'
-                unless $game.heights[$row_1][$column_1];
-
-            my $number_of_samecolor_supporting_pieces
-                = ($game.colors[$row_1][$column_1] == $color ?? 1 !! 0)
-                + ($game.colors[$row_2][$column_2] == $color ?? 1 !! 0);
-
-            if    $game.heights[$row_m][$column_m]
-               == $game.heights[$row_1][$column_1] { 
-
-                $number_of_samecolor_supporting_pieces
-                    += $game.colors[$row_m][$column_m] == $color ?? 1 !! 0;
-            }
-
-            flunk_move 'Must be exactly two of your pieces under a lintel'
-                if $number_of_samecolor_supporting_pieces != 2;
-        }
-
-        when $pass {
-            # Nothing to do; it's a pass
-        }
-
-        default {
-            flunk_move '
-The move does not conform to the accepted move syntax, which is either
-something like "b2" or something like "c1-c3".'.substr(1);
-        }
-    }
-
-    return $move;
+    exit(0);
 }
 
 my $board_size = 8;
@@ -126,65 +45,37 @@ my Druid::View $view = Druid::View::Text.new(:$game);
 # RAKUDO: [perl #62894]
 #$view.init();
 
-if any(@*ARGS) eq '--help' {
-    # RAKUDO: Heredocs.
-    say .substr(4) for split "\n", '
-    Druid. Implementation © Carl Mäsak 2008-2009. Rules © Cameron Browne.
-
-    Usage:
-        % perl6 druid [switches]
-
-        --size=<size>       Give the board a size between 3 and 26.
-        --computer=[1|2]    The computer controls player one or two.
-        --help              Display this help text.
-    ';
-
-    exit(0);
-}
-
-my $play_mode =    (?(any(@*ARGS) eq '--computer=1') && 1)
-                +| (?(any(@*ARGS) eq '--computer=2') && 2);
-
 die 'Druid currently does not support computer-vs-computer play.'
-    if $play_mode == 3;
+    if any(@*ARGS) eq '--computer=1'&'--computer=2';
+my Druid::Player ($player1, $player2);
+$player1 = any(@*ARGS) eq '--computer=1'
+    ?? Druid::Player::Computer.new(:$game, :color(1))
+    !! Druid::Player::Human.new(   :$game, :color(1));
+$player2 = any(@*ARGS) eq '--computer=2'
+    ?? Druid::Player::Computer.new(:$game, :color(2))
+    !! Druid::Player::Human.new(   :$game, :color(2));
 
 my $pass = /^ 'pass' | 'p' $/;
 
 my $passes_in_a_row = 0;
 loop {
-    for <Vertical Horizontal> Z 1, 2 -> $player, $color {
+    for $player1, $player2 -> $player {
 
-        my $move;
-        if $color +& $play_mode { # This player is controlled by the computer
-            my ($row, $column);
-            repeat {
-                $row    = (^$board_size).pick[0];
-                $column = (^$board_size).pick[0];
-            } until $game.colors[$row][$column] == 0 | $color;
-            $move = chr(ord('a')+$column) ~ ($row+1);
+        $view.show();
 
-            say "Computer moves $move";
-        }
-        else {
-            $view.show();
-
-            repeat {
-                print "\n", $player, ': '
-            } until $move = input_valid_move($game, $color);
-        }
+        my $move = $player.choose_move();
 
         if $move ~~ $pass {
             if ++$passes_in_a_row >= 2 {
                 say "It's a draw.";
                 exit(0);
             }
-            next;
         }
         elsif $move !~~ $pass {
             $passes_in_a_row = 0;
         }
 
-        $game.make_move($move, $color);
+        $game.make_move($move, $player.color);
 
         if $game.move_was_winning() {
             $view.show();
