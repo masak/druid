@@ -30,22 +30,6 @@ class Druid::View::Text is Druid::View {
 /-----/
 ';
 
-    method size() {
-        return $!game.size();
-    }
-
-    method layers() {
-        return $!game.layers();
-    }
-
-    method colors() {
-        return $!game.colors();
-    }
-
-    method heights() {
-        return $!game.heights();
-    }
-
     # Returns a string containing an ASCII picture of an empty druid board of
     # the given size. 
     sub make_empty_board($size) { 
