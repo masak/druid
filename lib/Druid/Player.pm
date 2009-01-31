@@ -1,7 +1,8 @@
 use v6;
+use Druid::Game;
 
 class Druid::Player {
-    has Druid::Game::Subject $!game;
+    has Druid::Game_ $!game handles <size layers colors heights>;
     has Int $.color;
 
     method choose_move() { ... }

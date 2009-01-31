@@ -37,15 +37,15 @@ class Druid::Player::Human is Druid::Player {
                 my $column = ord($<coords><col_letter>) - ord('a');
 
                 flunk_move "The highest column is '{
-                            chr(ord('A')+$!game.size-1)}'"
-                    if $column >= $!game.size;
+                            chr(ord('A')+$.size-1)}'"
+                    if $column >= $.size;
                 flunk_move 'There is no row 0'
                     if $row == -1;
-                flunk_move "There are only {$!game.size} rows"
-                    if $row >= $!game.size;
+                flunk_move "There are only {$.size} rows"
+                    if $row >= $.size;
 
                 flunk_move 'Not your spot'
-                    unless $!game.colors[$row][$column] == 0|$!color;
+                    unless $.colors[$row][$column] == 0|$!color;
             }
 
             when $lintel_move {
@@ -54,13 +54,12 @@ class Druid::Player::Human is Druid::Player {
                 my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
                 my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
 
-                flunk_move "The highest column is '{
-                            chr(ord('A')+{$!game.size}-1)}'"
-                    if $column_1|$column_2 >= $!game.size;
+                flunk_move "The highest column is '{chr(ord('A')+{$.size}-1)}'"
+                    if $column_1|$column_2 >= $.size;
                 flunk_move 'There is no row 0'
                     if $row_1|$row_2 == -1;
-                flunk_move "There are only {$!game.size} rows"
-                    if $row_1|$row_2 >= $!game.size;
+                flunk_move "There are only {$.size} rows"
+                    if $row_1|$row_2 >= $.size;
 
                 my $row_diff    = abs($row_1 - $row_2);
                 my $column_diff = abs($column_1 - $column_2);
@@ -70,28 +69,28 @@ class Druid::Player::Human is Druid::Player {
                         || $row_diff == 0 && $column_diff == 2;
 
                 flunk_move 'Must be supported at both ends'
-                    unless $!game.heights[$row_1][$column_1]
-                        == $!game.heights[$row_2][$column_2];
+                    unless $.heights[$row_1][$column_1]
+                        == $.heights[$row_2][$column_2];
 
                 my $row_m    = ($row_1    + $row_2   ) / 2;
                 my $column_m = ($column_1 + $column_2) / 2;
 
                 flunk_move 'There is a piece in the way in the middle'
-                    unless $!game.heights[$row_m][$column_m]
-                        <= $!game.heights[$row_1][$column_1];
+                    unless $.heights[$row_m][$column_m]
+                        <= $.heights[$row_1][$column_1];
 
                 flunk_move 'No lintels on the ground'
-                    unless $!game.heights[$row_1][$column_1];
+                    unless $.heights[$row_1][$column_1];
 
                 # Could rely on the numification of Bool here, but that while
                 # terser, it would also be harder to understand.
                 my $number_of_samecolor_supporting_pieces
-                    = ($!game.colors[$row_1][$column_1] == $!color ?? 1 !! 0)
-                    + ($!game.colors[$row_2][$column_2] == $!color ?? 1 !! 0);
+                    = ($.colors[$row_1][$column_1] == $!color ?? 1 !! 0)
+                    + ($.colors[$row_2][$column_2] == $!color ?? 1 !! 0);
 
-                if    $!game.heights[$row_m][$column_m]
-                   == $!game.heights[$row_1][$column_1]
-                   && $!game.colors[$row_m][$column_m] == $!color {
+                if    $.heights[$row_m][$column_m]
+                   == $.heights[$row_1][$column_1]
+                   && $.colors[$row_m][$column_m] == $!color {
 
                     $number_of_samecolor_supporting_pieces++
                 }
