@@ -11,7 +11,7 @@ all: $(PIRS)
 
 %.pir: %.pm
 	$(PARROT_DIR)/parrot \
-        $(PARROT_DIR)/languages/perl6/perl6.pbc \
+        $(PARROT_DIR)/languages/rakudo/perl6.pbc \
         --target=pir --output=$@ \
         $<
 
