@@ -86,11 +86,8 @@ class Druid::View::Text is Druid::View {
 
                     next if $cell == 0;
 
-                    my $move
-                        = chr($column + ord('a')) ~ ($row+1) ~ '-' ~ $height;
-
                     given ($v_piece, $h_piece)[$cell-1] -> $piece {
-                        $board = put( $piece, $board, $move );
+                        $board = put( $piece, $board, $height, $row, $column );
                     }
                 }
             }
@@ -103,18 +100,15 @@ class Druid::View::Text is Druid::View {
     # returns a new board with the piece inserted into some coordinates. This
     # sub assumes that pieces are drawn in an order that makes sense, so that
     # pieces in front cover those behind.
-    sub put($piece, $board, $coords) {
+    sub put($piece, $board, $height, $row, $column) {
         my @lines = $board.split("\n");
 
-        my $layer = substr( $coords, 3 );
+        my $coord_line = +@lines - 8 - 3 * $row - $height;
 
-        my $line = substr( $coords, 1, 1 );
-        my $coord_line = +@lines - 8 - 3 * ($line - 1) - $layer;
+        return put($piece, "\n" ~ $board, $height, $row, $column)
+            if $coord_line < 0;
 
-        return put($piece, "\n" ~ $board, $coords) if $coord_line < 0;
-
-        my $column = ord( substr($coords, 0, 1).lc ) - ord('a');
-        my $coord_column = 3 + 6 * $column + $layer;
+        my $coord_column = 3 + 6 * $column + $height;
 
         for $piece.split("\n").kv -> $line_no, $piece_line {
             my $board_line = @lines[$coord_line + $line_no];
