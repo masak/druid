@@ -3,10 +3,12 @@ use v6;
 use Druid::Game::Observer;
 
 role Druid::Game::Subject {
-    has Druid::Game::Observer @!observers;
+    # RAKUDO: Typed arrays don't really work yet
+#    has Druid::Game::Observer @!observers;
+    has @!observers;
 
     method attach(Druid::Game::Observer $observer) {
-        unless @!observers ~~ *, $observer, * {
+        unless @!observers ~~ (*, $observer, *) {
             @!observers.push($observer);
         }
     }

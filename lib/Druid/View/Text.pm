@@ -5,7 +5,7 @@ use Druid::View;
 
 class Druid::View::Text is Druid::View {
 
-    has $!empty_board is rw;
+    has $!cached_board is rw;
 
     my $v_piece = '
  +-----+
@@ -26,9 +26,9 @@ class Druid::View::Text is Druid::View {
     # Returns a string containing an ASCII picture of an empty druid board of
     # the given size. 
     sub make_empty_board($size) { 
-        # The 'join $sep, gather { ... }' pattern makes us put a long string
-        # together, without having to refer to the same variable over and
-        # over.
+        # The 'join $sep, gather { ... }' pattern allows us to put a long
+        # string together, without having to refer to the same variable over
+        # and over.
         return join "\n", gather { 
             take ''; 
             take my $heading 
@@ -56,8 +56,9 @@ class Druid::View::Text is Druid::View {
 # RAKUDO: This doesn't match here [perl #62902]
 #            if $!game === Druid::Game_;
 
+        # RAKUDO: The following line should be in Druid::View
         $!game.attach(self);
-        $!empty_board = make_empty_board($.size);
+        $!cached_board = make_empty_board($.size);
     }
 
     # Prints the 3D game board and the two smaller sub boards, reflecting the
@@ -65,28 +66,37 @@ class Druid::View::Text is Druid::View {
     method show() {
 
         # RAKUDO: BUILD
-        $!empty_board // self.init();
-        my $board = $!empty_board;
+        $!cached_board // self.init();
+        print $!cached_board;
 
-        for @.layers.kv -> $height, $layer {
+        self.print_colors_and_heights();
+    }
+
+    method build_layers($board is copy, $from) {
+        # RAKUDO: Something strange happens when passing Ints as parameters
+        my $from_copy = +$from;
+        # RAKUDO: Something about array indices and list context
+        my @layers = $from_copy == @.layers.end
+                        ?? @.layers[$from_copy]
+                        !! @.layers[$from_copy .. @.layers.end];
+        for @layers.kv -> $relheight, $layer {
+            my $height = $relheight + $from_copy;
             for $layer.kv.reverse -> $line, $row {
                 for $line.kv.reverse -> $cell, $column {
+
+                    next if $cell == 0;
 
                     my $move
                         = chr($column + ord('a')) ~ ($row+1) ~ '-' ~ $height;
 
-                    $board = do given $cell {
-                        when 1  { put( $v_piece, $board, $move ) }
-                        when 2  { put( $h_piece, $board, $move ) }
-                        default { $board }
-                    };
+                    given ($v_piece, $h_piece)[$cell-1] -> $piece {
+                        $board = put( $piece, $board, $move );
+                    }
                 }
             }
         }
 
-        print $board;
-
-        self.print_colors_and_heights();
+        return $board;
     }
 
     # Given a string representing a piece and one representing the board,
@@ -170,6 +180,7 @@ class Druid::View::Text is Druid::View {
     }
 
     method add_piece($height, $row, $column, $color) {
+        $!cached_board = self.build_layers($!cached_board, $height);
     }
 }
 

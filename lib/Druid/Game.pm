@@ -67,6 +67,8 @@ class Druid::Game_ is Druid::Base does Druid::Game::Subject {
                 = @!colors[$row][$column]
                 = $color;
             @!heights[$row][$column] = $height + 1;
+
+            .add_piece($height, $row, $column, $color) for @!observers;
         }
 
         $!last_move = $move;
