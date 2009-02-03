@@ -23,6 +23,20 @@ class Druid::View::Text is Druid::View {
 /-----/
 ';
 
+    my $cover_right = '
+        
+       #
+       #
+';
+
+    my $cover_top = '
+  #####
+';
+
+    my $cover_top_right = '
+       #
+';
+
     # Returns a string containing an ASCII picture of an empty druid board of
     # the given size. 
     sub make_empty_board($size) { 
@@ -88,6 +102,24 @@ class Druid::View::Text is Druid::View {
 
                     given ($v_piece, $h_piece)[$cell-1] -> $piece {
                         $board = put( $piece, $board, $height, $row, $column );
+                        if $column < $.size - 1
+                           && $layer[$row][$column] == $layer[$row][$column+1] {
+                            $board = put( $cover_right, $board,
+                                          $height, $row, $column );
+                        }
+                        if $row < $.size - 1
+                           && $layer[$row][$column] == $layer[$row+1][$column] {
+                            $board = put( $cover_top, $board,
+                                          $height, $row, $column );
+                        }
+                        if $row & $column < $.size - 1
+                           && $layer[$row][$column]
+                              == $layer[$row+1][$column]
+                              == $layer[$row][$column+1]
+                              == $layer[$row+1][$column+1] {
+                            $board = put( $cover_top_right, $board,
+                                          $height, $row, $column );
+                        }
                     }
                 }
             }
