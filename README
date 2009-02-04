@@ -44,11 +44,14 @@ Yup, you're ready to go.
 
 == For those who want to compile things
 
+(After all, compilation does make startup a little faster.)
+
 % perl Makefile.PL
 % make
 
 Remember that you still need to set $PERL6LIB and $PARROT_DIR as above. The
-file Makefile.PL will complain if you don't. The 'make' process will not
+file Makefile.PL will complain if you don't. The 'make' process, should you
+foolishly proceed to it without heeding Makefile.PL's advice, will not
 complain, just fail.
 
 == License
