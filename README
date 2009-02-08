@@ -14,7 +14,7 @@ Instructions on getting Druid running:
 You need Rakudo to run the Perl 6 code in Druid -- instructions
 here: <http://www.perlfoundation.org/perl6/index.cgi?rakudo>.
 
-== Set some environment variable
+== Set some environment variables
 
 Put something like this in your ~/.bash_profile analogue:
 
