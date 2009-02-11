@@ -64,11 +64,8 @@ class Druid::View::Text is Druid::View {
     } 
 
     method init() {
-#        die 'Must be tied to a game'
-# RAKUDO: Protoobjects shouldn't be defined [perl #62894]
-#            unless $!game.defined;
-# RAKUDO: This doesn't match here [perl #62902]
-#            if $!game === Druid::Game;
+        die 'Must be tied to a game'
+            unless $!game.defined;
 
         # RAKUDO: The following line should be in Druid::View
         $!game.attach(self);
