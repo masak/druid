@@ -16,4 +16,4 @@ all: $(PIRS)
         $<
 
 clean:
-	rm -f $(PIRS)
+	rm -f $(PIRS) Makefile
