@@ -28,6 +28,11 @@ my %replacements = (
     PARROT_DIR => $parrot_dir,
 );
 
+if ( !-e 'Test.pm' ) {
+    !system("ln -s $parrot_dir/languages/rakudo/Test.pm") or die @!;
+    print "Symlinked Test.pm from the Rakudo directory \n";
+}
+
 for my $infile (@infiles) {
     if ((my $outfile = $infile) =~ s/\.in$//g) {
         open my $IN,  '<', $infile  or die "Couldn't open $infile, $!, $?";
