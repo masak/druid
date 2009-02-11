@@ -38,7 +38,7 @@ for @*ARGS -> $argument {
     }
 }
 
-my Druid::Game_ $game .= new(:size($board_size));
+my Druid::Game $game .= new(:size($board_size));
 # RAKUDO: BUILD
 $game.init();
 my Druid::View $view = Druid::View::Text.new(:$game);

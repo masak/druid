@@ -3,9 +3,7 @@ use v6;
 use Druid::Base;
 use Druid::Game::Subject;
 
-# RAKUDO: Cannot declare class after use-ing Druid::Game::Subject.
-# [perl #62898]
-class Druid::Game_ is Druid::Base does Druid::Game::Subject {
+class Druid::Game is Druid::Base does Druid::Game::Subject {
     has $.size;
     has @.layers;
     has @.heights;

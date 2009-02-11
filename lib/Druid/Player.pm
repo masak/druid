@@ -2,7 +2,7 @@ use v6;
 use Druid::Game;
 
 class Druid::Player is Druid::Base {
-    has Druid::Game_ $!game handles <size layers colors heights>;
+    has Druid::Game $!game handles <size layers colors heights>;
     has Int $.color;
 
     method choose_move() { ... }
