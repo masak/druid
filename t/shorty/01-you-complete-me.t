@@ -4,7 +4,7 @@ use Druid::Player::Computer::Shorty;
 plan 9;
 
 sub assert(:$that!, :$yields!, :$desc = '') {
-    my $game = Druid::Game_.new(:size(3));
+    my $game = Druid::Game.new(:size(3));
     my $shorty = Druid::Player::Computer::Shorty.new(:$game, :color(1));
     my $move = $shorty.choose_move();
     is($move, $yields, $desc);
