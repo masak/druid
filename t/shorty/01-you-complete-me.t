@@ -3,15 +3,30 @@ use Druid::Player::Computer::Shorty;
 
 plan 9;
 
+sub pieces($board) {
+    my @result;
+    my $board_new = $board.subst(/\s+/, '');
+    my $size = +$board_new.split("\n");
+    for $board_new.split("\n").kv -> $row, $line {
+        for $line.subst(/\s+/, '').split('').kv -> $column, $cell {
+            if $cell eq 'V' {
+                push @result, chr(ord('a')+$column)~($size-$row), 1;
+            }
+        }
+    }
+    return @result;
+}
+
 # RAKUDO: Unable to rename named params with parens
 sub assert(:$that!, :$yields!, :$desc = '') {
     my $input = $that;
     my $expected = $yields;
-    my $game = Druid::Game.new(:size(3));
+    my $size = +$input.subst(/\s+/, '').split("\n");
+    my $game = Druid::Game.new(:size($size));
     $game.init();
-    # TODO: Generalize
-    $game.make_move('b3', 1);
-    $game.make_move('b2', 1);
+    for pieces($input) -> $pos, $player {
+        $game.make_move($pos, $player);
+    }
     my $shorty = Druid::Player::Computer::Shorty.new(:$game, :color(1));
     my $received = $shorty.choose_move();
     is($received, $expected, $desc);
