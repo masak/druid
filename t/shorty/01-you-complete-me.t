@@ -3,11 +3,18 @@ use Druid::Player::Computer::Shorty;
 
 plan 9;
 
+# RAKUDO: Unable to rename named params with parens
 sub assert(:$that!, :$yields!, :$desc = '') {
+    my $input = $that;
+    my $expected = $yields;
     my $game = Druid::Game.new(:size(3));
+    $game.init();
+    # TODO: Generalize
+    $game.make_move('b3', 1);
+    $game.make_move('b2', 1);
     my $shorty = Druid::Player::Computer::Shorty.new(:$game, :color(1));
-    my $move = $shorty.choose_move();
-    is($move, $yields, $desc);
+    my $received = $shorty.choose_move();
+    is($received, $expected, $desc);
 }
 
 {
