@@ -9,6 +9,9 @@ Instructions on getting Druid running:
 * Set some environment variables.
 * Call 'perl6 druid'.
 
+There's also a an installer called 'proto' that you can use to install druid;
+see 'Installing via proto' below.
+
 == Get Rakudo
 
 You need Rakudo to run the Perl 6 code in Druid -- instructions
@@ -46,6 +49,14 @@ Remember that you still need to set $PERL6LIB and $PARROT_DIR as above. The
 file Makefile.PL will complain if you don't. The 'make' process, should you
 foolishly proceed to it without heeding Makefile.PL's advice, will not
 complain, just fail.
+
+== Installing via proto
+
+1. Get proto from <https://github.com/masak/proto>
+2. Run './proto' and optionally review the settings in the created config file
+3. Run './proto install druid'
+
+...and you're ready to run.
 
 == License
 
