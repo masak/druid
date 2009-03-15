@@ -41,3 +41,5 @@ my @tests =
         "does not win the game if it connects the enemy's edges",
     ]
 ;
+
+# vim: filetype=perl6
