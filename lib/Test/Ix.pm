@@ -67,3 +67,19 @@ sub first-index(Code $cond, @array) {
     }
     return ();
 }
+
+multi sub count(@tests) {
+    my Int $total;
+    for @tests -> $test {
+        if $test ~~ Pair {
+            $total += count($test.value);
+        }
+        elsif $test ~~ Str {
+            ++$total;
+        }
+        else {
+            die "Don't understand a {$test.WHAT} in the declaration.";
+        }
+    }
+    return $total;
+}

@@ -1,4 +1,5 @@
 use v6;
+use Test::Ix;
 
 my @tests =
     'the player to move' => [
@@ -41,5 +42,7 @@ my @tests =
         "does not win the game if it connects the enemy's edges",
     ]
 ;
+
+plan count(@tests);
 
 # vim: filetype=perl6
