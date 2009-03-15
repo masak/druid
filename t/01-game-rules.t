@@ -43,6 +43,7 @@ my @tests =
     ]
 ;
 
-plan count(@tests);
+plan count-tests(@tests);
+run-tests(@tests);
 
 # vim: filetype=perl6

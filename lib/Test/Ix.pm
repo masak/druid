@@ -68,11 +68,11 @@ sub first-index(Code $cond, @array) {
     return ();
 }
 
-multi sub count(@tests) {
+multi sub count-tests(@tests) {
     my Int $total;
     for @tests -> $test {
         if $test ~~ Pair {
-            $total += count($test.value);
+            $total += count-tests($test.value);
         }
         elsif $test ~~ Str {
             ++$total;
@@ -82,4 +82,22 @@ multi sub count(@tests) {
         }
     }
     return $total;
+}
+
+multi sub run-tests(@tests) {
+    for @tests -> $test {
+        if $test ~~ Pair {
+            run-tests($test.value);
+        }
+        elsif $test ~~ Str {
+            my $subname = $test.subst(' ', '-', :global);
+            eval($subname);
+            if $! {
+                ok 0, sprintf 'tried to run %s but it did not exist', $subname;
+            }
+        }
+        else {
+            die "Don't understand a {$test.WHAT} in the declaration.";
+        }
+    }
 }
