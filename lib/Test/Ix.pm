@@ -68,7 +68,7 @@ sub first-index(Code $cond, @array) {
     return ();
 }
 
-multi sub count-tests(@tests) {
+sub count-tests(@tests) {
     my Int $total;
     for @tests -> $test {
         if $test ~~ Pair {
@@ -85,12 +85,16 @@ multi sub count-tests(@tests) {
 }
 
 multi sub run-tests(@tests) {
+    run-tests(@tests, '');
+}
+
+multi sub run-tests(@tests, $prefix) {
     for @tests -> $test {
         if $test ~~ Pair {
-            run-tests($test.value);
+            run-tests($test.value, sprintf('%s%s ', $prefix, $test.key));
         }
         elsif $test ~~ Str {
-            my $subname = $test.subst(' ', '-', :global);
+            my $subname = ($prefix ~ $test).subst(' ', '-', :global);
             eval($subname);
             if $! {
                 ok 0, sprintf 'tried to run %s but it did not exist', $subname;
