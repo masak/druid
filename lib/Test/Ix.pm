@@ -29,22 +29,28 @@ sub find-all-tests-in-declaration($declaration) {
     return find-all-tests(@tests)
 }
 
-multi sub find-all-tests(@tests) {
-    return gather { find-all-tests(@tests, '') }
+multi sub traverse-tests(@tests, Code $leaf-action) {
+    return gather { traverse-tests(@tests, $leaf-action, '') };
 }
 
-multi sub find-all-tests(@tests, $prefix) {
+multi sub traverse-tests(@tests, Code $leaf-action, $prefix) {
     for @tests -> $test {
         if $test ~~ Pair {
-            find-all-tests($test.value, sprintf('%s%s ', $prefix, $test.key));
+            traverse-tests($test.value,
+                           $leaf-action,
+                           sprintf('%s%s ', $prefix, $test.key));
         }
         elsif $test ~~ Str {
-            take $prefix ~ $test;
+            $leaf-action($prefix ~ $test);
         }
         else {
             die "Don't understand a {$test.WHAT} in the declaration.";
         }
     }
+}
+
+sub find-all-tests(@tests) {
+    return traverse-tests(@tests, { take $_ });
 }
 
 # RAKUDO: Would like to make this a named param. [perl #63230]
@@ -69,39 +75,16 @@ sub first-index(Code $cond, @array) {
 }
 
 sub count-tests(@tests) {
-    my Int $total;
-    for @tests -> $test {
-        if $test ~~ Pair {
-            $total += count-tests($test.value);
-        }
-        elsif $test ~~ Str {
-            ++$total;
-        }
-        else {
-            die "Don't understand a {$test.WHAT} in the declaration.";
-        }
-    }
-    return $total;
+    return +traverse-tests(@tests, { take $_ });
 }
 
-multi sub run-tests(@tests) {
-    run-tests(@tests, '');
-}
-
-multi sub run-tests(@tests, $prefix) {
-    for @tests -> $test {
-        if $test ~~ Pair {
-            run-tests($test.value, sprintf('%s%s ', $prefix, $test.key));
+sub run-tests(@tests) {
+    my &run-test = {
+        my $subname = $_.subst(' ', '-', :global);
+        eval($subname);
+        if $! {
+            ok 0, sprintf 'tried to run %s but it did not exist', $subname;
         }
-        elsif $test ~~ Str {
-            my $subname = ($prefix ~ $test).subst(' ', '-', :global);
-            eval($subname);
-            if $! {
-                ok 0, sprintf 'tried to run %s but it did not exist', $subname;
-            }
-        }
-        else {
-            die "Don't understand a {$test.WHAT} in the declaration.";
-        }
-    }
+    };
+    traverse-tests(@tests, &run-test);
 }
