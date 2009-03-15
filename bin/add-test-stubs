@@ -1,0 +1,13 @@
+use v6;
+
+use Test::Ix;
+
+for @*ARGS -> $file {
+    if ! $file ~~ :f {
+        warn "Could not find $file -- skipping";
+        next;
+    }
+    my $new-contents = inject-subs-in-file($file);
+    my $fh = open($file, :w);
+    $fh.print($new-contents);
+}
