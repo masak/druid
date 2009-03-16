@@ -52,11 +52,17 @@ complain, just fail.
 
 == Installing via proto
 
+Proto is a no-fuss installer of Perl 6 projects. One of the advantages of this
+way of installing Druid is that if you don't already have Rakudo Perl 6, proto
+installs it for you.
+
 1. Get proto from <https://github.com/masak/proto>
 2. Run './proto' and optionally review the settings in the created config file
 3. Run './proto install druid'
+4. 'export PERL6LIB=`pwd`/projects/druid/lib'
+5. 'cd projects/druid'
 
-...and you're ready to run.
+...and you're ready to run. See "Call 'perl6 druid'" above.
 
 == License
 
