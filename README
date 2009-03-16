@@ -64,6 +64,19 @@ installs it for you.
 
 ...and you're ready to run. See "Call 'perl6 druid'" above.
 
+== Future plans
+
+* Add tests. Right now there are stubbed, failing tests in t/.
+
+* Add a swap command.
+
+* Add resign command.
+
+* Add an SVG renderer.
+
+* Work on the machine play. (It's currently random, but I have some fairly
+  nice ideas lying around in a local branch.)
+
 == License
 
 This Druid implementation is released under Artistic 2.0. See LICENSE.
