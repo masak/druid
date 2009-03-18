@@ -1,5 +1,6 @@
 use v6;
 use Test::Ix;
+use Druid::Game;
 
 my @tests =
     'the player to move' => [
@@ -50,7 +51,10 @@ plan count-tests(@tests);
 run-tests(@tests);
 
 sub the-player-to-move-is-vertical-at-the-beginning-of-the-game {
-    ok 0, "the player to move is vertical at the beginning of the game";
+    my Druid::Game $game .= new(:size(3));
+    $game.init();
+    is $game.player-to-move, 'vertical',
+       "the player to move is vertical at the beginning of the game";
 }
 
 sub the-player-to-move-is-horizontal-after-the-first-move {
