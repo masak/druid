@@ -82,8 +82,11 @@ sub run-tests(@tests) {
     my &run-test = {
         my $subname = $_.subst(' ', '-', :global);
         eval($subname);
-        if $! {
+        if $! ~~ /^ 'Could not find non-existent sub'/ {
             ok 0, sprintf 'tried to run %s but it did not exist', $subname;
+        }
+        elsif $! {
+            die $!;
         }
     };
     traverse-tests(@tests, &run-test);
