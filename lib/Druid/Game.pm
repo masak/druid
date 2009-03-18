@@ -76,9 +76,6 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     # the two sides have been connected.
     method move_was_winning() {
 
-        # BUG: There is something wrong with this algorithm for board size 3
-        # and the move sequence c1, b2, c3, b2, c1-c3. The last move should
-        # register as a winning move, but it doesn't.
         my ($row, $column);
         given $!last_move {
             when $.sarsen_move {
