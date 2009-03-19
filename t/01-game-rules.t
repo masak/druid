@@ -94,8 +94,11 @@ sub a-sarsen-move-can-be-made-directly-on-the-ground($game) {
         "a sarsen move can be made directly on the ground";
 }
 
-sub a-sarsen-move-can-be-made-on-top-of-the-same-color {
-    ok 0, "a sarsen move can be made on top of the same color";
+sub a-sarsen-move-can-be-made-on-top-of-the-same-color($game) {
+    $game.make-move("b2");
+    $game.make-move("a1");
+    lives_ok { $game.make-move("b2") },
+        "a sarsen move can be made on top of the same color";
 }
 
 sub a-sarsen-move-can-not-be-made-on-top-of-another-color {
