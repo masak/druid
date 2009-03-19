@@ -73,6 +73,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         $!last_move = $move;
         $!player-to-move = 3 - $color; # 1 => 2, 2 => 1
+
+        return;
     }
 
     # Starting from the last move made, traces the chains to determine whether
