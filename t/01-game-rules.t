@@ -62,7 +62,7 @@ sub the-player-to-move-is-vertical-at-the-beginning-of-the-game($game) {
 }
 
 sub the-player-to-move-is-horizontal-after-the-first-move($game) {
-    $game.make_move('a1', 1);
+    $game.make-move('a1');
     is $game.player-to-move, 2,
         "the player to move is horizontal after the first move";
 }
@@ -70,27 +70,27 @@ sub the-player-to-move-is-horizontal-after-the-first-move($game) {
 sub the-player-to-move-alternates-with-every-move($game) {
     my @move-order = gather for ^10 {
         take 0+$game.player-to-move;
-        $game.make_move('a1', 1);
+        $game.make-move('a1');
         take 0+$game.player-to-move;
-        $game.make_move('b1', 2);
+        $game.make-move('b1');
     };
     is @move-order, [(1, 2) xx 10],
         "the player to move alternates with every move";
 }
 
 sub a-sarsen-move-must-have-a-certain-syntax($game) {
-    ok (eval '$game.make_move("a1", 1)'; !defined $!)
-    && (eval '$game.make_move("1a", 2)';  defined $!),
+    ok (eval '$game.make-move("a1")'; !defined $!)
+    && (eval '$game.make-move("1a")';  defined $!),
         "a sarsen move must have a certain syntax";
 }
 
 sub a-sarsen-move-must-be-within-the-limits-of-the-board($game) {
-    dies_ok { $game.make_move("a5", 1) },
+    dies_ok { $game.make-move("a5") },
         "a sarsen move must be within the limits of the board";
 }
 
 sub a-sarsen-move-can-be-made-directly-on-the-ground($game) {
-    lives_ok { $game.make_move("b2", 1) },
+    lives_ok { $game.make-move("b2") },
         "a sarsen move can be made directly on the ground";
 }
 

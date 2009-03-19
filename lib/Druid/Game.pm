@@ -21,10 +21,9 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         $!player-to-move = 1;
     }
 
-    # Analyzes a given move of a piece of a given color, and makes the
-    # appropriate changes to the given game state data structures. This sub
-    # assumes that the move is valid.
-    method make_move($move, $color) {
+    # Analyzes a given move, and makes the appropriate changes to the given
+    # game state data structures. Throws exceptions if the move isn't valid.
+    method make-move($move) {
 
         my @pieces_to_put;
 
@@ -57,6 +56,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
             default { die "Nasty syntax."; }
         }
+
+        my $color = $!player-to-move;
 
         for @pieces_to_put -> $height, $row, $column {
 

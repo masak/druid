@@ -75,7 +75,7 @@ loop {
             $passes_in_a_row = 0;
         }
 
-        $player.make_move($move);
+        $player.make-move($move);
 
         if $game.move_was_winning() {
             $view.show();
