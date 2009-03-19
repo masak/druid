@@ -50,9 +50,13 @@ my @tests =
 plan count-tests(@tests);
 run-tests(@tests);
 
-sub the-player-to-move-is-vertical-at-the-beginning-of-the-game {
+sub before {
     my Druid::Game $game .= new(:size(3));
     $game.init();
+    return $game;
+}
+
+sub the-player-to-move-is-vertical-at-the-beginning-of-the-game($game) {
     is $game.player-to-move, 'vertical',
        "the player to move is vertical at the beginning of the game";
 }
