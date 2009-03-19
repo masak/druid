@@ -73,13 +73,15 @@ sub the-player-to-move-alternates-with-every-move($game) {
         $game.make_move('a1', 1);
         take 0+$game.player-to-move;
         $game.make_move('b1', 2);
-    }
+    };
     is @move-order, [(1, 2) xx 10],
         "the player to move alternates with every move";
 }
 
-sub a-sarsen-move-must-have-a-certain-syntax {
-    ok 0, "a sarsen move must have a certain syntax";
+sub a-sarsen-move-must-have-a-certain-syntax($game) {
+    ok (eval '$game.make_move("a1", 1)'; !$!)
+    && (eval '$game.make_move("1a", 2)';  $!),
+        "a sarsen move must have a certain syntax";
 }
 
 sub a-sarsen-move-must-be-within-the-limits-of-the-board {
