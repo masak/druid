@@ -89,8 +89,9 @@ sub a-sarsen-move-must-be-within-the-limits-of-the-board($game) {
         "a sarsen move must be within the limits of the board";
 }
 
-sub a-sarsen-move-can-be-made-directly-on-the-ground {
-    ok 0, "a sarsen move can be made directly on the ground";
+sub a-sarsen-move-can-be-made-directly-on-the-ground($game) {
+    lives_ok { $game.make_move("b2", 1) },
+        "a sarsen move can be made directly on the ground";
 }
 
 sub a-sarsen-move-can-be-made-on-top-of-the-same-color {
