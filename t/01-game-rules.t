@@ -57,18 +57,25 @@ sub before {
 }
 
 sub the-player-to-move-is-vertical-at-the-beginning-of-the-game($game) {
-    is $game.player-to-move, 'vertical',
+    is $game.player-to-move, 1,
        "the player to move is vertical at the beginning of the game";
 }
 
 sub the-player-to-move-is-horizontal-after-the-first-move($game) {
     $game.make_move('a1', 1);
-    is $game.player-to-move, 'horizontal',
+    is $game.player-to-move, 2,
         "the player to move is horizontal after the first move";
 }
 
-sub the-player-to-move-alternates-with-every-move {
-    ok 0, "the player to move alternates with every move";
+sub the-player-to-move-alternates-with-every-move($game) {
+    my @move-order = gather for ^10 {
+        take 0+$game.player-to-move;
+        $game.make_move('a1', 1);
+        take 0+$game.player-to-move;
+        $game.make_move('b1', 2);
+    }
+    is @move-order, [(1, 2) xx 10],
+        "the player to move alternates with every move";
 }
 
 sub a-sarsen-move-must-have-a-certain-syntax {

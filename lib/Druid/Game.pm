@@ -18,7 +18,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         @!heights = map { [ 0 xx $!size ] }, ^$!size;
         @!colors  = map { [ 0 xx $!size ] }, ^$!size;
-        $!player-to-move = 'vertical';
+        $!player-to-move = 1;
     }
 
     # Analyzes a given move of a piece of a given color, and makes the
@@ -72,7 +72,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         }
 
         $!last_move = $move;
-        $!player-to-move = <horizontal vertical>[$color-1];
+        $!player-to-move = 3 - $color; # 1 => 2, 2 => 1
     }
 
     # Starting from the last move made, traces the chains to determine whether
