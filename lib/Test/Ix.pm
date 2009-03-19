@@ -81,13 +81,17 @@ sub count-tests(@tests) {
 sub run-tests(@tests) {
     my &run-test = {
         my $subname = $_.subst(' ', '-', :global);
-        eval($subname);
-        if $! ~~ /^ 'Could not find non-existent sub'/ {
+        my $sub = eval( '&' ~ $subname );
+        if $sub ~~ Nil {
             ok 0, sprintf 'tried to run %s but it did not exist', $subname;
+            return;
         }
-        elsif $! {
-            die $!;
-        }
+        my @arguments = eval('&before') ~~ Sub # is there a &before sub?
+                            ?? before().list[ 0 ..^ $sub.arity ]
+                            !! undef xx $sub.arity;
+        $sub(|@arguments);
+        eval('&after') ~~ Sub
+            and after();
     };
     traverse-tests(@tests, &run-test);
 }
