@@ -61,8 +61,10 @@ sub the-player-to-move-is-vertical-at-the-beginning-of-the-game($game) {
        "the player to move is vertical at the beginning of the game";
 }
 
-sub the-player-to-move-is-horizontal-after-the-first-move {
-    ok 0, "the player to move is horizontal after the first move";
+sub the-player-to-move-is-horizontal-after-the-first-move($game) {
+    $game.make_move('a1', 1);
+    is $game.player-to-move, 'horizontal',
+        "the player to move is horizontal after the first move";
 }
 
 sub the-player-to-move-alternates-with-every-move {
