@@ -79,13 +79,14 @@ sub the-player-to-move-alternates-with-every-move($game) {
 }
 
 sub a-sarsen-move-must-have-a-certain-syntax($game) {
-    ok (eval '$game.make_move("a1", 1)'; !$!)
-    && (eval '$game.make_move("1a", 2)';  $!),
+    ok (eval '$game.make_move("a1", 1)'; !defined $!)
+    && (eval '$game.make_move("1a", 2)';  defined $!),
         "a sarsen move must have a certain syntax";
 }
 
-sub a-sarsen-move-must-be-within-the-limits-of-the-board {
-    ok 0, "a sarsen move must be within the limits of the board";
+sub a-sarsen-move-must-be-within-the-limits-of-the-board($game) {
+    dies_ok { $game.make_move("a5", 1) },
+        "a sarsen move must be within the limits of the board";
 }
 
 sub a-sarsen-move-can-be-made-directly-on-the-ground {
