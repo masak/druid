@@ -101,8 +101,11 @@ sub a-sarsen-move-can-be-made-on-top-of-the-same-color($game) {
         "a sarsen move can be made on top of the same color";
 }
 
-sub a-sarsen-move-can-not-be-made-on-top-of-another-color {
-    ok 0, "a sarsen move can not be made on top of another color";
+sub a-sarsen-move-can-not-be-made-on-top-of-another-color($game) {
+    $game.make-move("b2");
+    $game.make-move("a1");
+    dies_ok { $game.make-move("a1") },
+        "a sarsen move can not be made on top of another color";
 }
 
 sub a-lintel-move-must-have-a-certain-syntax {
