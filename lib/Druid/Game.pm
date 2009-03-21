@@ -21,6 +21,21 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         $!player-to-move = 1;
     }
 
+    method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
+        return "The highest column is '{chr(ord('A')+$.size-1)}'"
+            if $column >= $.size;
+        return 'There is no row 0'
+            if $row == -1;
+        return "There are only {$.size} rows"
+            if $row >= $.size;
+
+        return sprintf, q[Not %s's spot],
+                        <. vertical horizontal>[$color]
+            unless $.colors[$row][$column] == 0|$color;
+
+        return; # The move is fine.
+    }
+
     # Analyzes a given move, and makes the appropriate changes to the given
     # game state data structures. Throws exceptions if the move isn't valid.
     method make-move($move) {
@@ -31,20 +46,15 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         given $move {
             when $.sarsen_move {
-                my $row = $<coords><row_number> - 1;
-                my $column = ord($<coords><col_letter>) - ord('a');
+                # RAKUDO: Hoping these explicit int(...) conversions won't be
+                #         necessary in the long run.
+                my Int $row = int($<coords><row_number> - 1);
+                my Int $column = int(ord($<coords><col_letter>) - ord('a'));
                 my $height = @!heights[$row][$column];
 
-                fail "The highest column is '{chr(ord('A')+$.size-1)}'"
-                    if $column >= $.size;
-                fail 'There is no row 0'
-                    if $row == -1;
-                fail "There are only {$.size} rows"
-                    if $row >= $.size;
-
-                fail sprintf, q[Not %s's spot],
-                              <. vertical horizontal>[$color]
-                    unless $.colors[$row][$column] == 0|$color;
+                fail $reason
+                    if my $reason
+                        = self.is-sarsen-move-bad($row, $column, $color);
 
                 @pieces_to_put = $height, $row, $column;
             }

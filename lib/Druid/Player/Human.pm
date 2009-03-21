@@ -25,19 +25,13 @@ class Druid::Player::Human is Druid::Player {
 
         given $move {
             when $.sarsen_move {
-                my $row    = $<coords><row_number> - 1;
-                my $column = ord($<coords><col_letter>) - ord('a');
+                my Int $row    = int($<coords><row_number> - 1);
+                my Int $column = int(ord($<coords><col_letter>) - ord('a'));
 
-                flunk_move "The highest column is '{
-                            chr(ord('A')+$.size-1)}'"
-                    if $column >= $.size;
-                flunk_move 'There is no row 0'
-                    if $row == -1;
-                flunk_move "There are only {$.size} rows"
-                    if $row >= $.size;
-
-                flunk_move 'Not your spot'
-                    unless $.colors[$row][$column] == 0|$!color;
+                if $.game.is-sarsen-move-bad($row, $column, $.color)
+                  -> $reason {
+                    flunk_move $reason;
+                }
             }
 
             when $.lintel_move {
