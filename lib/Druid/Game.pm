@@ -27,11 +27,24 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         my @pieces_to_put;
 
+        my $color = $!player-to-move;
+
         given $move {
             when $.sarsen_move {
                 my $row = $<coords><row_number> - 1;
                 my $column = ord($<coords><col_letter>) - ord('a');
                 my $height = @!heights[$row][$column];
+
+                fail "The highest column is '{chr(ord('A')+$.size-1)}'"
+                    if $column >= $.size;
+                fail 'There is no row 0'
+                    if $row == -1;
+                fail "There are only {$.size} rows"
+                    if $row >= $.size;
+
+                fail sprintf, q[Not %s's spot],
+                              <. vertical horizontal>[$color]
+                    unless $.colors[$row][$column] == 0|$color;
 
                 @pieces_to_put = $height, $row, $column;
             }
@@ -56,8 +69,6 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
             default { die "Nasty syntax."; }
         }
-
-        my $color = $!player-to-move;
 
         for @pieces_to_put -> $height, $row, $column {
 
