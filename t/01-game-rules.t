@@ -117,8 +117,9 @@ sub a-lintel-move-must-be-within-the-limits-of-the-board($game) {
         "a lintel move must be within the limits of the board";
 }
 
-sub a-lintel-move-can-not-be-made-directly-on-the-ground {
-    ok 0, "a lintel move can not be made directly on the ground";
+sub a-lintel-move-can-not-be-made-directly-on-the-ground($game) {
+    dies_ok { $game.make-move("a1-c1") },
+        "a lintel move can not be made directly on the ground";
 }
 
 sub a-lintel-move-must-be-made-two-units-apart {
