@@ -22,7 +22,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     }
 
     method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
-        return "The highest column is '{chr(ord('A')+$.size-1)}'"
+        return "The rightmost column is '{chr(ord('A')+$.size-1)}'"
             if $column >= $.size;
         return 'There is no row 0'
             if $row == -1;
@@ -32,6 +32,57 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         return sprintf, q[Not %s's spot],
                         <. vertical horizontal>[$color]
             unless $.colors[$row][$column] == 0|$color;
+
+        return; # The move is fine.
+    }
+
+    method is-lintel-move-bad(Int $row_1, Int $row_2,
+                              Int $column_1, Int $column_2,
+                              Int $color) {
+
+        return "The rightmost column is '{chr(ord('A')+{$.size}-1)}'"
+            if $column_1|$column_2 >= $.size;
+        return 'There is no row 0'
+            if $row_1|$row_2 == -1;
+        return "There are only {$.size} rows"
+            if $row_1|$row_2 >= $.size;
+
+        my $row_diff    = abs($row_1 - $row_2);
+        my $column_diff = abs($column_1 - $column_2);
+
+        return 'A lintel must be three units long'
+            unless $row_diff == 2 && $column_diff == 0
+                || $row_diff == 0 && $column_diff == 2;
+
+        return 'A lintel must be supported at both ends'
+            unless $.heights[$row_1][$column_1]
+                == $.heights[$row_2][$column_2];
+
+        my $row_m    = ($row_1    + $row_2   ) / 2;
+        my $column_m = ($column_1 + $column_2) / 2;
+
+        return 'A lintel must lie flat'
+            unless $.heights[$row_m][$column_m]
+                <= $.heights[$row_1][$column_1];
+
+        return 'A lintel cannot lie directly on the ground'
+            unless $.heights[$row_1][$column_1];
+
+        # Could rely on the numification of Bool here, but that while
+        # terser, it would also be harder to understand.
+        my $number_of_samecolor_supporting_pieces
+            = ($.colors[$row_1][$column_1] == $!color ?? 1 !! 0)
+            + ($.colors[$row_2][$column_2] == $!color ?? 1 !! 0);
+
+        if    $.heights[$row_m][$column_m]
+           == $.heights[$row_1][$column_1]
+           && $.colors[$row_m][$column_m] == $!color {
+
+            $number_of_samecolor_supporting_pieces++
+        }
+
+        return 'A lintel must reast on exactly two pieces of its own color'
+            if $number_of_samecolor_supporting_pieces != 2;
 
         return; # The move is fine.
     }
@@ -52,18 +103,25 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                 my Int $column = int(ord($<coords><col_letter>) - ord('a'));
                 my $height = @!heights[$row][$column];
 
-                fail $reason
-                    if my $reason
-                        = self.is-sarsen-move-bad($row, $column, $color);
+                fail $reason if my $reason
+                    = self.is-sarsen-move-bad($row, $column, $color);
 
                 @pieces_to_put = $height, $row, $column;
             }
 
             when $.lintel_move {
-                my $row_1    = $<coords>[0]<row_number> - 1;
-                my $row_2    = $<coords>[1]<row_number> - 1;
-                my $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
-                my $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
+                # RAKUDO: Hoping these explicit int(...) conversions won't be
+                #         necessary in the long run.
+                my Int $row_1    = $<coords>[0]<row_number> - 1;
+                my Int $row_2    = $<coords>[1]<row_number> - 1;
+                my Int $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
+                my Int $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
+
+                fail $reason if my $reason
+                    = self.is-lintel-move-bad($row_1, $row_2,
+                                              $column_1, $column_2,
+                                              $color);
+
                 my $height   = @!heights[$row_1][$column_1];
                 my $row_m    = ($row_1    + $row_2   ) / 2;
                 my $column_m = ($column_1 + $column_2) / 2;
@@ -77,7 +135,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                 # Nothing happens
             }
 
-            default { die "Nasty syntax."; }
+            default { fail "Nasty syntax."; }
         }
 
         for @pieces_to_put -> $height, $row, $column {
