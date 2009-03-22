@@ -79,7 +79,7 @@ sub the-player-to-move-alternates-with-every-move($game) {
 }
 
 sub a-sarsen-move-must-have-a-certain-syntax($game) {
-    dies_ok { $game.make-move("1a") },
+    ok $game.make-move("1a") ~~ Failure,
         "a sarsen move must have a certain syntax";
 }
 
@@ -108,7 +108,7 @@ sub a-sarsen-move-can-not-be-made-on-top-of-another-color($game) {
 }
 
 sub a-lintel-move-must-have-a-certain-syntax($game) {
-    dies_ok { $game.make-move("a3-3c") },
+    ok $game.make-move("a3-3c") ~~ Failure,
         "a lintel move must have a certain syntax";
 }
 
