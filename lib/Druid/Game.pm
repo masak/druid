@@ -29,8 +29,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         return "There are only {$.size} rows"
             if $row >= $.size;
 
-        return sprintf, q[Not %s's spot],
-                        <. vertical horizontal>[$color]
+        return sprintf q[Not %s's spot],
+                       <. vertical horizontal>[$color]
             unless $.colors[$row][$column] == 0|$color;
 
         return; # The move is fine.
@@ -91,13 +91,13 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             when $.sarsen_move {
                 # RAKUDO: Hoping these explicit int(...) conversions won't be
                 #         necessary in the long run.
-                my Int $row = int($<coords><row_number> - 1);
+                my Int $row    = int($<coords><row_number> - 1);
                 my Int $column = int(ord($<coords><col_letter>) - ord('a'));
-                my $height = @!heights[$row][$column];
 
                 fail $reason if my $reason
                     = self.is-sarsen-move-bad($row, $column, $color);
 
+                my $height     = @!heights[$row][$column];
                 @pieces_to_put = $height, $row, $column;
             }
 
