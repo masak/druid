@@ -71,12 +71,12 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         # Could rely on the numification of Bool here, but that while
         # terser, it would also be harder to understand.
         my $number_of_samecolor_supporting_pieces
-            = ($.colors[$row_1][$column_1] == $!color ?? 1 !! 0)
-            + ($.colors[$row_2][$column_2] == $!color ?? 1 !! 0);
+            = ($.colors[$row_1][$column_1] == $color ?? 1 !! 0)
+            + ($.colors[$row_2][$column_2] == $color ?? 1 !! 0);
 
         if    $.heights[$row_m][$column_m]
            == $.heights[$row_1][$column_1]
-           && $.colors[$row_m][$column_m] == $!color {
+           && $.colors[$row_m][$column_m] == $color {
 
             $number_of_samecolor_supporting_pieces++
         }
