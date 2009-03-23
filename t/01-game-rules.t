@@ -122,8 +122,12 @@ sub a-lintel-move-can-not-be-made-directly-on-the-ground($game) {
         "a lintel move can not be made directly on the ground";
 }
 
-sub a-lintel-move-must-be-made-two-units-apart {
-    ok 0, "a lintel move must be made two units apart";
+sub a-lintel-move-must-be-made-two-units-apart($game) {
+    $game.make-move("a1");
+    $game.make-move("a3");
+    $game.make-move("b1");
+    ok $game.make-move("a1-b1") ~~ Failure,
+        "a lintel move must be made two units apart";
 }
 
 sub a-lintel-move-must-have-support-at-both-ends {
