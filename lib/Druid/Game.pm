@@ -112,10 +112,12 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             when $.lintel_move {
                 # RAKUDO: Hoping these explicit int(...) conversions won't be
                 #         necessary in the long run.
-                my Int $row_1    = $<coords>[0]<row_number> - 1;
-                my Int $row_2    = $<coords>[1]<row_number> - 1;
-                my Int $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
-                my Int $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
+                my Int $row_1    = int($<coords>[0]<row_number> - 1);
+                my Int $row_2    = int($<coords>[1]<row_number> - 1);
+                my Int $column_1
+                    = int(ord($<coords>[0]<col_letter>) - ord('a'));
+                my Int $column_2
+                    = int(ord($<coords>[1]<col_letter>) - ord('a'));
 
                 fail $reason if my $reason
                     = self.is-lintel-move-bad($row_1, $row_2,
