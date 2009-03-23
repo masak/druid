@@ -113,12 +113,12 @@ sub a-lintel-move-must-have-a-certain-syntax($game) {
 }
 
 sub a-lintel-move-must-be-within-the-limits-of-the-board($game) {
-    dies_ok { $game.make-move("a4-c4") },
+    ok $game.make-move("a4-c4") ~~ Failure,
         "a lintel move must be within the limits of the board";
 }
 
 sub a-lintel-move-can-not-be-made-directly-on-the-ground($game) {
-    dies_ok { $game.make-move("a1-c1") },
+    ok $game.make-move("a1-c1") ~~ Failure,
         "a lintel move can not be made directly on the ground";
 }
 
