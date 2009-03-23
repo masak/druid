@@ -84,26 +84,24 @@ sub a-sarsen-move-must-have-a-certain-syntax($game) {
 }
 
 sub a-sarsen-move-must-be-within-the-limits-of-the-board($game) {
-    dies_ok { $game.make-move("a5") },
+    ok $game.make-move("a5") ~~ Failure,
         "a sarsen move must be within the limits of the board";
 }
 
 sub a-sarsen-move-can-be-made-directly-on-the-ground($game) {
-    lives_ok { $game.make-move("b2") },
+    ok $game.make-move("b2") !~~ Failure,
         "a sarsen move can be made directly on the ground";
 }
 
 sub a-sarsen-move-can-be-made-on-top-of-the-same-color($game) {
-    $game.make-move("b2");
-    $game.make-move("a1");
-    lives_ok { $game.make-move("b2") },
+    $game.make-move($_) for <b2 a1>;
+    ok $game.make-move("b2") !~~ Failure,
         "a sarsen move can be made on top of the same color";
 }
 
 sub a-sarsen-move-can-not-be-made-on-top-of-another-color($game) {
-    $game.make-move("b2");
-    $game.make-move("a1");
-    dies_ok { $game.make-move("a1") },
+    $game.make-move($_) for <b2 a1>;
+    ok $game.make-move("a1") ~~ Failure,
         "a sarsen move can not be made on top of another color";
 }
 
@@ -146,8 +144,9 @@ sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it($game) {
         "a lintel move can not have more than two friendly stones under it";
 }
 
-sub a-lintel-move-can-form-a-bridge {
-    ok 0, "a lintel move can form a bridge";
+sub a-lintel-move-can-form-a-bridge($game) {
+    $game.make-move($_) for <a2 a1 c2 c1>;
+    ok $game.make-move('a2-c2'), "a lintel move can form a bridge";
 }
 
 sub a-lintel-move-can-claim-enemy-territory {
