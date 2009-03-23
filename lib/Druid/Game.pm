@@ -10,7 +10,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     has @.colors;
     has $.player-to-move;
 
-    has $!last_move;
+    has $!latest_move;
 
     method init() {
         die "Forbidden size: $!size"
@@ -145,18 +145,18 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             .add_piece($height, $row, $column, $color) for @!observers;
         }
 
-        $!last_move = $move;
+        $!latest_move = $move;
         $!player-to-move = 3 - $color; # 1 => 2, 2 => 1
 
-        return;
+        return $move;
     }
 
-    # Starting from the last move made, traces the chains to determine whether
-    # the two sides have been connected.
+    # Starting from the latest move made, traces the chains to determine
+    # whether the two sides have been connected.
     method move_was_winning() {
 
         my ($row, $column);
-        given $!last_move {
+        given $!latest_move {
             when $.sarsen_move {
                 $row    = $<coords><row_number> - 1;
                 $column = ord($<coords><col_letter>) - ord('a');
@@ -170,7 +170,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         my @pos_queue = { :$row, :$column };
 
-        my $last_color = @!colors[$row][$column];
+        my $latest_color = @!colors[$row][$column];
 
         my &above = { .<row>    < $!size - 1 && { :row(.<row> + 1),
                                                   :column(.<column>) } };
@@ -194,20 +194,20 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
                     if !%visited.exists(~$neighbor)
                        && @!colors[$neighbor<row>][$neighbor<column>]
-                          == $last_color {
+                          == $latest_color {
 
                         push @pos_queue, $neighbor;
                     }
                 }
             }
 
-            if    $last_color == 1 && !above($pos)
-               || $last_color == 2 && !right($pos) {
+            if    $latest_color == 1 && !above($pos)
+               || $latest_color == 2 && !right($pos) {
 
                 $reached_one_end   = True;
             }
-            elsif    $last_color == 1 && !below($pos)
-                  || $last_color == 2 &&  !left($pos) {
+            elsif    $latest_color == 1 && !below($pos)
+                  || $latest_color == 2 &&  !left($pos) {
 
                 $reached_other_end = True;
             }
