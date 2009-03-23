@@ -140,8 +140,10 @@ sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it($game) {
         "a lintel move can not have less than two friendly stones under it";
 }
 
-sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it {
-    ok 0, "a lintel move can not have more than two friendly stones under it";
+sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it($game) {
+    $game.make-move($_) for <a1 a3 b1 b3 c1 c3>;
+    ok $game.make-move('a1-c1') ~~ Failure,
+        "a lintel move can not have more than two friendly stones under it";
 }
 
 sub a-lintel-move-can-form-a-bridge {
