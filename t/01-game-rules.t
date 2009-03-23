@@ -130,8 +130,11 @@ sub a-lintel-move-must-be-made-two-units-apart($game) {
         "a lintel move must be made two units apart";
 }
 
-sub a-lintel-move-must-have-support-at-both-ends {
-    ok 0, "a lintel move must have support at both ends";
+sub a-lintel-move-must-have-support-at-both-ends($game) {
+    $game.make-move("a1");
+    $game.make-move("a3");
+    ok $game.make-move("a1-c1") ~~ Failure,
+        "a lintel move must have support at both ends";
 }
 
 sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it {
