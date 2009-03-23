@@ -123,22 +123,21 @@ sub a-lintel-move-can-not-be-made-directly-on-the-ground($game) {
 }
 
 sub a-lintel-move-must-be-made-two-units-apart($game) {
-    $game.make-move("a1");
-    $game.make-move("a3");
-    $game.make-move("b1");
+    $game.make-move($_) for <a1 a3 b1>;
     ok $game.make-move("a1-b1") ~~ Failure,
         "a lintel move must be made two units apart";
 }
 
 sub a-lintel-move-must-have-support-at-both-ends($game) {
-    $game.make-move("a1");
-    $game.make-move("a3");
+    $game.make-move($_) for <a1 a3>;
     ok $game.make-move("a1-c1") ~~ Failure,
         "a lintel move must have support at both ends";
 }
 
-sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it {
-    ok 0, "a lintel move can not have less than two friendly stones under it";
+sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it($game) {
+    $game.make-move($_) for <a1 b1 a3 c1>;
+    ok $game.make-move('a1-c1') ~~ Failure,
+        "a lintel move can not have less than two friendly stones under it";
 }
 
 sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it {
