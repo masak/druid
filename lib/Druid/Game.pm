@@ -68,21 +68,13 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         return 'A lintel cannot lie directly on the ground'
             unless $.heights[$row_1][$column_1];
 
-        # Could rely on the numification of Bool here, but that while
-        # terser, it would also be harder to understand.
-        my $number_of_samecolor_supporting_pieces
-            = ($.colors[$row_1][$column_1] == $color ?? 1 !! 0)
-            + ($.colors[$row_2][$column_2] == $color ?? 1 !! 0);
-
-        if    $.heights[$row_m][$column_m]
-           == $.heights[$row_1][$column_1]
-           && $.colors[$row_m][$column_m] == $color {
-
-            $number_of_samecolor_supporting_pieces++
-        }
-
-        return 'A lintel must reast on exactly two pieces of its own color'
-            if $number_of_samecolor_supporting_pieces != 2;
+        return 'A lintel must rest on exactly two pieces of its own color'
+            unless 2 == elems grep { $_ == $color },
+                $.colors[$row_1][$column_1],        # first end...
+                $.colors[$row_2][$column_2],        # ...second end...
+                $.heights[$row_m][$column_m] == $.heights[$row_1][$column_1]
+                    ?? $.colors[$row_m][$column_m]  # ...middle piece only if
+                    !! ();                          # it's level with both ends
 
         return; # The move is fine.
     }
