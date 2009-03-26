@@ -66,7 +66,7 @@ installs it for you.
 
 == Future plans
 
-* Add tests. Right now there are stubbed, failing tests in t/.
+* Add tests. Currently about half the game tests are implemented.
 
 * Add a swap command.
 
