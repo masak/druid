@@ -149,8 +149,10 @@ sub a-lintel-move-can-form-a-bridge($game) {
     ok $game.make-move('a2-c2'), "a lintel move can form a bridge";
 }
 
-sub a-lintel-move-can-claim-enemy-territory {
-    ok 0, "a lintel move can claim enemy territory";
+sub a-lintel-move-can-claim-enemy-territory($game) {
+    $game.make-move($_) for <a1 a3 b1 c1>;
+    ok defined $game.make-move('a1-c1'),
+        "a lintel move can claim enemy territory";
 }
 
 sub swapping-changes-the-location-of-the-piece-on-the-board {
