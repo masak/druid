@@ -27,11 +27,11 @@ my @tests =
         'can claim enemy territory',
     ],
     'swapping' => [
-        'changes the location of the piece on the board',
-        'makes the piece belong to horizontal instead',
         'is allowed as the second move',
         'is not allowed as the first move',
         'is not allowed after the second move',
+        'exchanges the colors of the players',
+        "makes it the second player's turn again",
     ],
     'passing' => [
         'does not change the board',
@@ -156,14 +156,6 @@ sub a-lintel-move-can-claim-enemy-territory {
         "a lintel move can claim enemy territory";
 }
 
-sub swapping-changes-the-location-of-the-piece-on-the-board {
-    ok 0, "swapping changes the location of the piece on the board";
-}
-
-sub swapping-makes-the-piece-belong-to-horizontal-instead {
-    ok 0, "swapping makes the piece belong to horizontal instead";
-}
-
 sub swapping-is-allowed-as-the-second-move {
     ok 0, "swapping is allowed as the second move";
 }
@@ -174,6 +166,14 @@ sub swapping-is-not-allowed-as-the-first-move {
 
 sub swapping-is-not-allowed-after-the-second-move {
     ok 0, "swapping is not allowed after the second move";
+}
+
+sub swapping-exchanges-the-colors-of-the-players {
+    ok 0, "swapping exchanges the colors of the players";
+}
+
+sub swapping-makes-it-the-second-player's-turn-again {
+    ok 0, "swapping makes it the second player's turn again";
 }
 
 sub passing-does-not-change-the-board {
