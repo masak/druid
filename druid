@@ -54,6 +54,7 @@ $player1 = any(@*ARGS) eq '--computer=1'
 $player2 = any(@*ARGS) eq '--computer=2'
     ?? Druid::Player::Computer.new(:$game, :color(2))
     !! Druid::Player::Human.new(   :$game, :color(2));
+.init for $player1, $player2;
 
 my $pass = /^ 'pass' | 'p' $/;
 

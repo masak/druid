@@ -56,8 +56,8 @@ sub before {
     $game.init();
     # XXX: Maybe we should mock these instead of depending on Druid::Player.
     my Druid::Player ($player1, $player2)
-        = Druid::Player.new(:game($game), :color(1)),
-          Druid::Player.new(:game($game), :color(2));
+        = Druid::Player.new(:game($game), :color(1)).init(),
+          Druid::Player.new(:game($game), :color(2)).init();
 
     return ($game, $player1, $player2);
 }
