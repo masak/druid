@@ -186,7 +186,9 @@ sub swapping-exchanges-the-colors-of-the-players {
 }
 
 sub swapping-makes-it-the-second-player's-turn-again {
-    ok 0, "swapping makes it the second player's turn again";
+    $^game.make-move($_) for <a1 swap>;
+    is $^game.player-to-move, 2,
+        "swapping makes it the second player's turn again";
 }
 
 sub passing-does-not-change-the-board {
