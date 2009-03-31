@@ -9,6 +9,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     has @.heights;
     has @.colors;
     has $.player-to-move;
+    has $.moves-so-far;
 
     has $!latest_move;
 
@@ -130,6 +131,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.swap {
+                fail 'Swap is only allowed on second move'
+                    if $!moves-so-far != 1;
             }
 
             default { fail "Nasty syntax."; }
@@ -150,6 +153,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         $!latest_move = $move;
         $!player-to-move = 3 - $color; # 1 => 2, 2 => 1
+        $!moves-so-far++;
 
         return $move;
     }
