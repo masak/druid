@@ -157,7 +157,9 @@ sub a-lintel-move-can-claim-enemy-territory {
 }
 
 sub swapping-is-allowed-as-the-second-move {
-    ok 0, "swapping is allowed as the second move";
+    $^game.make-move('a1');
+    ok defined $game.make-move('swap'),
+        "swapping is allowed as the second move";
 }
 
 sub swapping-is-not-allowed-as-the-first-move {
