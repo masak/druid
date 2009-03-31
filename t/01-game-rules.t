@@ -163,7 +163,8 @@ sub swapping-is-allowed-as-the-second-move {
 }
 
 sub swapping-is-not-allowed-as-the-first-move {
-    ok 0, "swapping is not allowed as the first move";
+    ok !defined $^game.make-move('swap'),
+        "swapping is not allowed as the first move";
 }
 
 sub swapping-is-not-allowed-after-the-second-move {
