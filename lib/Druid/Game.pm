@@ -129,6 +129,9 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                 # Nothing happens
             }
 
+            when $.swap {
+            }
+
             default { fail "Nasty syntax."; }
         }
 
