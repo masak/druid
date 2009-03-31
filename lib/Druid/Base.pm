@@ -7,7 +7,7 @@ class Druid::Base {
 
     our $.sarsen_move = /^ <coords> $/;
     our $.lintel_move = /^ <coords> '-' <coords> $/;
-    our $.pass = /^ 'pass' | 'p' $/;
+    our $.pass = /^ ['pass' | 'p'] $/;
 }
 
 # vim: filetype=perl6
