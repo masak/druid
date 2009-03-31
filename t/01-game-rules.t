@@ -168,7 +168,9 @@ sub swapping-is-not-allowed-as-the-first-move {
 }
 
 sub swapping-is-not-allowed-after-the-second-move {
-    ok 0, "swapping is not allowed after the second move";
+    $^game.make-move($_) for <a1 a2>;
+    ok !defined $^game.make-move('swap'),
+        "swapping is not allowed after the second move";
 }
 
 sub swapping-exchanges-the-colors-of-the-players {
