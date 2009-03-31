@@ -1,6 +1,7 @@
 use v6;
 use Test::Ix;
 use Druid::Game;
+use Druid::Player;
 
 my @tests =
     'the player to move' => [
@@ -53,7 +54,12 @@ run-tests(@tests);
 sub before {
     my Druid::Game $game .= new(:size(3));
     $game.init();
-    return $game;
+    # XXX: Maybe we should mock these instead of depending on Druid::Player.
+    my Druid::Player ($player1, $player2)
+        = Druid::Player.new(:game($game), :color(1)),
+          Druid::Player.new(:game($game), :color(2));
+
+    return ($game, $player1, $player2);
 }
 
 sub the-player-to-move-is-vertical-at-the-beginning-of-the-game {
@@ -174,7 +180,9 @@ sub swapping-is-not-allowed-after-the-second-move {
 }
 
 sub swapping-exchanges-the-colors-of-the-players {
-    ok 0, "swapping exchanges the colors of the players";
+    $^game.make-move($_) for <a1 swap>;
+    ok $^player1.color == 2 && $^player2.color == 1,
+        "swapping exchanges the colors of the players";
 }
 
 sub swapping-makes-it-the-second-player's-turn-again {
