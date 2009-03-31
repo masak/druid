@@ -1,5 +1,7 @@
 use v6;
 
+# Usage: perl6 add-test-stubs <file.t> ...
+
 use Test::Ix;
 
 for @*ARGS -> $file {
