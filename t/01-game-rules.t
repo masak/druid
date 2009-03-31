@@ -56,18 +56,19 @@ sub before {
     return $game;
 }
 
-sub the-player-to-move-is-vertical-at-the-beginning-of-the-game($game) {
-    is $game.player-to-move, 1,
+sub the-player-to-move-is-vertical-at-the-beginning-of-the-game {
+    is $^game.player-to-move, 1,
        "the player to move is vertical at the beginning of the game";
 }
 
-sub the-player-to-move-is-horizontal-after-the-first-move($game) {
-    $game.make-move('a1');
+sub the-player-to-move-is-horizontal-after-the-first-move {
+    $^game.make-move('a1');
     is $game.player-to-move, 2,
         "the player to move is horizontal after the first move";
 }
 
-sub the-player-to-move-alternates-with-every-move($game) {
+sub the-player-to-move-alternates-with-every-move {
+    $^game; # must mention it outside of the gather
     my @move-order = gather for ^10 {
         take 0+$game.player-to-move;
         $game.make-move('a1');
@@ -78,79 +79,79 @@ sub the-player-to-move-alternates-with-every-move($game) {
         "the player to move alternates with every move";
 }
 
-sub a-sarsen-move-must-have-a-certain-syntax($game) {
-    ok !defined $game.make-move("1a"),
+sub a-sarsen-move-must-have-a-certain-syntax {
+    ok !defined $^game.make-move("1a"),
         "a sarsen move must have a certain syntax";
 }
 
-sub a-sarsen-move-must-be-within-the-limits-of-the-board($game) {
-    ok !defined $game.make-move("a5"),
+sub a-sarsen-move-must-be-within-the-limits-of-the-board {
+    ok !defined $^game.make-move("a5"),
         "a sarsen move must be within the limits of the board";
 }
 
-sub a-sarsen-move-can-be-made-directly-on-the-ground($game) {
-    ok defined $game.make-move("b2"),
+sub a-sarsen-move-can-be-made-directly-on-the-ground {
+    ok defined $^game.make-move("b2"),
         "a sarsen move can be made directly on the ground";
 }
 
-sub a-sarsen-move-can-be-made-on-top-of-the-same-color($game) {
-    $game.make-move($_) for <b2 a1>;
+sub a-sarsen-move-can-be-made-on-top-of-the-same-color {
+    $^game.make-move($_) for <b2 a1>;
     ok defined $game.make-move("b2"),
         "a sarsen move can be made on top of the same color";
 }
 
-sub a-sarsen-move-can-not-be-made-on-top-of-another-color($game) {
-    $game.make-move($_) for <b2 a1>;
+sub a-sarsen-move-can-not-be-made-on-top-of-another-color {
+    $^game.make-move($_) for <b2 a1>;
     ok !defined $game.make-move("a1"),
         "a sarsen move can not be made on top of another color";
 }
 
-sub a-lintel-move-must-have-a-certain-syntax($game) {
-    ok !defined $game.make-move("a3-3c"),
+sub a-lintel-move-must-have-a-certain-syntax {
+    ok !defined $^game.make-move("a3-3c"),
         "a lintel move must have a certain syntax";
 }
 
-sub a-lintel-move-must-be-within-the-limits-of-the-board($game) {
-    ok !defined $game.make-move("a4-c4"),
+sub a-lintel-move-must-be-within-the-limits-of-the-board {
+    ok !defined $^game.make-move("a4-c4"),
         "a lintel move must be within the limits of the board";
 }
 
-sub a-lintel-move-can-not-be-made-directly-on-the-ground($game) {
-    ok !defined $game.make-move("a1-c1"),
+sub a-lintel-move-can-not-be-made-directly-on-the-ground {
+    ok !defined $^game.make-move("a1-c1"),
         "a lintel move can not be made directly on the ground";
 }
 
-sub a-lintel-move-must-be-made-two-units-apart($game) {
-    $game.make-move($_) for <a1 a3 b1>;
+sub a-lintel-move-must-be-made-two-units-apart {
+    $^game.make-move($_) for <a1 a3 b1>;
     ok !defined $game.make-move("a1-b1"),
         "a lintel move must be made two units apart";
 }
 
-sub a-lintel-move-must-have-support-at-both-ends($game) {
-    $game.make-move($_) for <a1 a3>;
+sub a-lintel-move-must-have-support-at-both-ends {
+    $^game.make-move($_) for <a1 a3>;
     ok !defined $game.make-move("a1-c1"),
         "a lintel move must have support at both ends";
 }
 
-sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it($game) {
-    $game.make-move($_) for <a1 b1 a3 c1>;
+sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it {
+    $^game.make-move($_) for <a1 b1 a3 c1>;
     ok !defined $game.make-move('a1-c1'),
         "a lintel move can not have less than two friendly stones under it";
 }
 
-sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it($game) {
-    $game.make-move($_) for <a1 a3 b1 b3 c1 c3>;
+sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it {
+    $^game.make-move($_) for <a1 a3 b1 b3 c1 c3>;
     ok !defined $game.make-move('a1-c1'),
         "a lintel move can not have more than two friendly stones under it";
 }
 
-sub a-lintel-move-can-form-a-bridge($game) {
-    $game.make-move($_) for <a2 a1 c2 c1>;
+sub a-lintel-move-can-form-a-bridge {
+    $^game.make-move($_) for <a2 a1 c2 c1>;
     ok defined $game.make-move('a2-c2'), "a lintel move can form a bridge";
 }
 
-sub a-lintel-move-can-claim-enemy-territory($game) {
-    $game.make-move($_) for <a1 a3 b1 c1>;
+sub a-lintel-move-can-claim-enemy-territory {
+    $^game.make-move($_) for <a1 a3 b1 c1>;
     ok defined $game.make-move('a1-c1'),
         "a lintel move can claim enemy territory";
 }
