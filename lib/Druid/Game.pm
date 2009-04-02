@@ -10,6 +10,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     has @.colors;
     has $.player-to-move;
     has $.moves-so-far;
+    has $.finished;
 
     has $!latest_move;
 

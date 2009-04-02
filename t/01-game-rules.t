@@ -37,6 +37,7 @@ my @tests =
     'passing' => [
         'does not change the board',
         "makes it the other player's turn",
+        'twice ends the game',
     ],
     'resigning' => [
         'does not change the board',
@@ -204,6 +205,11 @@ sub passing-makes-it-the-other-player's-turn {
     $^game.make-move('pass');
     is $game.player-to-move, 2,
         "passing makes it the other player's turn";
+}
+
+sub passing-twice-ends-the-game {
+    $^game.make-move($_) for <pass pass>;
+    ok $game.finished, "passing twice ends the game";
 }
 
 sub resigning-does-not-change-the-board {
