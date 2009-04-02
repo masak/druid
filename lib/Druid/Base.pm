@@ -7,8 +7,9 @@ class Druid::Base {
 
     our $.sarsen_move = /^ <coords> $/;
     our $.lintel_move = /^ <coords> '-' <coords> $/;
-    our $.pass = /^ ['pass' | 'p'] $/;
-    our $.swap = /^ ['swap' | 's'] $/;
+    our $.pass   = /^ ['pass'   | 'p'] $/;
+    our $.swap   = /^ ['swap'   | 's'] $/;
+    our $.resign = /^ ['resign' | 'r'] $/;
 }
 
 # vim: filetype=perl6

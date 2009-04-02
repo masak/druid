@@ -49,8 +49,15 @@ class Druid::Player::Human is Druid::Player {
                 }
             }
 
-            when $.pass {
-                # Nothing to do; it's a pass
+            when $.swap {
+                if $!game.moves-so-far != 1 {
+                    say "Can only swap on the second move of the game.";
+                    return;
+                }
+            }
+
+            when $.pass | $.resign {
+                # Always valid -- no error-checking needed.
             }
 
             default {

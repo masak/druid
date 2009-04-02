@@ -142,6 +142,10 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                 .swap() for @!observers;
             }
 
+            when $.resign {
+                $!finished = True;
+            }
+
             default { fail "Nasty syntax."; }
         }
 
