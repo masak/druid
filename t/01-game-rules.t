@@ -40,6 +40,7 @@ my @tests =
         'twice ends the game',
     ],
     'resigning' => [
+        'must have a certain syntax',
         'does not change the board',
         'ends the game',
     ],
@@ -212,8 +213,20 @@ sub passing-twice-ends-the-game {
     ok $game.finished, "passing twice ends the game";
 }
 
+sub resigning-must-have-a-certain-syntax {
+    ok defined $^game.make-move('resign'),
+        "resigning must have a certain syntax";
+}
+
 sub resigning-does-not-change-the-board {
-    ok 0, "resigning does not change the board";
+    $^game.make-move($_) for <a2 b3 c1 b3>;
+    my @heights-snapshot = $game.heights;
+    my @colors-snapshot  = $game.colors;
+    $game.make-move('resign');
+    # RAKUDO: eqv would be nicer here
+    ok @heights-snapshot eq $game.heights
+       || @colors-snapshot eq $game.colors,
+        "resigning does not change the board";
 }
 
 sub resigning-ends-the-game {
