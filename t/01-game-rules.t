@@ -230,7 +230,8 @@ sub resigning-does-not-change-the-board {
 }
 
 sub resigning-ends-the-game {
-    ok 0, "resigning ends the game";
+    $^game.make-move('resign');
+    ok $game.finished, "resigning ends the game";
 }
 
 sub a-chain-wins-the-game-if-it-connects-a-player's-edges {
