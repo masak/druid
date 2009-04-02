@@ -167,12 +167,16 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             unless $move ~~ $.swap;
         $!moves-so-far++;
 
+        if self.move-was-winning() {
+            $!finished = True;
+        }
+
         return $move;
     }
 
     # Starting from the latest move made, traces the chains to determine
     # whether the two sides have been connected.
-    method move_was_winning() {
+    submethod move-was-winning() {
 
         my ($row, $column);
         given $!latest-move {

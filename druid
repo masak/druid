@@ -73,7 +73,7 @@ loop {
 
         $player.make-move($move);
 
-        if $game.move_was_winning() {
+        if $game.finished() {
             $view.show();
             print "\n";
 
