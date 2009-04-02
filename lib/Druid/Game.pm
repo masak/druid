@@ -12,7 +12,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     has $.moves-so-far;
     has $.finished;
 
-    has $!latest_move;
+    has $!latest-move;
 
     # RAKUDO: This could be done with BUILD instead, as soon as BUILD can
     #         access private attributes. [perl #64388]
@@ -131,7 +131,9 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.pass {
-                # Nothing happens
+                if $!latest-move ~~ $.pass {
+                    $!finished = True;
+                }
             }
 
             when $.swap {
@@ -156,7 +158,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             .add_piece($height, $row, $column, $color) for @!observers;
         }
 
-        $!latest_move = $move;
+        $!latest-move = $move;
         $!player-to-move = $color == 1 ?? 2 !! 1
             unless $move ~~ $.swap;
         $!moves-so-far++;
@@ -169,7 +171,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     method move_was_winning() {
 
         my ($row, $column);
-        given $!latest_move {
+        given $!latest-move {
             when $.sarsen_move {
                 $row    = $<coords><row_number> - 1;
                 $column = ord($<coords><col_letter>) - ord('a');
@@ -183,7 +185,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         my @pos_queue = { :$row, :$column };
 
-        my $latest_color = @!colors[$row][$column];
+        my $latest-color = @!colors[$row][$column];
 
         my &above = { .<row>    < $!size - 1 && { :row(.<row> + 1),
                                                   :column(.<column>) } };
@@ -207,20 +209,20 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
                     if !%visited.exists(~$neighbor)
                        && @!colors[$neighbor<row>][$neighbor<column>]
-                          == $latest_color {
+                          == $latest-color {
 
                         push @pos_queue, $neighbor;
                     }
                 }
             }
 
-            if    $latest_color == 1 && !above($pos)
-               || $latest_color == 2 && !right($pos) {
+            if    $latest-color == 1 && !above($pos)
+               || $latest-color == 2 && !right($pos) {
 
                 $reached_one_end   = True;
             }
-            elsif    $latest_color == 1 && !below($pos)
-                  || $latest_color == 2 &&  !left($pos) {
+            elsif    $latest-color == 1 && !below($pos)
+                  || $latest-color == 2 &&  !left($pos) {
 
                 $reached_other_end = True;
             }
