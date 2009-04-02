@@ -241,7 +241,9 @@ sub a-chain-wins-the-game-if-it-connects-a-player's-edges {
 }
 
 sub a-chain-does-not-win-the-game-if-it-connects-the-enemy's-edges {
-    ok 0, "a chain does not win the game if it connects the enemy's edges";
+    $^game.make-move($_) for <a2 b1 b2 b1 c2>;
+    ok !$game.finished,
+        "a chain does not win the game if it connects the enemy's edges";
 }
 
 # vim: filetype=perl6
