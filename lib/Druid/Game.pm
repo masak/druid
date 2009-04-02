@@ -134,9 +134,9 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.swap {
-                .swap() for @!observers;
                 fail 'Swap is only allowed on second move'
                     if $!moves-so-far != 1;
+                .swap() for @!observers;
             }
 
             default { fail "Nasty syntax."; }
@@ -156,7 +156,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         }
 
         $!latest_move = $move;
-        $!player-to-move = $color == 1 ?? 2 !! 1;
+        $!player-to-move = $color == 1 ?? 2 !! 1
+            unless $move ~~ $.swap;
         $!moves-so-far++;
 
         return $move;
