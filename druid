@@ -40,8 +40,6 @@ for @*ARGS -> $argument {
 
 my Druid::Game $game .= new(:size($board_size));
 my Druid::View $view = Druid::View::Text.new(:$game);
-# RAKUDO: [perl #62894]
-#$view.init();
 
 die 'Druid currently does not support computer-vs-computer play.'
     if any(@*ARGS) eq '--computer=1'&'--computer=2';
@@ -52,7 +50,6 @@ $player1 = any(@*ARGS) eq '--computer=1'
 $player2 = any(@*ARGS) eq '--computer=2'
     ?? Druid::Player::Computer.new(:$game, :color(2))
     !! Druid::Player::Human.new(   :$game, :color(2));
-.init for $player1, $player2;
 
 my $pass = /^ 'pass' | 'p' $/;
 

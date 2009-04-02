@@ -4,12 +4,16 @@ use Druid::Game::Observer;
 
 class Druid::Player is Druid::Base does Druid::Game::Observer {
     has Druid::Game $!game handles <size layers colors heights>;
-    has Int $.color;
+    has Int $.color where { $_ == 1|2 };
 
-    # RAKUDO: Workaround while 'new' doesn't completely work in Rakudo.
-    method init() {
-        $!game.attach(self);
-        return self;
+    # RAKUDO: This could be done with BUILD instead, as soon as BUILD can
+    #         access private attributes. [perl #64388]
+    method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
+        my $player = self.bless( :game($game),
+                                 :color($color)
+                               );
+        $game.attach($player);
+        return $player;
     }
 
     method choose_move() { ... }
