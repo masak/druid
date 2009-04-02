@@ -26,7 +26,7 @@ class Druid::Player::Human is Druid::Player {
                 my Int $row    = int($<coords><row_number> - 1);
                 my Int $column = int(ord($<coords><col_letter>) - ord('a'));
 
-                if $.game.is-sarsen-move-bad($row, $column, $.color)
+                if $!game.is-sarsen-move-bad($row, $column, $.color)
                   -> $reason {
                     say $reason;
                     return;
@@ -34,12 +34,14 @@ class Druid::Player::Human is Druid::Player {
             }
 
             when $.lintel_move {
-                my Int $row_1    = $<coords>[0]<row_number> - 1;
-                my Int $row_2    = $<coords>[1]<row_number> - 1;
-                my Int $column_1 = ord($<coords>[0]<col_letter>) - ord('a');
-                my Int $column_2 = ord($<coords>[1]<col_letter>) - ord('a');
+                my Int $row_1    = int($<coords>[0]<row_number> - 1);
+                my Int $row_2    = int($<coords>[1]<row_number> - 1);
+                my Int $column_1 = int(ord($<coords>[0]<col_letter>)
+                                       - ord('a'));
+                my Int $column_2 = int(ord($<coords>[1]<col_letter>)
+                                       - ord('a'));
 
-                if $.game.is-lintel-move-bad($row_1, $row_2,
+                if $!game.is-lintel-move-bad($row_1, $row_2,
                                              $column_1, $column_2,
                                              $.color) -> $reason {
                     say $reason;
@@ -52,9 +54,11 @@ class Druid::Player::Human is Druid::Player {
             }
 
             default {
-                flunk_move '
+                say '
 The move does not conform to the accepted move syntax, which is either
-something like "b2" or something like "c1-c3".'.substr(1);
+something like "b2" or something like "c1-c3" You can also "pass" on
+any move, and "swap" on the second move of the game.'.substr(1);
+                return;
             }
         }
 
