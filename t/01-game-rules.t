@@ -235,7 +235,9 @@ sub resigning-ends-the-game {
 }
 
 sub a-chain-wins-the-game-if-it-connects-a-player's-edges {
-    ok 0, "a chain wins the game if it connects a player's edges";
+    $^game.make-move($_) for <b1 b2 c1 b2 c2 b2 c3>;
+    ok $game.finished,
+        "a chain wins the game if it connects a player's edges";
 }
 
 sub a-chain-does-not-win-the-game-if-it-connects-the-enemy's-edges {
