@@ -185,16 +185,25 @@ sub swapping-exchanges-the-colors-of-the-players {
 
 sub swapping-makes-it-the-second-player's-turn-again {
     $^game.make-move($_) for <a1 swap>;
-    is $^game.player-to-move, 2,
+    is $game.player-to-move, 2,
         "swapping makes it the second player's turn again";
 }
 
 sub passing-does-not-change-the-board {
-    ok 0, "passing does not change the board";
+    $^game.make-move($_) for <a2 b3 c1 b3>;
+    my @heights-snapshot = $game.heights;
+    my @colors-snapshot  = $game.colors;
+    $game.make-move('pass');
+    # RAKUDO: eqv would be nicer here
+    ok @heights-snapshot eq $game.heights
+       || @colors-snapshot eq $game.colors,
+        "passing does not change the board";
 }
 
 sub passing-makes-it-the-other-player's-turn {
-    ok 0, "passing makes it the other player's turn";
+    $^game.make-move('pass');
+    is $game.player-to-move, 2,
+        "passing makes it the other player's turn";
 }
 
 sub resigning-does-not-change-the-board {
