@@ -53,7 +53,6 @@ run-tests(@tests);
 
 sub before {
     my Druid::Game $game .= new(:size(3));
-    $game.init();
     # XXX: Maybe we should mock these instead of depending on Druid::Player.
     my Druid::Player ($player1, $player2)
         = Druid::Player.new(:game($game), :color(1)).init(),

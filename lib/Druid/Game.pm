@@ -13,13 +13,16 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
     has $!latest_move;
 
-    method init() {
-        die "Forbidden size: $!size"
-            unless 3 <= $!size <= 26;
+    # RAKUDO: This could be done with BUILD instead, as soon as BUILD can
+    #         access private attributes. [perl #64388]
+    method new(:$size = 3) {
+        die "Forbidden size: $size"
+            unless 3 <= $size <= 26;
 
-        @!heights = map { [ 0 xx $!size ] }, ^$!size;
-        @!colors  = map { [ 0 xx $!size ] }, ^$!size;
-        $!player-to-move = 1;
+        return self.bless( :size($size),
+                           :heights(map { [ 0 xx $size ] }, ^$size),
+                           :colors( map { [ 0 xx $size ] }, ^$size),
+                           :player-to-move(1) );
     }
 
     method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
