@@ -66,12 +66,6 @@ installs it for you.
 
 == Future plans
 
-* Add tests. Currently about half the game tests are implemented.
-
-* Add a swap command.
-
-* Add resign command.
-
 * Add an SVG renderer.
 
 * Work on the machine play. (It's currently random, but I have some fairly
