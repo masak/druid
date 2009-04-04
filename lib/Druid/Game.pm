@@ -26,6 +26,47 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                            :player-to-move(1) );
     }
 
+    method is-move-bad(Str $move) {
+        my $color = $!player-to-move;
+
+        given $move {
+            when $.sarsen_move {
+                my Int ($row, $column) = self.extract-coords($<coords>);
+
+                return $reason if my $reason
+                    = self.is-sarsen-move-bad($row, $column, $color);
+            }
+
+            when $.lintel_move {
+                my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
+                my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
+
+                return $reason if my $reason
+                    = self.is-lintel-move-bad($row_1, $row_2,
+                                              $column_1, $column_2,
+                                              $color);
+            }
+
+            when $.swap {
+                fail 'Swap is only allowed on second move'
+                    if $!moves-so-far != 1;
+            }
+
+            when $.pass | $.resign {
+                # those are always OK
+            }
+
+            default {
+                fail '
+The move does not conform to the accepted move syntax, which is either
+something like "b2" or something like "c1-c3" You can also "pass" or
+"resign" on any move, and "swap" on the second move of the game.'.substr(1);
+            }
+        }
+
+        return False; # move is OK
+    }
+
     method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
         return "The rightmost column is '{chr(ord('A')+$.size-1)}'"
             if $column >= $.size;
@@ -88,16 +129,15 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     # game state data structures. Throws exceptions if the move isn't valid.
     method make-move($move) {
 
-        my @pieces_to_put;
+        fail $reason
+            if my $reason = self.is-move-bad($move);
 
+        my @pieces_to_put;
         my $color = $!player-to-move;
 
         given $move {
             when $.sarsen_move {
                 my Int ($row, $column) = self.extract-coords($<coords>);
-
-                fail $reason if my $reason
-                    = self.is-sarsen-move-bad($row, $column, $color);
 
                 my $height     = @!heights[$row][$column];
                 @pieces_to_put = $height, $row, $column;
@@ -106,11 +146,6 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             when $.lintel_move {
                 my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
                 my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
-
-                fail $reason if my $reason
-                    = self.is-lintel-move-bad($row_1, $row_2,
-                                              $column_1, $column_2,
-                                              $color);
 
                 my $height   = @!heights[$row_1][$column_1];
                 my $row_m    = ($row_1    + $row_2   ) / 2;
@@ -128,8 +163,6 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.swap {
-                fail 'Swap is only allowed on second move'
-                    if $!moves-so-far != 1;
                 .swap() for @!observers;
             }
 

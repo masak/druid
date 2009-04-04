@@ -21,47 +21,9 @@ class Druid::Player::Human is Druid::Player {
         my $move = =$*IN;
         say '' and exit(1) if $*IN.eof;
 
-        given $move {
-            when $.sarsen_move {
-                my Int ($row, $column) = self.extract-coords($<coords>);
-
-                if $!game.is-sarsen-move-bad($row, $column, $.color)
-                  -> $reason {
-                    say $reason;
-                    return;
-                }
-            }
-
-            when $.lintel_move {
-                my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
-                my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
-
-                if $!game.is-lintel-move-bad($row_1, $row_2,
-                                             $column_1, $column_2,
-                                             $.color) -> $reason {
-                    say $reason;
-                    return;
-                }
-            }
-
-            when $.swap {
-                if $!game.moves-so-far != 1 {
-                    say "Can only swap on the second move of the game.";
-                    return;
-                }
-            }
-
-            when $.pass | $.resign {
-                # Always valid -- no error-checking needed.
-            }
-
-            default {
-                say '
-The move does not conform to the accepted move syntax, which is either
-something like "b2" or something like "c1-c3" You can also "pass" on
-any move, and "swap" on the second move of the game.'.substr(1);
-                return;
-            }
+        if $!game.is-move-bad($move) -> $reason {
+            say $reason;
+            return;
         }
 
         return $move;
