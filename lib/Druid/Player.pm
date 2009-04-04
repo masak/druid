@@ -16,7 +16,7 @@ class Druid::Player is Druid::Base does Druid::Game::Observer {
         return $player;
     }
 
-    method choose_move() { ... }
+    method choose-move() { ... }
 
     method make-move($move) { $!game.make-move($move) }
 

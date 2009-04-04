@@ -21,7 +21,7 @@ if any(@*ARGS) eq '--help' {
     exit(0);
 }
 
-my $board_size = 8;
+my $board-size = 8;
 for @*ARGS -> $argument {
     if $argument ~~ / '--size=' (\d+) / {
         if $0 < (my $MIN_SIZE = 3) {
@@ -32,11 +32,11 @@ for @*ARGS -> $argument {
             say "The board size may not be larger than $MAX_SIZE.";
             exit(1);
         }
-        $board_size = +$0;
+        $board-size = +$0;
     }
 }
 
-my Druid::Game $game .= new(:size($board_size));
+my Druid::Game $game .= new(:size($board-size));
 my Druid::View $view = Druid::View::Text.new(:$game);
 
 die 'Druid currently does not support computer-vs-computer play.'
@@ -51,22 +51,22 @@ $player2 = any(@*ARGS) eq '--computer=2'
 
 my $pass = /^ 'pass' | 'p' $/;
 
-my $passes_in_a_row = 0;
+my $passes-in-a-row = 0;
 loop {
     for $player1, $player2 -> $player {
 
         $view.show();
 
-        my $move = $player.choose_move();
+        my $move = $player.choose-move();
 
         if $move ~~ $pass {
-            if ++$passes_in_a_row >= 2 {
+            if ++$passes-in-a-row >= 2 {
                 say "It's a draw.";
                 exit(0);
             }
         }
         elsif $move !~~ $pass {
-            $passes_in_a_row = 0;
+            $passes-in-a-row = 0;
         }
 
         $player.make-move($move);

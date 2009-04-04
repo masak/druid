@@ -2,7 +2,7 @@ use v6;
 use Druid::Player;
 
 class Druid::Player::Computer is Druid::Player {
-    method choose_move() {
+    method choose-move() {
         my ($row, $column);
         repeat {
             $row    = (^$.size).pick[0];

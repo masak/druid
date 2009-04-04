@@ -2,10 +2,10 @@ use v6;
 use Druid::Player;
 
 class Druid::Player::Human is Druid::Player {
-    method choose_move() {
+    method choose-move() {
         repeat {
             print "\n{self}: "
-        } until my $move = self.input_valid_move();
+        } until my $move = self.input-valid-move();
         return $move;
     }
 
@@ -16,7 +16,7 @@ class Druid::Player::Human is Druid::Player {
     # locations in a row, and the lintel itself must have stones under both
     # ends, and two of the maximally three supporting stones must be of the
     # placed lintel's color.
-    submethod input_valid_move() {
+    submethod input-valid-move() {
 
         my $move = =$*IN;
         say '' and exit(1) if $*IN.eof;

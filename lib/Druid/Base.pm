@@ -1,12 +1,13 @@
 use v6;
 
 class Druid::Base {
+    # RAKUDO: Cannot use dashes here. [perl #64464]
     regex col_letter { <[a..z]> }
     regex row_number { \d+ }
     regex coords { <col_letter><row_number> }
 
-    our $.sarsen_move = /^ <coords> $/;
-    our $.lintel_move = /^ <coords> '-' <coords> $/;
+    our $.sarsen-move = /^ <coords> $/;
+    our $.lintel-move = /^ <coords> '-' <coords> $/;
     our $.pass   = /^ ['pass'   | 'p'] $/;
     our $.swap   = /^ ['swap'   | 's'] $/;
     our $.resign = /^ ['resign' | 'r'] $/;

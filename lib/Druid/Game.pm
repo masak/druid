@@ -30,14 +30,14 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         my $color = $!player-to-move;
 
         given $move {
-            when $.sarsen_move {
+            when $.sarsen-move {
                 my Int ($row, $column) = self.extract-coords($<coords>);
 
                 return $reason if my $reason
                     = self.is-sarsen-move-bad($row, $column, $color);
             }
 
-            when $.lintel_move {
+            when $.lintel-move {
                 my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
                 my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
@@ -93,12 +93,12 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         return "There are only {$.size} rows"
             if $row_1|$row_2 >= $.size;
 
-        my $row_diff    = abs($row_1 - $row_2);
-        my $column_diff = abs($column_1 - $column_2);
+        my $row-diff    = abs($row_1 - $row_2);
+        my $column-diff = abs($column_1 - $column_2);
 
         return 'A lintel must be three units long'
-            unless $row_diff == 2 && $column_diff == 0
-                || $row_diff == 0 && $column_diff == 2;
+            unless $row-diff == 2 && $column-diff == 0
+                || $row-diff == 0 && $column-diff == 2;
 
         return 'A lintel must be supported at both ends'
             unless $.heights[$row_1][$column_1]
@@ -132,18 +132,18 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         fail $reason
             if my $reason = self.is-move-bad($move);
 
-        my @pieces_to_put;
+        my @pieces-to-put;
         my $color = $!player-to-move;
 
         given $move {
-            when $.sarsen_move {
+            when $.sarsen-move {
                 my Int ($row, $column) = self.extract-coords($<coords>);
 
                 my $height     = @!heights[$row][$column];
-                @pieces_to_put = $height, $row, $column;
+                @pieces-to-put = $height, $row, $column;
             }
 
-            when $.lintel_move {
+            when $.lintel-move {
                 my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
                 my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
@@ -151,7 +151,7 @@ something like "b2" or something like "c1-c3" You can also "pass" or
                 my $row_m    = ($row_1    + $row_2   ) / 2;
                 my $column_m = ($column_1 + $column_2) / 2;
 
-                @pieces_to_put = $height, $row_1, $column_1,
+                @pieces-to-put = $height, $row_1, $column_1,
                                  $height, $row_m, $column_m,
                                  $height, $row_2, $column_2;
             }
@@ -173,7 +173,7 @@ something like "b2" or something like "c1-c3" You can also "pass" or
             default { fail "Nasty syntax."; }
         }
 
-        for @pieces_to_put -> $height, $row, $column {
+        for @pieces-to-put -> $height, $row, $column {
 
             if $height >= @!layers {
                 push @!layers, [map { [0 xx $!size] }, ^$!size];
@@ -183,7 +183,7 @@ something like "b2" or something like "c1-c3" You can also "pass" or
                 = $color;
             @!heights[$row][$column] = $height + 1;
 
-            .add_piece($height, $row, $column, $color) for @!observers;
+            .add-piece($height, $row, $column, $color) for @!observers;
         }
 
         $!latest-move = $move;
@@ -203,12 +203,12 @@ something like "b2" or something like "c1-c3" You can also "pass" or
     submethod move-was-winning() {
 
         my ($row, $column) = self.extract-coords(
-            $!latest-move ~~ $.sarsen_move ?? $<coords>    !!
-            $!latest-move ~~ $.lintel_move ?? $<coords>[0] !!
+            $!latest-move ~~ $.sarsen-move ?? $<coords>    !!
+            $!latest-move ~~ $.lintel-move ?? $<coords>[0] !!
             return False # swap or pass or other kind of move
         );
 
-        my @pos_queue = { :$row, :$column };
+        my @pos-queue = { :$row, :$column };
 
         my $latest-color = @!colors[$row][$column];
 
@@ -222,10 +222,10 @@ something like "b2" or something like "c1-c3" You can also "pass" or
                                                   :column(.<column> - 1) } };
 
         my %visited;
-        my $reached_one_end   = False;
-        my $reached_other_end = False;
+        my $reached-one-end   = False;
+        my $reached-other-end = False;
 
-        while shift @pos_queue -> $pos {
+        while shift @pos-queue -> $pos {
             ++%visited{~$pos};
 
             for &above, &below, &right, &left -> &direction {
@@ -236,7 +236,7 @@ something like "b2" or something like "c1-c3" You can also "pass" or
                        && @!colors[$neighbor<row>][$neighbor<column>]
                           == $latest-color {
 
-                        push @pos_queue, $neighbor;
+                        push @pos-queue, $neighbor;
                     }
                 }
             }
@@ -244,15 +244,15 @@ something like "b2" or something like "c1-c3" You can also "pass" or
             if    $latest-color == 1 && !above($pos)
                || $latest-color == 2 && !right($pos) {
 
-                $reached_one_end   = True;
+                $reached-one-end   = True;
             }
             elsif    $latest-color == 1 && !below($pos)
                   || $latest-color == 2 &&  !left($pos) {
 
-                $reached_other_end = True;
+                $reached-other-end = True;
             }
 
-            return True if $reached_one_end && $reached_other_end;
+            return True if $reached-one-end && $reached-other-end;
         }
 
         return False;
