@@ -94,10 +94,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
 
         given $move {
             when $.sarsen_move {
-                # RAKUDO: Hoping these explicit int(...) conversions won't be
-                #         necessary in the long run.
-                my Int $row    = int($<coords><row_number> - 1);
-                my Int $column = int(ord($<coords><col_letter>) - ord('a'));
+                my Int ($row, $column) = self.extract-coords($<coords>);
 
                 fail $reason if my $reason
                     = self.is-sarsen-move-bad($row, $column, $color);
@@ -107,14 +104,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.lintel_move {
-                # RAKUDO: Hoping these explicit int(...) conversions won't be
-                #         necessary in the long run.
-                my Int $row_1    = int($<coords>[0]<row_number> - 1);
-                my Int $row_2    = int($<coords>[1]<row_number> - 1);
-                my Int $column_1
-                    = int(ord($<coords>[0]<col_letter>) - ord('a'));
-                my Int $column_2
-                    = int(ord($<coords>[1]<col_letter>) - ord('a'));
+                my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
+                my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
                 fail $reason if my $reason
                     = self.is-lintel-move-bad($row_1, $row_2,
@@ -178,18 +169,11 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
     # whether the two sides have been connected.
     submethod move-was-winning() {
 
-        my ($row, $column);
-        given $!latest-move {
-            when $.sarsen_move {
-                $row    = $<coords><row_number> - 1;
-                $column = ord($<coords><col_letter>) - ord('a');
-            }
-            when $.lintel_move {
-                $row    = $<coords>[0]<row_number> - 1;
-                $column = ord($<coords>[0]<col_letter>) - ord('a');
-            }
-            default { return False; } # pass or unknown move type
-        }
+        my ($row, $column) = self.extract-coords(
+            $!latest-move ~~ $.sarsen_move ?? $<coords>    !!
+            $!latest-move ~~ $.lintel_move ?? $<coords>[0] !!
+            return False # swap or pass or other kind of move
+        );
 
         my @pos_queue = { :$row, :$column };
 

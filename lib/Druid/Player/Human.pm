@@ -23,8 +23,7 @@ class Druid::Player::Human is Druid::Player {
 
         given $move {
             when $.sarsen_move {
-                my Int $row    = int($<coords><row_number> - 1);
-                my Int $column = int(ord($<coords><col_letter>) - ord('a'));
+                my Int ($row, $column) = self.extract-coords($<coords>);
 
                 if $!game.is-sarsen-move-bad($row, $column, $.color)
                   -> $reason {
@@ -34,12 +33,8 @@ class Druid::Player::Human is Druid::Player {
             }
 
             when $.lintel_move {
-                my Int $row_1    = int($<coords>[0]<row_number> - 1);
-                my Int $row_2    = int($<coords>[1]<row_number> - 1);
-                my Int $column_1 = int(ord($<coords>[0]<col_letter>)
-                                       - ord('a'));
-                my Int $column_2 = int(ord($<coords>[1]<col_letter>)
-                                       - ord('a'));
+                my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
+                my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
                 if $!game.is-lintel-move-bad($row_1, $row_2,
                                              $column_1, $column_2,
