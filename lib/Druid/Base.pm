@@ -16,6 +16,8 @@ class Druid::Base {
         #         necessary in the long run.
         my Int $row    = int($m<row_number> - 1);
         my Int $column = int(ord($m<col_letter>) - ord('a'));
+
+        return ($row, $column);
     }
 }
 
