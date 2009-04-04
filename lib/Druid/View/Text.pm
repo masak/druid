@@ -48,7 +48,9 @@ class Druid::View::Text is Druid::View {
             take my $heading 
                 = [~] '   ', map {"   $_  "}, map {chr($_+ord('A'))}, ^$size; 
             take my $line = [~] '   ', '+-----' x $size, '+'; 
-            for (1..$size).reverse -> $r { 
+            take (1..$size).reverse.perl;
+            # RAKUDO: .reverse on Ranges out of order. [perl #64458]
+            for (1..$size).list.reverse -> $r {
                 take [~] (sprintf '%2d |', $r),
                          '      ' x ($size) - 1,
                          "     | $r";
@@ -190,7 +192,8 @@ class Druid::View::Text is Druid::View {
         my $header = "$footer\n";
 
         print $header;
-        for (1..$.size).reverse -> $row {
+        # RAKUDO: .reverse on Ranges out of order. [perl #64458]
+        for (1..$.size).list.reverse -> $row {
             say sprintf from_pretty(
                     [~] '  ', $board_line, $inter_board_space, $board_line
                 ),
