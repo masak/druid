@@ -1,9 +1,7 @@
 use v6;
 
 use Druid::Game;
-use Druid::View;
 use Druid::View::Text;
-use Druid::Player;
 use Druid::Player::Human;
 use Druid::Player::Computer;
 
