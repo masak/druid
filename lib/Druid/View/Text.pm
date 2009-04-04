@@ -63,21 +63,19 @@ class Druid::View::Text is Druid::View {
         }; 
     } 
 
-    method init() {
-        die 'Must be tied to a game'
-            unless $!game.defined;
-
-        # RAKUDO: The following line should be in Druid::View
-        $!game.attach(self);
-        $!cached_board = make_empty_board($.size);
+    # RAKUDO: This could be done with BUILD instead, as soon as BUILD can
+    #         access private attributes. [perl #64388]
+    method new(Druid::Game :$game!) {
+        my $view = self.bless( :$game,
+                                :cached_board(make_empty_board($game.size)) );
+        $game.attach($view);
+        return $view;
     }
 
     # Prints the 3D game board and the two smaller sub boards, reflecting the
     # current state of the game.
     method show() {
 
-        # RAKUDO: BUILD
-        $!cached_board // self.init();
         print $!cached_board;
 
         self.print_colors_and_heights();
