@@ -48,7 +48,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             when $.swap {
-                fail 'Swap is only allowed on second move'
+                return 'Swap is only allowed on second move'
                     if $!moves-so-far != 1;
             }
 
