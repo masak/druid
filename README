@@ -42,13 +42,11 @@ Yup, you're ready to go.
 
 (After all, compilation does make startup a little faster.)
 
-% perl Makefile.PL
+% perl6 configure
 % make
 
 Remember that you still need to set $PERL6LIB and $PARROT_DIR as above. The
-file Makefile.PL will complain if you don't. The 'make' process, should you
-foolishly proceed to it without heeding Makefile.PL's advice, will not
-complain, just fail.
+configure script will complain if you don't.
 
 == Installing via proto
 
