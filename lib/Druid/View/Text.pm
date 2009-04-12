@@ -75,10 +75,13 @@ class Druid::View::Text is Druid::View {
     # Prints the 3D game board and the two smaller sub boards, reflecting the
     # current state of the game.
     method show() {
+        .print for $!cached-board, self.colors-and-heights();
+    }
 
-        print $!cached-board;
-
-        self.print-colors-and-heights();
+    # Returns the 3D game board and the two smaller sub boards, reflecting the
+    # current state of the game.
+    method Str() {
+        return [~] $!cached-board, self.colors-and-heights();
     }
 
     method build-layers($board is copy, $from) {
@@ -170,7 +173,7 @@ class Druid::View::Text is Druid::View {
 
     # Prints two smaller boards representing (1) who owns each location, and
     # (2) how many stones have been piled on each location.
-    method print-colors-and-heights() {
+    method colors-and-heights() {
 
         my &from-pretty    = { $^pretty.trans( ['>>',   '<<', '.']
                                             => ['%2d','%-2d','%s'] ) };
@@ -189,16 +192,19 @@ class Druid::View::Text is Druid::View {
                          $letters.join(' '), "\n";
         my $header = "$footer\n";
 
-        print $header;
-        # RAKUDO: .reverse on Ranges out of order. [perl #64458]
-        for (1..$.size).list.reverse -> $row {
-            say sprintf from-pretty(
-                    [~] '  ', $board-line, $inter-board-space, $board-line
-                ),
-                $row, (map &format-colors,  @.colors[$row-1].values),  $row,
-                $row, (map &format-heights, @.heights[$row-1].values), $row;
-        }
-        print $footer;
+        return gather {
+            take $header;
+            # RAKUDO: .reverse on Ranges out of order. [perl #64458]
+            for (1..$.size).list.reverse -> $row {
+                take sprintf from-pretty(
+                        [~] '  ', $board-line, $inter-board-space, $board-line
+                    ),
+                    $row, (map &format-colors,  @.colors[$row-1].values),  $row,
+                    $row, (map &format-heights, @.heights[$row-1].values), $row;
+                take "\n";
+            }
+            take $footer;
+        };
     }
 
     method add-piece($height, $row, $column, $color) {
