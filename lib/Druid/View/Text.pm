@@ -48,9 +48,7 @@ class Druid::View::Text is Druid::View {
             take my $heading 
                 = [~] '   ', map {"   $_  "}, map {chr($_+ord('A'))}, ^$size; 
             take my $line = [~] '   ', '+-----' x $size, '+'; 
-            take (1..$size).reverse.perl;
-            # RAKUDO: .reverse on Ranges out of order. [perl #64458]
-            for (1..$size).list.reverse -> $r {
+            for (1..$size).reverse -> $r {
                 take [~] (sprintf '%2d |', $r),
                          '      ' x ($size) - 1,
                          "     | $r";
@@ -69,7 +67,7 @@ class Druid::View::Text is Druid::View {
     #         access private attributes. [perl #64388]
     method new(Druid::Game :$game!) {
         my $view = self.bless( :$game,
-                                :cached-board(make-empty-board($game.size)) );
+                               :cached-board(make-empty-board($game.size)) );
         $game.attach($view);
         return $view;
     }
