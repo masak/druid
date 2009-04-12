@@ -257,6 +257,18 @@ something like "b2" or something like "c1-c3" You can also "pass" or
 
         return False;
     }
+
+    # We don't handle lintel moves yet. :( I have a nice O(1) algorithm, but
+    # very little time.
+    method possible-moves() {
+        return gather for ^$!size -> $row {
+            for ^$!size -> $column {
+                if @!colors[$row][$column] == 0|$!player-to-move {
+                    take chr($column + ord("a")) ~ ($row+1);
+                }
+            }
+        }
+    }
 }
 
 # vim: filetype=perl6
