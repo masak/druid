@@ -1,0 +1,63 @@
+#!/usr/local/bin/perl6
+use v6;
+use HTTP::Daemon;
+use Tags;
+use Druid::Game;
+use Druid::View::Text;
+
+defined @*ARGS[0] && @*ARGS[0] eq '--request' ?? request() !! daemon();
+
+# Serve one page
+sub request {
+    # Currently executed in a child process of socat - inefficient
+    my HTTP::Daemon $d .= new;
+    while my HTTP::Daemon::ClientConn $c = $d.accept {
+        while my HTTP::Request $r = $c.get_request {
+            if $r.req_method eq 'GET' {
+                # log request info to the standard error stream
+                warn "{hhmm} GET {$r.url.path} {$r.header('User-Agent')}";
+                my $qs = $r.url.path ~~ / '?' (.*) $/
+                            ?? $0
+                            !! '';
+                my $board-size = 8;
+                my Druid::Game $game .= new(:size($board-size));
+                my Druid::View $view = Druid::View::Text.new(:$game);
+
+                $c.send_response(
+                    show {
+                        html {
+                            head { title { 'Druid' } }
+                            body {
+                                pre { $view }
+                                ul {
+                                    for $game.possible-moves() -> $move {
+                                        li {
+                                            a :href("?moves=$move"), { $move }
+                    }}}}}}
+                );
+            }
+            else {
+                warn "{hhmm} rejected {$r.req_method} {$r.url.path}";
+                $c.send_error('RC_FORBIDDEN');
+            }
+            warn ' '; # blank line
+        }
+    }
+}
+
+# Executed as main parent process with an endless loop that re-starts
+# netcat after every page request.
+sub daemon {
+    my HTTP::Daemon $d .= new( host=> '127.0.0.1', port=> 8888 );
+    say "Browse this Perl 6 (Rakudo) web server at {$d.url}";
+    $d.daemon();
+}
+
+# give the current time in hh:mm format
+sub hhmm {
+    my $t = int(time);
+    my $m = int( $t / 60 ) % 60;
+    my $h = int( $t / 3600 ) % 24;
+    my $hhmm = "{$h.fmt('%02d')}:{$m.fmt('%02d')}";
+    return $hhmm;
+}
