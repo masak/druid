@@ -6,7 +6,7 @@ SOURCES=lib/Druid/Base.pm lib/Druid/Game/Observer.pm \
         lib/Druid/Game/Subject.pm lib/Druid/Game.pm lib/Druid/View.pm \
         lib/Druid/View/Text.pm lib/Druid/Player.pm \
         lib/Druid/Player/Human.pm lib/Druid/Player/Computer.pm \
-        lib/Test/Ix.pm
+        lib/Test/Ix.pm lib/Druid/Webapp.pm
 
 PIRS=$(SOURCES:.pm=.pir)
 

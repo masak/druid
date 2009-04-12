@@ -1,9 +1,7 @@
 #!/usr/local/bin/perl6
 use v6;
 use HTTP::Daemon;
-use Tags;
-use Druid::Game;
-use Druid::View::Text;
+use Druid::Webapp;
 
 defined @*ARGS[0] && @*ARGS[0] eq '--request' ?? request() !! daemon();
 
@@ -19,22 +17,7 @@ sub request {
                 my $qs = $r.url.path ~~ / '?' (.*) $/
                             ?? $0
                             !! '';
-                my $board-size = 8;
-                my Druid::Game $game .= new(:size($board-size));
-                my Druid::View $view = Druid::View::Text.new(:$game);
-
-                $c.send_response(
-                    show {
-                        html {
-                            head { title { 'Druid' } }
-                            body {
-                                pre { $view }
-                                ul {
-                                    for $game.possible-moves() -> $move {
-                                        li {
-                                            a :href("?moves=$move"), { $move }
-                    }}}}}}
-                );
+                $c.send_response( Druid::Webapp.page($qs) );
             }
             else {
                 warn "{hhmm} rejected {$r.req_method} {$r.url.path}";
