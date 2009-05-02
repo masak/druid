@@ -18,7 +18,7 @@ class Druid::Player::Human is Druid::Player {
     # placed lintel's color.
     submethod input-valid-move() {
 
-        my $move = =$*IN;
+        my $move = $*IN.get;
         say '' and exit(1) if $*IN.eof;
 
         if $!game.is-move-bad($move) -> $reason {
