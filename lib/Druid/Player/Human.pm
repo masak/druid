@@ -3,9 +3,7 @@ use Druid::Player;
 
 class Druid::Player::Human is Druid::Player {
     method choose-move() {
-        repeat {
-            print "\n{self}: "
-        } until my $move = self.input-valid-move();
+        do Whatever until my $move = self.input-valid-move();
         return $move;
     }
 
@@ -18,7 +16,7 @@ class Druid::Player::Human is Druid::Player {
     # placed lintel's color.
     submethod input-valid-move() {
 
-        my $move = $*IN.get;
+        my $move = prompt("\n{self}: ");
         say '' and exit(1) if $*IN.eof;
 
         if $!game.is-move-bad($move) -> $reason {
