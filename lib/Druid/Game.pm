@@ -20,7 +20,8 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
         die "Forbidden size: $size"
             unless 3 <= $size <= 26;
 
-        return self.bless( :size($size),
+        return self.bless( self.CREATE(),
+                           :size($size),
                            :heights(map { [ 0 xx $size ] }, ^$size),
                            :colors( map { [ 0 xx $size ] }, ^$size),
                            :player-to-move(1) );

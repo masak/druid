@@ -9,7 +9,8 @@ class Druid::Player is Druid::Base does Druid::Game::Observer {
     # RAKUDO: This could be done with BUILD instead, as soon as BUILD can
     #         access private attributes. [perl #64388]
     method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
-        my $player = self.bless( :game($game),
+        my $player = self.bless( self.CREATE(),
+                                 :game($game),
                                  :color($color)
                                );
         $game.attach($player);
