@@ -58,7 +58,7 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
             }
 
             default {
-                fail '
+                return '
 The move does not conform to the accepted move syntax, which is either
 something like "b2" or something like "c1-c3" You can also "pass" or
 "resign" on any move, and "swap" on the second move of the game.'.substr(1);
