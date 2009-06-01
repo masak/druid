@@ -16,6 +16,9 @@ class Druid::Webapp {
                     head { title { 'Druid' } }
                     body {
                         pre { $view }
+                        object :type<image/svg+xml>, :data</board.svg>, {
+                            'alternate text'
+                        }
                         ul {
                             for $game.possible-moves() -> $move {
                                 li {

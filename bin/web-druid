@@ -11,10 +11,15 @@ sub request($c) {
     if $r.req_method eq 'GET' {
         # log request info to the standard error stream
         warn "{hhmm} GET {$r.url.path} {$r.header('User-Agent')}";
-        my $qs = $r.url.path ~~ / '?' (.*) $/
-                    ?? $0
-                    !! '';
-        $c.send_response( Druid::Webapp.page($qs) );
+        if $r.url.path eq '/board.svg' {
+            $c.send_response( svg-board() );
+        }
+        else {
+            my $qs = $r.url.path ~~ / '?' (.*) $/
+                        ?? $0
+                        !! '';
+            $c.send_response( Druid::Webapp.page($qs) );
+        }
     }
     else {
         warn "{hhmm} rejected {$r.req_method} {$r.url.path}";
@@ -38,4 +43,22 @@ sub hhmm {
     my $h = int( $t / 3600 ) % 24;
     my $hhmm = "{$h.fmt('%02d')}:{$m.fmt('%02d')}";
     return $hhmm;
+}
+
+sub svg-board() {
+    return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="400"
+   height="400">
+    <rect
+        width="400"
+        height="400"
+        x="0"
+        y="0"
+        style="opacity:1;fill:none;stroke:#000000;stroke-width:2;"
+    />
+</svg>';
 }
