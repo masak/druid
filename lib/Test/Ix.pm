@@ -1,6 +1,12 @@
 use v6;
 use Test;
 
+=begin SUMMARY
+This module takes a recursive list of tests and autogenerates test subs
+from it, injecting those subroutines into a given file. It also handles
+traversing the same list in order to count or run the tests in a file.
+=end SUMMARY
+
 sub inject-subs-in-file($file) {
     my $code = slurp($file)
         or die "Couldn't open $file";
@@ -17,7 +23,7 @@ sub inject-subs-in-file($file) {
         my $sub =
             sprintf (join "\n", 'sub %s {', '    ok 0, "%s";', '}', ''),
                                      $subname,          $test;
-        $code = inject($sub, :into($code));
+        $code = inject $sub, :into($code);
     }
     return $code;
 }
@@ -27,6 +33,10 @@ sub find-all-tests-in-declaration($declaration) {
     eval($declaration); # see what's going on here? :) aye, evil eval, I know.
 
     return find-all-tests(@tests)
+}
+
+sub find-all-tests(@tests) {
+    return traverse-tests(@tests, { take $_ });
 }
 
 multi sub traverse-tests(@tests, Code $leaf-action) {
@@ -47,10 +57,6 @@ multi sub traverse-tests(@tests, Code $leaf-action, $prefix) {
             die "Don't understand a {$test.WHAT} in the declaration.";
         }
     }
-}
-
-sub find-all-tests(@tests) {
-    return traverse-tests(@tests, { take $_ });
 }
 
 # RAKUDO: Would like to make this a named param. [perl #63230]

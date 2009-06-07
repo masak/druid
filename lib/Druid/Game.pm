@@ -1,15 +1,36 @@
 use v6;
 
+=begin SUMMARY
+An instance of C<Druid::Game> holds an ongoing (or finished) Druid game.
+It keeps track of the contents of the board, whose turn it is, the number
+of moves made, and whether the game is over. The methods in this class
+are created so as to disallow all illegal moves (or other actions) on the
+game state. In other words, an invariant of this class is that it is
+always in a permitted states, according to the rules of Druid.
+
+The class does the role C<Druid::Game::Subject>, making it possible for
+instances of other classes to subscribe to updates from instances of this
+class, in an B<observer> pattern.
+=end SUMMARY
+
 use Druid::Base;
 use Druid::Game::Subject;
 
 class Druid::Game is Druid::Base does Druid::Game::Subject {
+
+=attr The size of a side of the (always quadratic) board.
     has $.size;
+=attr An array of layers, each a C<$.size * $.size> AoA with color info.
     has @.layers;
+=attr A C<$.size * $.size> AoA with height info.
     has @.heights;
+=attr A C<$.size * $.size> AoA with color info.
     has @.colors;
+=attr An integer (either 1 or 2) denoting whose turn it is to move.
     has $.player-to-move;
+=attr The number of moves made so far in the game, including swapping.
     has $.moves-so-far;
+=attr Whether the game has already ended.
     has $.finished;
 
     has $!latest-move;
@@ -27,6 +48,11 @@ class Druid::Game is Druid::Base does Druid::Game::Subject {
                            :player-to-move(1) );
     }
 
+=begin METHOD
+Reports C<False> if the move is permissible in the given state of the game,
+or a C<Str> explaining why if it isn't. (Thus 'bad' here means
+'impermissible', but 'bad' is less to write.)
+=end METHOD
     method is-move-bad(Str $move) {
         my $color = $!player-to-move;
 
@@ -68,6 +94,11 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         return False; # move is OK
     }
 
+=begin METHOD
+Returns, for given C<$row>, C<$column>, and C<$color>, the reason why
+a sarsen (a one-block piece) of that color cannot be placed on that location,
+or C<False> if the placing of the sarsen is permissible.
+=end METHOD
     method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
         return "The rightmost column is '{chr(ord('A')+$.size-1)}'"
             if $column >= $.size;
@@ -76,13 +107,22 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         return "There are only {$.size} rows"
             if $row >= $.size;
 
-        return sprintf q[Not %s's spot],
-                       <. vertical horizontal>[$color]
+        return sprintf q[Not %s's spot], <. vertical horizontal>[$color]
             unless $.colors[$row][$column] == 0|$color;
 
-        return; # The move is fine.
+        return False; # The move is fine.
     }
 
+=begin METHOD
+Returns, for a given C<$row_1>, C<$row_2>, C<$column_1>, C<$column_2>, and
+C<$color>, the reason why a lintel (a three-block piece) of that color cannot
+be placed bridging these locations, or C<False> if the placing of the lintel
+is permissible.
+
+There are no preconditions on the coordinate parameters to be exactly two
+rows or two columns apart; instead, these conditions are also tested in this
+method.
+=end METHOD
     method is-lintel-move-bad(Int $row_1, Int $row_2,
                               Int $column_1, Int $column_2,
                               Int $color) {
@@ -117,18 +157,20 @@ something like "b2" or something like "c1-c3" You can also "pass" or
 
         return 'A lintel must rest on exactly two pieces of its own color'
             unless 2 == elems grep { $_ == $color },
-                $.colors[$row_1][$column_1],        # first end...
-                $.colors[$row_2][$column_2],        # ...second end...
+                $.colors[$row_1][$column_1],        # one end...
+                $.colors[$row_2][$column_2],        # ...other end...
                 $.heights[$row_m][$column_m] == $.heights[$row_1][$column_1]
                     ?? $.colors[$row_m][$column_m]  # ...middle piece only if
                     !! ();                          # it's level with both ends
 
-        return; # The move is fine.
+        return False; # The move is fine.
     }
 
-    # Analyzes a given move, and makes the appropriate changes to the given
-    # game state data structures. Throws exceptions if the move isn't valid.
-    method make-move($move) {
+=begin METHOD
+Analyzes a given move, and makes the appropriate changes to the attributes
+of this C<Druid::Game>. C<fail>s if the move isn't valid.
+=end METHOD
+    method make-move(Str $move) {
 
         fail $reason
             if my $reason = self.is-move-bad($move);
@@ -170,8 +212,6 @@ something like "b2" or something like "c1-c3" You can also "pass" or
             when $.resign {
                 $!finished = True;
             }
-
-            default { fail "Nasty syntax."; }
         }
 
         for @pieces-to-put -> $height, $row, $column {
@@ -199,28 +239,40 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         return $move;
     }
 
-    # Starting from the latest move made, traces the chains to determine
-    # whether the two sides have been connected.
+=begin METHOD
+Returns a C<Bool> indicating whether the latest move created a winning chain
+across the board.
+=end METHOD
     submethod move-was-winning() {
 
-        my ($row, $column) = self.extract-coords(
+        my ($row, $col) = self.extract-coords(
             $!latest-move ~~ $.sarsen-move ?? $<coords>    !!
             $!latest-move ~~ $.lintel-move ?? $<coords>[0] !!
             return False # swap or pass or other kind of move
         );
 
-        my @pos-queue = { :$row, :$column };
+        # Starting from the latest move made, traces the chains to determine
+        # whether the two sides have been connected. Since the winning chain
+        # must by necessity contain the last move, this is equivalent to
+        # asking 'was the last move winning?'.
 
-        my $latest-color = @!colors[$row][$column];
+        my @pos-queue = { :$row, :$col };
 
-        my &above = { .<row>    < $!size - 1 && { :row(.<row> + 1),
-                                                  :column(.<column>) } };
-        my &below = { .<row>    > 0          && { :row(.<row> - 1),
-                                                  :column(.<column>) } };
-        my &right = { .<column> < $!size - 1 && { :row(.<row>),
-                                                  :column(.<column> + 1) } };
-        my &left  = { .<column> > 0          && { :row(.<row>),
-                                                  :column(.<column> - 1) } };
+        my $latest-color = @!colors[$row][$col];
+
+        # The following four code variables take a step in either of the
+        # four compass directions. Given a position as a two-entry hash
+        # (:row, :col), it returns a neighboring position as a new such
+        # hash or C<Bool::False> if the position would be outside of
+        # the board.
+        my &above
+            = { .<row> < $!size - 1 && { :row(.<row> + 1), :col(.<col>) } };
+        my &below
+            = { .<row> > 0          && { :row(.<row> - 1), :col(.<col>) } };
+        my &right
+            = { .<col> < $!size - 1 && { :row(.<row>), :col(.<col> + 1) } };
+        my &left
+            = { .<col> > 0          && { :row(.<row>), :col(.<col> - 1) } };
 
         my %visited;
         my $reached-one-end   = False;
@@ -230,11 +282,11 @@ something like "b2" or something like "c1-c3" You can also "pass" or
             ++%visited{~$pos};
 
             for &above, &below, &right, &left -> &direction {
-                my ($r, $c) = .<row>, .<column> given $pos;
+                my ($r, $c) = .<row>, .<col> given $pos;
                 if direction($pos) -> $neighbor {
 
                     if !%visited.exists(~$neighbor)
-                       && @!colors[$neighbor<row>][$neighbor<column>]
+                       && @!colors[$neighbor<row>][$neighbor<col>]
                           == $latest-color {
 
                         push @pos-queue, $neighbor;
@@ -259,9 +311,13 @@ something like "b2" or something like "c1-c3" You can also "pass" or
         return False;
     }
 
-    # We don't handle lintel moves yet. :( I have a nice O(1) algorithm, but
-    # very little time.
+=begin METHOD
+Returns a C<List> of the possible moves in this C<Druid::Game>, represented as
+C<Str>s.
+=end METHOD
     method possible-moves() {
+        # We don't handle lintel moves yet. :( I have a nice O(1) algorithm,
+        # but very little time.
         return gather for ^$!size -> $row {
             for ^$!size -> $column {
                 if @!colors[$row][$column] == 0|$!player-to-move {

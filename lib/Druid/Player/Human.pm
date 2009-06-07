@@ -1,19 +1,17 @@
 use v6;
 use Druid::Player;
 
+=begin SUMMARY
+A human player, i.e. a C<Druid::Player> whose moves are typed in on C<$*IN>
+by a human.
+=end SUMMARY
+
 class Druid::Player::Human is Druid::Player {
     method choose-move() {
         do Whatever until my $move = self.input-valid-move();
         return $move;
     }
 
-    # Reads a string from STDIN, and checks it for validity in various ways.
-    # As a first check, the move syntax is checked to be either a sarsen move
-    # or a lintel move. A valid sarsen move must be placed on the ground or on
-    # stones of the same color. A valid lintel move must cover exactly three
-    # locations in a row, and the lintel itself must have stones under both
-    # ends, and two of the maximally three supporting stones must be of the
-    # placed lintel's color.
     submethod input-valid-move() {
 
         my $move = prompt("\n{self}: ");

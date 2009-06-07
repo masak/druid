@@ -1,5 +1,10 @@
 use v6;
 
+=begin SUMMARY
+C<Druid::Base> is the base class of most other Druid classes, collecting
+regexes, attributes and methods which most of these other classes need.
+=end SUMMARY
+
 class Druid::Base {
     # RAKUDO: Cannot use dashes here. [perl #64464]
     regex col_letter { <[a..z]> }
