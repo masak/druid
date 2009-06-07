@@ -1,4 +1,4 @@
-use v6;
+role Druid::Game::Observer;
 
 =begin SUMMARY
 This role enables objects to I<observe> a C<Druid::Game::Subject>, i.e.
@@ -12,19 +12,17 @@ Examples of classes which might want to observe a C<Druid::Game::Subject>
 are classes derived from C<Druid::View> or C<Druid::Player>.
 =end SUMMARY
 
-role Druid::Game::Observer {
 =begin METHOD
 Gets called any time the C<Druid::Game::Subject> adds a piece to its game
 board. Note that, for the purposes of this method, lintels are considered
 to be three adjacent (but separate) pieces.
 =end METHOD
-    method add-piece($height, $row, $column, $color) { ... };
+method add-piece($height, $row, $column, $color) { ... };
 
 =begin METHOD
 Gets called when the C<Druid::Game::Subject> swaps positions between the
 two players.
 =end METHOD
-    method swap() { ... }
-}
+method swap() { ... }
 
 # vim: filetype=perl6

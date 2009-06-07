@@ -1,6 +1,7 @@
 use v6;
-
 use Druid::Game::Observer;
+
+role Druid::Game::Subject;
 
 =begin SUMMARY
 This role enables objects to be I<observed> by one or more
@@ -12,15 +13,13 @@ Examples of classes which might want to observe a C<Druid::Game::Subject>
 are classes derived from C<Druid::View> or C<Druid::Player>.
 =end SUMMARY
 
-role Druid::Game::Subject {
-    # RAKUDO: Typed arrays don't really work yet
-#    has Druid::Game::Observer @!observers;
-    has @!observers;
+# RAKUDO: Typed arrays don't really work yet
+#has Druid::Game::Observer @!observers;
+has @!observers;
 
-    method attach(Druid::Game::Observer $observer) {
-        unless @!observers ~~ (*, $observer, *) {
-            @!observers.push($observer);
-        }
+method attach(Druid::Game::Observer $observer) {
+    unless @!observers ~~ (*, $observer, *) {
+        @!observers.push($observer);
     }
 }
 
