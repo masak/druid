@@ -59,10 +59,8 @@ multi sub traverse-tests(@tests, Code $leaf-action, $prefix) {
     }
 }
 
-# RAKUDO: Would like to make this a named param. [perl #63230]
-# sub inject(Str $sub, Str :into($code)!) {
-sub inject(Str $sub, Str :$into!) {
-    my @lines = $into.split("\n");
+sub inject(Str $sub, Str :into($code)!) {
+    my @lines = $code.split("\n");
     my $line-with-vim-conf = first-index { $_ ~~ /^ '# vim'/ }, @lines;
     # RAKUDO: $line-with-vim-conf ~~ Nil [perl #63894]
     if $line-with-vim-conf.WHAT ne 'Nil' {
@@ -70,7 +68,7 @@ sub inject(Str $sub, Str :$into!) {
                           $sub,
                           @lines[$line-with-vim-conf ..^ *];
     }
-    return $into ~ $sub;
+    return $code ~ $sub;
 }
 
 sub first-index(Code $cond, @array) {

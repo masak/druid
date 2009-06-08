@@ -216,8 +216,7 @@ method colors-and-heights() {
 
     return gather {
         take $header;
-        # RAKUDO: .reverse on Ranges out of order. [perl #64458]
-        for (1..$.size).list.reverse -> $row {
+        for (1..$.size).reverse -> $row {
             take sprintf from-pretty(
                     [~] '  ', $board-line, $inter-board-space, $board-line
                 ),
