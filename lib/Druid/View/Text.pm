@@ -71,14 +71,11 @@ sub make-empty-board($size) {
     }; 
 } 
 
-# RAKUDO: This could be done with BUILD instead, as soon as BUILD can
-#         access private attributes. [perl #64388]
-method new(Druid::Game :$game!) {
-    my $view = self.bless( self.CREATE(),
-                           :$game,
-                           :cached-board(make-empty-board($game.size)) );
-    $game.attach($view);
-    return $view;
+submethod BUILD(Druid::Game :$game!) {
+    $!cached-board = make-empty-board($game.size);
+    $game.attach(self);
+    # RAKUDO: These attributes should be auto-initialized
+    $!game = $game;
 }
 
 =begin METHOD

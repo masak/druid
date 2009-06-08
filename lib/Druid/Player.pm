@@ -16,12 +16,11 @@ has Druid::Game $!game handles <size layers colors heights make-move>;
 =attr The color of this C<Druid::Player>'s pieces.
 has Int $.color where { $_ == 1|2 };
 
-# RAKUDO: This could be done with BUILD instead, as soon as BUILD can
-#         access private attributes. [perl #64388]
-method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
-    my $player = self.bless( self.CREATE(), :game($game), :color($color) );
-    $game.attach($player);
-    return $player;
+submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
+    $game.attach(self);
+    # RAKUDO: These attributes should be auto-initialized
+    $!game = $game;
+    $!color = $color;
 }
 
 method choose-move() { ... }

@@ -35,17 +35,15 @@ has $.finished;
 
 has $!latest-move;
 
-# RAKUDO: This could be done with BUILD instead, as soon as BUILD can
-#         access private attributes. [perl #64388]
-method new(:$size = 3) {
+submethod BUILD(:$size = 3) {
     die "Forbidden size: $size"
         unless 3 <= $size <= 26;
 
-    return self.bless( self.CREATE(),
-                       :size($size),
-                       :heights(map { [ 0 xx $size ] }, ^$size),
-                       :colors( map { [ 0 xx $size ] }, ^$size),
-                       :player-to-move(1) );
+    @!heights = map { [ 0 xx $size ] }, ^$size;
+    @!colors  = map { [ 0 xx $size ] }, ^$size;
+    $!player-to-move = 1;
+    # RAKUDO: These attributes should be auto-initialized
+    $!size = $size;
 }
 
 =begin METHOD
