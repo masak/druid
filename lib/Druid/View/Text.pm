@@ -71,11 +71,8 @@ sub make-empty-board($size) {
     }; 
 } 
 
-submethod BUILD(Druid::Game :$game!) {
-    $!cached-board = make-empty-board($game.size);
-    $game.attach(self);
-    # RAKUDO: These attributes should be auto-initialized
-    $!game = $game;
+submethod BUILD() {
+    $!cached-board = make-empty-board($!game.size);
 }
 
 =begin METHOD

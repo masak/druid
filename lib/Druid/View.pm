@@ -11,4 +11,10 @@ Base class for classes that represent a C<Druid::Game> visually.
 
 has Druid::Game $!game handles <size layers colors heights>;
 
+submethod BUILD(Druid::Game :$game!) {
+    $game.attach(self);
+    # RAKUDO: These attributes should be auto-initialized
+    $!game = $game;
+}
+
 # vim: filetype=perl6
