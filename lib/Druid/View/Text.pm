@@ -92,14 +92,9 @@ method Str() {
 }
 
 method build-layers($board is copy, $from) {
-    # RAKUDO: Something strange happens when passing Ints as parameters
-    my $from-copy = +$from;
-    # RAKUDO: Something about array indices and list context
-    my @layers = $from-copy == @.layers.end
-                    ?? @.layers[$from-copy]
-                    !! @.layers[$from-copy .. @.layers.end];
+    my @layers = @.layers[$from .. @.layers.end];
     for @layers.kv -> $relheight, $layer {
-        my $height = $relheight + $from-copy;
+        my $height = $relheight + $from;
         for $layer.kv.reverse -> $line, $row {
             for $line.kv.reverse -> $cell, $column {
 
