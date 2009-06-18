@@ -1,0 +1,118 @@
+use v6;
+use Num :Trig;
+
+sub header {
+    '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   width="500"
+   height="500">
+'
+}
+
+sub polygon($color, @coords) {
+    qq[  <path
+     style="fill:$color;stroke:none"
+     d="] ~ pathspec(@coords) ~ '" />
+'
+}
+
+sub pathspec(@coords) {
+    die "Need an even number of coords, got {+@coords}"
+        if @coords % 2;
+    return [~]
+        'M ',
+        (join ' L ', map -> $x, $y { sprintf '%.3f,%.3f', $x, $y }, @coords),
+        ' z';
+}
+
+sub footer {
+    '</svg>
+'
+}
+
+sub project(@coords3d) {
+    die "Number of coords must be multiple of 3, got {+@coords3d}"
+        if @coords3d % 3;
+    return map -> $x,$y,$z { $x, $y }, @coords3d;
+}
+
+sub translate(@coords, $dx, $dy) {
+    return map -> $x,$y { $x+$dx, $y+$dy }, @coords;
+}
+
+sub scale(@coords, $fx, $fy = $fx) {
+    return map -> $x,$y { $x*$fx, $y*$fx }, @coords;
+}
+
+sub rot-x(@coords3d, $deg) {
+    my $rad = $deg * pi / 180;
+    return map -> $x,$y,$z {
+        $x, $y*cos($rad)-$z*sin($rad), $y*sin($rad)+$z*cos($rad)
+    }, @coords3d;
+}
+
+sub rot-z(@coords3d, $deg) {
+    my $rad = $deg * pi / 180;
+    return map -> $x,$y,$z {
+        $x*cos($rad)-$y*sin($rad), $x*sin($rad)+$y*cos($rad), $z
+    }, @coords3d;
+}
+
+sub translate3d(@coords3d, $dx, $dy, $dz) {
+    die "Number of coords must be multiple of 3, got {+@coords3d}"
+        if @coords3d % 3;
+    return map -> $x,$y,$z { $x+$dx, $y+$dy, $z+$dz }, @coords3d;
+}
+
+sub block($color, @one-corner, @other-corner) {
+    my ($x1,$y1,$z1) = @one-corner;
+    my ($x2,$y2,$z2) = @other-corner;
+    my $c = $color.substr(1);
+    my $brighter-color = [~] '#', map { sprintf '%x', :16($_)+3 }, $c.comb;
+    my $darker-color   = [~] '#', map { sprintf '%x', :16($_)-3 }, $c.comb;
+    # RAKUDO: Multi-arg return
+    return [
+        $darker-color,   [$x1,$y2,$z1, $x1,$y2,$z2, $x2,$y2,$z2, $x2,$y2,$z1],
+        $color,          [$x1,$y1,$z1, $x1,$y1,$z2, $x1,$y2,$z2, $x1,$y2,$z1],
+        $brighter-color, [$x1,$y1,$z2, $x1,$y2,$z2, $x2,$y2,$z2, $x2,$y1,$z2],
+    ].list;
+}
+
+sub board {
+    return
+        map -> $y {
+            map -> $x {
+                block('#999999', [$x+.025,$y+.025,-.25], [$x+.975,$y+.975,0])
+            }, (^8).reverse
+        }, ^8;
+#    return block('#999999', [0,0,-.25], [8,8,0])
+}
+
+sub piece($color, $row, $column, $height) {
+    return block(($color eq 'black' ?? '#553333' !! '#aaaacc'),
+                 [$column-1,8-$row,$height-1],
+                 [$column,  9-$row,$height  ]);
+}
+
+print header;
+for board,
+    piece('black', 5, 5, 1),
+    piece('white', 4, 4, 1),
+    piece('white', 4, 6, 1),
+    piece('black', 3, 3, 1),
+    piece('black', 5, 5, 2),
+    piece('white', 4, 6, 2),
+    piece('white', 4, 5, 2),
+    piece('white', 4, 4, 2)
+-> $color, @coords3d {
+    my @center-board      = translate3d(@coords3d, -4, -4, 0);
+    my @rotated-coords3d  = rot-x(rot-z(@center-board, -25), 45);
+    my @put-board-back    = translate3d(@rotated-coords3d, 4, 4, 0);
+    my @projected-coords  = project(@put-board-back);
+    my @translated-coords = translate(@projected-coords, -4, -4);
+    my @scaled-coords     = scale(@translated-coords, 40);
+    my @coords2d          = translate(@scaled-coords, 250, 250);
+    print polygon($color, @coords2d);
+}
+print footer;
