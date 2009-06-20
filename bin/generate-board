@@ -86,7 +86,6 @@ sub board {
                 block('#999999', [$x+.025,$y+.025,-.25], [$x+.975,$y+.975,0])
             }, (^8).reverse
         }, ^8;
-#    return block('#999999', [0,0,-.25], [8,8,0])
 }
 
 sub piece($color, $row, $column, $height) {
