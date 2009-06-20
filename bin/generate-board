@@ -97,16 +97,28 @@ sub piece($color, $row, $column, $height) {
                  [$column,  9-$row,$height  ]);
 }
 
+my @heights = map { [ map { 0 }, ^8 ] }, ^8;
+my @pieces = map {
+    [
+        <black white>.pick()[0],
+        (my $row    = (1..8).pick()[0]),
+        (my $column = (1..8).pick()[0]),
+        ++@heights[$row-1][$column-1]
+    ]
+}, ^25;
+
+@pieces.=sort: -> $p1, $p2 {
+    my ($c1, $ro1, $co1, $h1, $c2, $ro2, $co2, $h2) = $p1.list, $p2.list;
+    my ($x1, $y1, $z1, $x2, $y2, $z2)
+        = $co1-.5, 8.5-$ro1, $h1-.5, $co2-.5, 8.5-$ro2, $h2-.5;
+    my @center-board = translate3d([$x1,$y1,$z1,$x2,$y2,$z2], -4, -4, 0);
+    my @rotated-coords3d = rot-x(rot-z(@center-board, -25), 45);
+    $h1 <=> $h2 || .[2] <=> .[5] given @rotated-coords3d;
+};
+
 print header;
 for board,
-    piece('black', 5, 5, 1),
-    piece('white', 4, 4, 1),
-    piece('white', 4, 6, 1),
-    piece('black', 3, 3, 1),
-    piece('black', 5, 5, 2),
-    piece('white', 4, 6, 2),
-    piece('white', 4, 5, 2),
-    piece('white', 4, 4, 2)
+    (@pieces.map: { my ($c, $ro, $co, $h) = .list; piece($c, $ro, $co, $h) })
 -> $color, @coords3d {
     my @center-board      = translate3d(@coords3d, -4, -4, 0);
     my @rotated-coords3d  = rot-x(rot-z(@center-board, -25), 45);
