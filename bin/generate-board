@@ -31,10 +31,13 @@ sub footer {
 '
 }
 
-sub project(@coords3d) {
+sub project(@coords3d, $camera-distance) {
     die "Number of coords must be multiple of 3, got {+@coords3d}"
         if @coords3d % 3;
-    return map -> $x,$y,$z { $x, $y }, @coords3d;
+    return map -> $x,$y,$z {
+        my $t = $camera-distance / ($camera-distance - $z);
+        $x*$t, $y*$t
+    }, @coords3d;
 }
 
 sub translate(@coords, $dx, $dy) {
@@ -107,10 +110,9 @@ for board,
 -> $color, @coords3d {
     my @center-board      = translate3d(@coords3d, -4, -4, 0);
     my @rotated-coords3d  = rot-x(rot-z(@center-board, -25), 45);
-    my @put-board-back    = translate3d(@rotated-coords3d, 4, 4, 0);
-    my @projected-coords  = project(@put-board-back);
-    my @translated-coords = translate(@projected-coords, -4, -4);
-    my @scaled-coords     = scale(@translated-coords, 40);
+    my @move-board-back   = translate3d(@rotated-coords3d, 0, 0, -20);
+    my @projected-coords  = project(@move-board-back, 1);
+    my @scaled-coords     = scale(@projected-coords, 700);
     my @coords2d          = translate(@scaled-coords, 250, 250);
     print polygon($color, @coords2d);
 }
