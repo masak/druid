@@ -83,18 +83,35 @@ sub block($color, @one-corner, @other-corner) {
 }
 
 sub board {
-    return
-        map -> $y {
-            map -> $x {
-                block('#999999', [$x+.025,$y+.025,-.25], [$x+.975,$y+.975,0])
-            }, (^8).reverse
-        }, ^8;
+    return block('#999999', [0,0,-.25], [8,8,0]);
 }
 
 sub piece($color, $row, $column, $height) {
     return block(($color eq 'black' ?? '#553333' !! '#aaaacc'),
                  [$column-1,8-$row,$height-1],
                  [$column,  9-$row,$height  ]);
+}
+
+sub rotate-widget {
+    '  <path
+     d="M 365,406 L 365,441 C 365,448 393,454 427,454 C 461,454 489,448 489,441 L 489,406 C 486,414 460,420 427,420 C 393,420 365,414 365,406 z"
+     style="fill:none;stroke:#000000" />
+  <path
+     d="M 408,388 C 406,399 405,414 405,430 C 405,446 406,475 408,485 C 414,486 419,486 425,486 C 432,486 439,486 445,485 C 447,474 449,446 449,430 C 449,414 447,399 445,388 C 437,388 433,389 427,389 C 420,389 414,388 408,388 z"
+     style="fill:none;stroke:#000000" />
+  <path
+     d="M 454,427 L 470,427 L 470,421 L 483,433 L 470,445 L 470,439 L 454,439 L 454,427 z"
+     style="fill:none;stroke:#000000;stroke-width:0.5px" />
+  <path
+     d="M 399,428 L 383,428 L 383,422 L 370,434 L 383,446 L 383,440 L 399,440 L 399,428 z"
+     style="fill:none;stroke:#000000;stroke-width:0.5px" />
+  <path
+     d="M 421,418 L 421,402 L 415,402 L 427,389 L 439,402 L 433,402 L 433,418 L 421,418 z"
+     style="fill:none;stroke:#000000;stroke-width:0.5px" />
+  <path
+     d="M 422,455 L 422,471 L 416,471 L 428,485 L 439,471 L 433,471 L 433,455 L 422,455 z"
+     style="fill:none;stroke:#000000;stroke-width:0.5px" />
+'
 }
 
 my @heights = map { [ map { 0 }, ^8 ] }, ^8;
@@ -117,9 +134,7 @@ my @pieces = map {
 };
 
 print header;
-for board,
-    (@pieces.map: { my ($c, $ro, $co, $h) = .list; piece($c, $ro, $co, $h) })
--> $color, @coords3d {
+for board() -> $color, @coords3d {
     my @center-board      = translate3d(@coords3d, -4, -4, 0);
     my @rotated-coords3d  = rot-x(rot-z(@center-board, -25), 45);
     my @move-board-back   = translate3d(@rotated-coords3d, 0, 0, -20);
@@ -128,4 +143,5 @@ for board,
     my @coords2d          = translate(@scaled-coords, 250, 250);
     print polygon($color, @coords2d);
 }
+print rotate-widget;
 print footer;
