@@ -14,7 +14,7 @@ and making them.
 =attr The game this C<Druid::Player> is playing.
 has Druid::Game $!game handles <size layers colors heights make-move>;
 =attr The color of this C<Druid::Player>'s pieces.
-has Int $.color where { $_ == 1|2 };
+has Int $.color where 1|2;
 
 submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
     $game.attach(self);
