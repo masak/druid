@@ -3,13 +3,10 @@ use v6;
 use Druid::Game;
 use Druid::View;
 
-class Druid::View::Text is Druid::View;
-
-=begin SUMMARY
-A textual view of a C<Druid::Game>. Draws a large isometric 3D view, with
+#=[A textual view of a C<Druid::Game>. Draws a large isometric 3D view, with
 the pieces rendered as ASCII blocks, and two smaller 2D views giving
-information about the colors and heights of the pieces on the board.
-=end SUMMARY
+information about the colors and heights of the pieces on the board.]
+class Druid::View::Text is Druid::View;
 
 has $!cached-board;
 
@@ -43,10 +40,8 @@ my $cover-top-right = '
        #
 ';
 
-=begin METHOD
-Returns a string containing an ASCII picture of an empty Druid board of
-the given size. 
-=end METHOD
+#=[Returns a string containing an ASCII picture of an empty Druid board of
+the given size.]
 sub make-empty-board($size) { 
     # The 'join $sep, gather { ... }' pattern allows us to put a long
     # string together, without having to refer to the same variable over
@@ -75,18 +70,14 @@ submethod BUILD() {
     $!cached-board = make-empty-board($!game.size);
 }
 
-=begin METHOD
-Prints the 3D game board and the two smaller sub-boards, reflecting the
-current state of the game.
-=end METHOD
+#=[Prints the 3D game board and the two smaller sub-boards, reflecting the
+current state of the game.]
 method show() {
     .print for $!cached-board, self.colors-and-heights();
 }
 
-=begin METHOD
-Returns the 3D game board and the two smaller sub-boards, reflecting the
-current state of the game.
-=end METHOD
+#=[Returns the 3D game board and the two smaller sub-boards, reflecting the
+current state of the game.]
 method Str() {
     return [~] $!cached-board, self.colors-and-heights();
 }
@@ -128,12 +119,10 @@ method build-layers($board is copy, $from) {
     return $board;
 }
 
-=begin SUBROUTINE
-Given a string representing a piece and one representing the board,
+#=[Given a string representing a piece and one representing the board,
 returns a new board with the piece inserted into some coordinates. This
 sub assumes that pieces are drawn in an order that makes sense, so that
-pieces in front cover those behind.
-=end SUBROUTINE
+pieces in front cover those behind.]
 sub put($piece, $board, $height, $row, $column) {
     my @lines = $board.split("\n");
 
@@ -153,8 +142,7 @@ sub put($piece, $board, $height, $row, $column) {
     return @lines.join("\n");
 }
 
-=begin SUBROUTINE
-Given a string (assumed to contain no newlines), replaces a section of
+#=[Given a string (assumed to contain no newlines), replaces a section of
 that string, starting from $column, with the contents of $new.
 When replacing characters, two excpetions are made:
 =for item
@@ -162,8 +150,7 @@ When replacing characters, two excpetions are made:
     don't replace the old character,
 =for item
     octothorpes '#' insert actual spaces, i.e. act as a sort of
-    escape character for spaces.
-=end SUBROUTINE
+    escape character for spaces.]
 sub merge($old, $new, $start) {
     my @old = $old.split('');
     my @new = $new.split('');
@@ -179,11 +166,9 @@ sub merge($old, $new, $start) {
     return @old.join('');
 }
 
-=begin METHOD
-Prints two smaller boards representing
+#=[Prints two smaller boards representing
 =item who owns each location, and
-=item how many stones have been piled on each location.
-=end METHOD
+=item how many stones have been piled on each location.]
 method colors-and-heights() {
 
     my &from-pretty    = { $^pretty.trans( ['>>',   '<<', '.']

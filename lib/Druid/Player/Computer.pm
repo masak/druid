@@ -2,12 +2,10 @@ use v6;
 
 use Druid::Player;
 
+#=[ A computer player. It currently tries to move close to its opponent's
+last move or, failing that, entirely randomly. Thus it is almost
+ridiculously easily defeatable.]
 class Druid::Player::Computer is Druid::Player;
-
-=begin SUMMARY
-A computer player. It currently only makes random sarsen moves, and is thus
-ridiculously easily defeatable.
-=end SUMMARY
 
 has $!last-move;
 

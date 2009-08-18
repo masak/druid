@@ -3,10 +3,7 @@ use v6;
 use Druid::Base;
 use Druid::Game::Subject;
 
-class Druid::Game is Druid::Base does Druid::Game::Subject;
-
-=begin SUMMARY
-An instance of C<Druid::Game> holds an ongoing (or finished) Druid game.
+#=[An instance of C<Druid::Game> holds an ongoing (or finished) Druid game.
 It keeps track of the contents of the board, whose turn it is, the number
 of moves made, and whether the game is over. The methods in this class
 are created so as to disallow all illegal moves (or other actions) on the
@@ -15,22 +12,22 @@ always in a permitted states, according to the rules of Druid.
 
 The class does the role C<Druid::Game::Subject>, making it possible for
 instances of other classes to subscribe to updates from instances of this
-class, in an B<observer> pattern.
-=end SUMMARY
+class, in an B<observer> pattern.]
+class Druid::Game is Druid::Base does Druid::Game::Subject;
 
-=attr The size of a side of the (always quadratic) board.
+#=[ The size of a side of the (always quadratic) board. ]
 has $.size;
-=attr An array of layers, each a C<$.size * $.size> AoA with color info.
+#=[ An array of layers, each a C<$.size * $.size> AoA with color info. ]
 has @.layers;
-=attr A C<$.size * $.size> AoA with height info.
+#=[ A C<$.size * $.size> AoA with height info. ]
 has @.heights;
-=attr A C<$.size * $.size> AoA with color info.
+#=[ A C<$.size * $.size> AoA with color info. ]
 has @.colors;
-=attr An integer (either 1 or 2) denoting whose turn it is to move.
+#=[ An integer (either 1 or 2) denoting whose turn it is to move. ]
 has $.player-to-move;
-=attr The number of moves made so far in the game, including swapping.
+#=[ The number of moves made so far in the game, including swapping. ]
 has $.moves-so-far;
-=attr Whether the game has already ended.
+#=[ Whether the game has already ended. ]
 has $.finished;
 
 has $!latest-move;
@@ -46,11 +43,9 @@ submethod BUILD(:$size = 3) {
     $!size = $size;
 }
 
-=begin METHOD
-Reports C<False> if the move is permissible in the given state of the game,
-or a C<Str> explaining why if it isn't. (Thus 'bad' here means
-'impermissible', but 'bad' is less to write.)
-=end METHOD
+#=[Reports C<False> if the move is permissible in the given state of
+the game, or a C<Str> explaining why if it isn't. (Thus 'bad' here means
+'impermissible', but 'bad' is less to write.)]
 method is-move-bad(Str $move) {
     my $color = $!player-to-move;
 
@@ -92,11 +87,9 @@ something like "b2" or something like "c1-c3" You can also "pass" or
     return False; # move is OK
 }
 
-=begin METHOD
-Returns, for given C<$row>, C<$column>, and C<$color>, the reason why
+#=[Returns, for given C<$row>, C<$column>, and C<$color>, the reason why
 a sarsen (a one-block piece) of that color cannot be placed on that location,
-or C<False> if the placing of the sarsen is permissible.
-=end METHOD
+or C<False> if the placing of the sarsen is permissible.]
 method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
     return "The rightmost column is '{chr(ord('A')+$.size-1)}'"
         if $column >= $.size;
@@ -111,16 +104,14 @@ method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
     return False; # The move is fine.
 }
 
-=begin METHOD
-Returns, for a given C<$row_1>, C<$row_2>, C<$column_1>, C<$column_2>, and
+#=[Returns, for a given C<$row_1>, C<$row_2>, C<$column_1>, C<$column_2>, and
 C<$color>, the reason why a lintel (a three-block piece) of that color cannot
 be placed bridging these locations, or C<False> if the placing of the lintel
 is permissible.
 
 There are no preconditions on the coordinate parameters to be exactly two
 rows or two columns apart; instead, these conditions are also tested in this
-method.
-=end METHOD
+method.]
 method is-lintel-move-bad(Int $row_1, Int $row_2,
                           Int $column_1, Int $column_2,
                           Int $color) {
@@ -164,10 +155,8 @@ method is-lintel-move-bad(Int $row_1, Int $row_2,
     return False; # The move is fine.
 }
 
-=begin METHOD
-Analyzes a given move, and makes the appropriate changes to the attributes
-of this C<Druid::Game>. C<fail>s if the move isn't valid.
-=end METHOD
+#=[Analyzes a given move, and makes the appropriate changes to the attributes
+of this C<Druid::Game>. C<fail>s if the move isn't valid.]
 method make-move(Str $move) {
 
     fail $reason
@@ -237,10 +226,8 @@ method make-move(Str $move) {
     return $move;
 }
 
-=begin METHOD
-Returns a C<Bool> indicating whether the latest move created a winning chain
-across the board.
-=end METHOD
+#=[Returns a C<Bool> indicating whether the latest move created
+a winning chain across the board.]
 submethod move-was-winning() {
 
     my ($row, $col) = self.extract-coords(
@@ -309,10 +296,8 @@ submethod move-was-winning() {
     return False;
 }
 
-=begin METHOD
-Returns a C<List> of the possible moves in this C<Druid::Game>, represented as
-C<Str>s.
-=end METHOD
+#=[Returns a C<List> of the possible moves in this C<Druid::Game>,
+represented as C<Str>s.]
 method possible-moves() {
     # We don't handle lintel moves yet. :( I have a nice O(1) algorithm,
     # but very little time.

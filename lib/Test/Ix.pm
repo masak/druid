@@ -1,12 +1,9 @@
 use v6;
 use Test;
 
-=begin SUMMARY
-This module takes a recursive list of tests and autogenerates test subs
+#=[This module takes a recursive list of tests and autogenerates test subs
 from it, injecting those subroutines into a given file. It also handles
-traversing the same list in order to count or run the tests in a file.
-=end SUMMARY
-
+traversing the same list in order to count or run the tests in a file.]
 sub inject-subs-in-file($file) {
     my $code = slurp($file)
         or die "Couldn't open $file";
