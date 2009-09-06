@@ -1,64 +1,9 @@
 #!/usr/local/bin/perl6
 use v6;
-use HTTP::Daemon;
 use Druid::Webapp;
 
-defined @*ARGS[0] && @*ARGS[0] eq '--request' ?? request() !! daemon();
+use Web::Handler::HTTPDaemon;
 
-# Serve one page
-sub request($c) {
-    my $r = $c.get_request;
-    if $r.req_method eq 'GET' {
-        # log request info to the standard error stream
-        warn "{hhmm} GET {$r.url.path} {$r.header('User-Agent')}";
-        if $r.url.path eq '/board.svg' {
-            $c.send_response( svg-board() );
-        }
-        else {
-            my $qs = $r.url.path ~~ / '?' (.*) $/
-                        ?? $0
-                        !! '';
-            $c.send_response( Druid::Webapp.page($qs) );
-        }
-    }
-    else {
-        warn "{hhmm} rejected {$r.req_method} {$r.url.path}";
-        $c.send_error('RC_FORBIDDEN');
-    }
-    warn ' '; # blank line
-}
-
-# Executed as main parent process with an endless loop that re-starts
-# netcat after every page request.
-sub daemon {
-    my HTTP::Daemon $d .= new( host=> '127.0.0.1', port=> 8888 );
-    say "Browse this Perl 6 (Rakudo) web server at {$d.url}";
-    $d.daemon();
-}
-
-# give the current time in hh:mm format
-sub hhmm {
-    my $t = int(time);
-    my $m = int( $t / 60 ) % 60;
-    my $h = int( $t / 3600 ) % 24;
-    my $hhmm = "{$h.fmt('%02d')}:{$m.fmt('%02d')}";
-    return $hhmm;
-}
-
-sub svg-board() {
-    return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg"
-   version="1.0"
-   width="400"
-   height="400">
-    <rect
-        width="400"
-        height="400"
-        x="0"
-        y="0"
-        style="opacity:1;fill:none;stroke:#000000;stroke-width:2;"
-    />
-</svg>';
-}
+my $port = 8888;
+say "Druid now runs on http://127.0.0.1:$port/";
+Web::Handler::HTTPDaemon.run( Druid::Webapp.new );

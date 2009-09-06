@@ -1,29 +1,23 @@
 use v6;
-use Tags; 
+
+use Web::Request;
+use Web::Response;
+
 use Druid::Game; 
 use Druid::View::Text;
 
-class Druid::Webapp {
-
-    method page(Str $query-string) {
+class Druid::Webapp does Callable {
+    method postcircumfix:<( )>($env) {
         my $board-size = 8;
         my Druid::Game $game .= new(:size($board-size));
         my Druid::View $view = Druid::View::Text.new(:$game);
 
-        return
-            show {
-                html {
-                    head { title { 'Druid' } }
-                    body {
-                        pre { $view }
-                        object :type<image/svg+xml>, :data</board.svg>, {
-                            'alternate text'
-                        }
-                        ul {
-                            for $game.possible-moves() -> $move {
-                                li {
-                                    a :href("?moves=$move"), { $move }
-            }}}}}};
+        my Web::Response $res .= new;
+        $res.write($_) for
+            '<title>Druid</title>',
+            '<pre>',
+            $view,
+            '</pre>';
+        $res.finish();
     }
-
 }
