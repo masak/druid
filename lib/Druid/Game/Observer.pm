@@ -19,4 +19,9 @@ two players.]
 =end METHOD
 method swap() { ... }
 
+#=[Gets called when the C<Druid::Game::Subject> changes so fundamentally
+that it's not feasible to track individual piece changes. This tells the
+observer to recalculate everything from scratch.]
+method reset() { ... }
+
 # vim: filetype=perl6

@@ -206,4 +206,8 @@ method add-piece($height, $row, $column, $color) {
     $!cached-board = self.build-layers($!cached-board, $height);
 }
 
+method reset() {
+    $!cached-board = self.build-layers($!cached-board, 0);
+}
+
 # vim: filetype=perl6

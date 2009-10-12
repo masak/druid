@@ -8,7 +8,7 @@ It keeps track of the contents of the board, whose turn it is, the number
 of moves made, and whether the game is over. The methods in this class
 are created so as to disallow all illegal moves (or other actions) on the
 game state. In other words, an invariant of this class is that it is
-always in a permitted states, according to the rules of Druid.
+always in a permitted state, according to the rules of Druid.
 
 The class does the role C<Druid::Game::Subject>, making it possible for
 instances of other classes to subscribe to updates from instances of this
@@ -27,10 +27,11 @@ has @.colors;
 has $.player-to-move;
 #=[ The number of moves made so far in the game, including swapping. ]
 has $.moves-so-far;
-#=[ Whether the game has already ended. ]
+#=[ Has the game been won or a player resigned? ]
 has $.finished;
 
 has $!latest-move;
+has @!possible-lintels = [], [];
 
 submethod BUILD(:$size = 3) {
     die "Forbidden size: $size"
@@ -41,6 +42,25 @@ submethod BUILD(:$size = 3) {
     $!player-to-move = 1;
     # RAKUDO: These attributes should be auto-initialized
     $!size = $size;
+}
+
+#=[Turns the state of this C<Druid::Game> into a string which can then be
+stored, later to be recreated into an object again with the C<.melt> method.]
+multi method gelatinize() {
+    return join '; ', map { $^attr ~ ' = '
+                            ~ eval($^attr).perl.subst(/^ '[' (.*) ']' $/,
+                                                      {"($0)"}) },
+                      <$!size @!layers @!heights @!colors $!player-to-move
+                       $!moves-so-far $!finished $!latest-move>;
+}
+
+multi method melt(Str $ice) {
+    # XXX: There are all sorts of security hazards involved in just eval-ing
+    #      an unknown string like this. Discussing it on #perl6, we concluded
+    #      that a solution using YAML or equivalent technology would be a much
+    #      better fit. But this works for now.
+    eval($ice);
+    .reset() for @!observers;
 }
 
 #=[Reports C<False> if the move is permissible in the given state of
@@ -299,15 +319,16 @@ submethod move-was-winning() {
 #=[Returns a C<List> of the possible moves in this C<Druid::Game>,
 represented as C<Str>s.]
 method possible-moves() {
-    # We don't handle lintel moves yet. :( I have a nice O(1) algorithm,
-    # but very little time.
-    return gather for ^$!size -> $row {
-        for ^$!size -> $column {
-            if @!colors[$row][$column] == 0|$!player-to-move {
-                take chr($column + ord("a")) ~ ($row+1);
-            }
+    my @moves = gather for ^$!size X ^$!size -> $row, $column {
+        if @!colors[$row][$column] == 0|$!player-to-move {
+            take chr($column + ord("a")) ~ ($row+1);
         }
+    };
+    push @moves, @!possible-lintels[$!player-to-move - 1];
+    if $!moves-so-far == 1 {
+        push @moves, 'swap';
     }
+    push @moves, <pass resign>;
 }
 
 # vim: filetype=perl6
