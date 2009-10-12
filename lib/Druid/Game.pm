@@ -31,7 +31,6 @@ has $.moves-so-far;
 has $.finished;
 
 has $!latest-move;
-has @!possible-lintels = [], [];
 
 submethod BUILD(:$size = 3) {
     die "Forbidden size: $size"
@@ -154,8 +153,8 @@ method is-lintel-move-bad(Int $row_1, Int $row_2,
         unless $.heights[$row_1][$column_1]
             == $.heights[$row_2][$column_2];
 
-    my $row_m    = ($row_1    + $row_2   ) / 2;
-    my $column_m = ($column_1 + $column_2) / 2;
+    my $row_m    = ($row_1    + $row_2   ) div 2;
+    my $column_m = ($column_1 + $column_2) div 2;
 
     return 'A lintel must lie flat'
         unless $.heights[$row_m][$column_m]
@@ -198,8 +197,8 @@ method make-move(Str $move) {
             my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
             my $height   = @!heights[$row_1][$column_1];
-            my $row_m    = ($row_1    + $row_2   ) / 2;
-            my $column_m = ($column_1 + $column_2) / 2;
+            my $row_m    = ($row_1    + $row_2   ) div 2;
+            my $column_m = ($column_1 + $column_2) div 2;
 
             @pieces-to-put = $height, $row_1, $column_1,
                              $height, $row_m, $column_m,
@@ -319,16 +318,58 @@ submethod move-was-winning() {
 #=[Returns a C<List> of the possible moves in this C<Druid::Game>,
 represented as C<Str>s.]
 method possible-moves() {
-    my @moves = gather for ^$!size X ^$!size -> $row, $column {
-        if @!colors[$row][$column] == 0|$!player-to-move {
-            take chr($column + ord("a")) ~ ($row+1);
-        }
-    };
-    push @moves, @!possible-lintels[$!player-to-move - 1];
-    if $!moves-so-far == 1 {
-        push @moves, 'swap';
+    if $!finished {
+        return ();
     }
-    push @moves, <pass resign>;
+    else {
+        return gather {
+            for ^$!size X ^$!size -> $row, $column {
+                if @!colors[$row][$column] == 0|$!player-to-move {
+                    take chr($column + ord("a")) ~ ($row+1);
+                }
+            }
+            for ^($!size - 2) X ^$!size -> $row, $column {
+                if @!colors[$row][$column] == @!colors[$row+2][$column]
+                   == $!player-to-move && @!heights[$row][$column]
+                   == @!heights[$row+2][$column] && @!heights[$row+1][$column]
+                   < @!heights[$row][$column] {
+                    take chr($column + ord("a")) ~ ($row+1) ~ '-'
+                         ~ chr($column + ord("a")) ~ ($row+3);
+                }
+            }
+            for ^$!size X ^($!size - 2) -> $row, $column {
+                if @!colors[$row][$column] == @!colors[$row][$column+2]
+                   == $!player-to-move && @!heights[$row][$column]
+                   == @!heights[$row][$column+2] && @!heights[$row][$column+1]
+                   < @!heights[$row][$column] {
+                    take chr($column + ord("a")) ~ ($row+1) ~ '-'
+                         ~ chr($column + 2 + ord("a")) ~ ($row+1);
+                }
+            }
+            for ^($!size - 2) X ^$!size -> $row, $column {
+                if @!heights[$row][$column] == @!heights[$row+1][$column]
+                   == @!heights[$row+2][$column] && @!colors[$row][$column]
+                   + @!colors[$row+1][$column] + @!colors[$row+2][$column]
+                   == 3 + $!player-to-move {
+                    take chr($column + ord("a")) ~ ($row+1) ~ '-'
+                         ~ chr($column + ord("a")) ~ ($row+3);
+                }
+            }
+            for ^$!size X ^($!size - 2) -> $row, $column {
+                if @!heights[$row][$column] == @!heights[$row][$column+1]
+                   == @!heights[$row][$column+2] && @!colors[$row][$column]
+                   + @!colors[$row][$column+1] + @!colors[$row][$column+2]
+                   == 3 + $!player-to-move {
+                    take chr($column + ord("a")) ~ ($row+1) ~ '-'
+                         ~ chr($column + 2 + ord("a")) ~ ($row+1);
+                }
+            }
+            if $!moves-so-far == 1 {
+                take 'swap';
+            }
+            take <pass resign>;
+        }
+    }
 }
 
 # vim: filetype=perl6
