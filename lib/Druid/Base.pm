@@ -14,10 +14,10 @@ our $.resign = /^ ['resign' | 'r'] $/;           #= A forfeit
 
 #= Returns (zero-based) row and column, given a C<Match> object
 method extract-coords(Match $m) {
-    # RAKUDO: Hoping these explicit int(...) conversions won't be
+    # RAKUDO: Hoping these explicit (...).Int conversions won't be
     #         necessary in the long run.
-    my Int $row    = int($m<row_number> - 1);
-    my Int $column = int(ord($m<col_letter>) - ord('a'));
+    my Int $row    = ($m<row_number> - 1).Int;
+    my Int $column = (ord($m<col_letter>) - ord('a')).Int;
 
     return ($row, $column);
 }
