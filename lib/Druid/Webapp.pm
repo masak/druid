@@ -15,7 +15,7 @@ class Druid::Webapp does Callable {
         my $board-size = 8;
         my Druid::Game $game .= new(:size($board-size));
         my Druid::View $view = Druid::View::Text.new(:$game);
-        if $GAME_STATE_FILE ~~ :e {
+        if $GAME_STATE_FILE ~~ :e && !$req.GET.<restart> {
             $game.melt(slurp($GAME_STATE_FILE));
         }
 
@@ -34,8 +34,15 @@ class Druid::Webapp does Callable {
             $view,
             '</pre>',
             '<p>';
-        $res.write("<a href='?move=$_'>$_</a> ") for $game.possible-moves();
-        $res.write('</p>');
+
+        if $game.finished {
+            $res.write('<a href="?restart=1">restart</a>');
+        }
+        else {
+            $res.write("<a href='?move=$_'>$_</a> ")
+                for $game.possible-moves();
+            $res.write('</p>');
+        }
         $res.finish();
     }
 }
