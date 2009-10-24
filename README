@@ -69,6 +69,14 @@ installs it for you.
 * Work on the machine play. (It's currently random, but I have some fairly
   nice ideas lying around in a local branch.)
 
+* Put in a few optimizations to make Druid::Game::possible-moves O(1)
+  instad of O($n**2) ($n being the size of the board), as it is presently.
+  In another language, the difference might not actually be noticeable, but
+  Rakudo Perl 6 is very "speed-sensitive" right now.
+
+* Make the web app do POST requests instead of GET requests. This is more in
+  line with the idea of making a move, a non-idempotent action.
+
 == License
 
 This Druid implementation is released under Artistic 2.0. See LICENSE.
