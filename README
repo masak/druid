@@ -77,6 +77,10 @@ installs it for you.
 * Make the web app do POST requests instead of GET requests. This is more in
   line with the idea of making a move, a non-idempotent action.
 
+* Make the web app handle different simultaneous games, played by distinct
+  users. This will likely require a real databse instead of the short-term
+  file solution used now.
+
 == License
 
 This Druid implementation is released under Artistic 2.0. See LICENSE.
