@@ -90,7 +90,7 @@ sub run-tests(@tests) {
         }
         my @arguments = eval('&before') ~~ Sub # is there a &before sub?
                             ?? before().list[ 0 ..^ $sub.arity ]
-                            !! undef xx $sub.arity;
+                            !! Any xx $sub.arity;
         $sub(|@arguments);
         eval('&after') ~~ Sub
             and after();
