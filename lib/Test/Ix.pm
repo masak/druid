@@ -76,12 +76,12 @@ sub first-index(Code $cond, @array) {
     return ();
 }
 
-sub count-tests(@tests) {
+our sub count-tests(@tests) {
     return +traverse-tests(@tests, { take $_ });
 }
 
-sub run-tests(@tests) {
-    my &run-test = {
+our sub run-tests(@tests) {
+    my &runtest = {
         my $subname = $_.subst(' ', '-', :global);
         my $sub = eval( '&' ~ $subname );
         if $sub ~~ Nil {
@@ -95,5 +95,6 @@ sub run-tests(@tests) {
         eval('&after') ~~ Sub
             and after();
     };
-    traverse-tests(@tests, &run-test);
+    # RAKUDO: When we have sink context, we don't need @sink here.
+    my @sink = traverse-tests(@tests, &runtest);
 }
