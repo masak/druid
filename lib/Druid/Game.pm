@@ -1,5 +1,7 @@
 use v6;
 
+class Druid::Game { ... } # RAKUDO: Workaround for [perl #75852]
+
 use Druid::Base;
 use Druid::Game::Subject;
 
