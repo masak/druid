@@ -19,7 +19,7 @@ has @!observers;
 #| notifications going out to all listening objects will also go out to the
 #| added C<Druid::Game::Observer>.
 method attach(Druid::Game::Observer $observer) {
-    unless @!observers ~~ (*, $observer, *) {
+    unless any(@!observers) === $observer {
         @!observers.push($observer);
     }
 }
