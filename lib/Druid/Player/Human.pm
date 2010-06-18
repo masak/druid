@@ -1,8 +1,8 @@
 use v6;
 use Druid::Player;
 
-#=[A human player, i.e. a C<Druid::Player> whose moves are typed in on C<$*IN>
-by a human.]
+#| A human player, i.e. a C<Druid::Player> whose moves are typed in on C<$*IN>
+#| by a human.
 class Druid::Player::Human is Druid::Player;
 
 method choose-move() {
