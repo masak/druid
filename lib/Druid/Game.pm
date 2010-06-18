@@ -3,31 +3,31 @@ use v6;
 use Druid::Base;
 use Druid::Game::Subject;
 
-#=[An instance of C<Druid::Game> holds an ongoing (or finished) Druid game.
-It keeps track of the contents of the board, whose turn it is, the number
-of moves made, and whether the game is over. The methods in this class
-are created so as to disallow all illegal moves (or other actions) on the
-game state. In other words, an invariant of this class is that it is
-always in a permitted state, according to the rules of Druid.
-
-The class does the role C<Druid::Game::Subject>, making it possible for
-instances of other classes to subscribe to updates from instances of this
-class, in an B<observer> pattern.]
+#| An instance of C<Druid::Game> holds an ongoing (or finished) Druid game.
+#| It keeps track of the contents of the board, whose turn it is, the number
+#| of moves made, and whether the game is over. The methods in this class
+#| are created so as to disallow all illegal moves (or other actions) on the
+#| game state. In other words, an invariant of this class is that it is
+#| always in a permitted state, according to the rules of Druid.
+#|
+#| The class does the role C<Druid::Game::Subject>, making it possible for
+#| instances of other classes to subscribe to updates from instances of this
+#| class, in an B<observer> pattern.
 class Druid::Game is Druid::Base does Druid::Game::Subject;
 
-#=[ The size of a side of the (always quadratic) board. ]
+#| The size of a side of the (always quadratic) board.
 has $.size;
-#=[ An array of layers, each a C<$.size * $.size> AoA with color info. ]
+#| An array of layers, each a C<$.size * $.size> AoA with color info.
 has @.layers;
-#=[ A C<$.size * $.size> AoA with height info. ]
+#| A C<$.size * $.size> AoA with height info.
 has @.heights;
-#=[ A C<$.size * $.size> AoA with color info. ]
+#| A C<$.size * $.size> AoA with color info.
 has @.colors;
-#=[ An integer (either 1 or 2) denoting whose turn it is to move. ]
+#| An integer (either 1 or 2) denoting whose turn it is to move.
 has $.player-to-move;
-#=[ The number of moves made so far in the game, including swapping. ]
+#| The number of moves made so far in the game, including swapping.
 has $.moves-so-far;
-#=[ Has the game been won or a player resigned? ]
+#| Has the game been won or a player resigned?
 has $.finished;
 
 has $!latest-move;
@@ -43,8 +43,8 @@ submethod BUILD(:$size = 3) {
     $!size = $size;
 }
 
-#=[Turns the state of this C<Druid::Game> into a string which can then be
-stored, later to be recreated into an object again with the C<.melt> method.]
+#| Turns the state of this C<Druid::Game> into a string which can then be
+#| stored, later to be recreated into an object again with the C<.melt> method.
 multi method gelatinize() {
     return join '; ', map { $^attr ~ ' = '
                             ~ eval($^attr).perl.subst(/^ '[' (.*) ']' $/,
@@ -62,9 +62,9 @@ multi method melt(Str $ice) {
     .reset() for @!observers;
 }
 
-#=[Reports C<False> if the move is permissible in the given state of
-the game, or a C<Str> explaining why if it isn't. (Thus 'bad' here means
-'impermissible', but 'bad' is less to write.)]
+#| Reports C<False> if the move is permissible in the given state of
+#| the game, or a C<Str> explaining why if it isn't. (Thus 'bad' here means
+#| 'impermissible', but 'bad' is less to write.)
 method is-move-bad(Str $move) {
     my $color = $!player-to-move;
 
@@ -106,9 +106,9 @@ something like "b2" or something like "c1-c3" You can also "pass" or
     return False; # move is OK
 }
 
-#=[Returns, for given C<$row>, C<$column>, and C<$color>, the reason why
-a sarsen (a one-block piece) of that color cannot be placed on that location,
-or C<False> if the placing of the sarsen is permissible.]
+#| Returns, for given C<$row>, C<$column>, and C<$color>, the reason why
+#| a sarsen (a one-block piece) of that color cannot be placed on that
+#| location, or C<False> if the placing of the sarsen is permissible.
 method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
     return "The rightmost column is '{chr(ord('A')+$.size-1)}'"
         if $column >= $.size;
@@ -123,14 +123,14 @@ method is-sarsen-move-bad(Int $row, Int $column, Int $color) {
     return False; # The move is fine.
 }
 
-#=[Returns, for a given C<$row_1>, C<$row_2>, C<$column_1>, C<$column_2>, and
-C<$color>, the reason why a lintel (a three-block piece) of that color cannot
-be placed bridging these locations, or C<False> if the placing of the lintel
-is permissible.
-
-There are no preconditions on the coordinate parameters to be exactly two
-rows or two columns apart; instead, these conditions are also tested in this
-method.]
+#| Returns, for a given C<$row_1>, C<$row_2>, C<$column_1>, C<$column_2>, and
+#| C<$color>, the reason why a lintel (a three-block piece) of that color
+#| can not be placed bridging these locations, or C<False> if the placing of
+#| the lintel is permissible.
+#|
+#| There are no preconditions on the coordinate parameters to be exactly two
+#| rows or two columns apart; instead, these conditions are also tested in this
+#| method.
 method is-lintel-move-bad(Int $row_1, Int $row_2,
                           Int $column_1, Int $column_2,
                           Int $color) {
@@ -174,8 +174,8 @@ method is-lintel-move-bad(Int $row_1, Int $row_2,
     return False; # The move is fine.
 }
 
-#=[Analyzes a given move, and makes the appropriate changes to the attributes
-of this C<Druid::Game>. C<fail>s if the move isn't valid.]
+#| Analyzes a given move, and makes the appropriate changes to the attributes
+#| of this C<Druid::Game>. C<fail>s if the move isn't valid.
 method make-move(Str $move) {
 
     fail $reason
@@ -245,8 +245,8 @@ method make-move(Str $move) {
     return $move;
 }
 
-#=[Returns a C<Bool> indicating whether the latest move created
-a winning chain across the board.]
+#| Returns a C<Bool> indicating whether the latest move created
+#| a winning chain across the board.
 submethod move-was-winning() {
 
     my ($row, $col) = self.extract-coords(
@@ -315,8 +315,8 @@ submethod move-was-winning() {
     return False;
 }
 
-#=[Returns a C<List> of the possible moves in this C<Druid::Game>,
-represented as C<Str>s.]
+#| Returns a C<List> of the possible moves in this C<Druid::Game>,
+#| represented as C<Str>s.
 method possible-moves() {
     if $!finished {
         return ();
