@@ -71,14 +71,14 @@ method is-move-bad(Str $move) {
     my $color = $!player-to-move;
 
     given $move {
-        when $.sarsen-move {
+        when Druid::Move.parse($_, :rule<sarsen-move>) {
             my Int ($row, $column) = self.extract-coords($<coords>);
 
             return $reason if my $reason
                 = self.is-sarsen-move-bad($row, $column, $color);
         }
 
-        when $.lintel-move {
+        when Druid::Move.parse($_, :rule<lintel-move>) {
             my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
             my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
@@ -88,12 +88,13 @@ method is-move-bad(Str $move) {
                                           $color);
         }
 
-        when $.swap {
+        when Druid::Move.parse($_, :rule<swap>) {
             return 'Swap is only allowed on second move'
                 if $!moves-so-far != 1;
         }
 
-        when $.pass | $.resign {
+        when Druid::Move.parse($_, :rule<pass>)
+             || Druid::Move.parse($move, :rule<resign>) {
             # those are always OK
         }
 
@@ -101,7 +102,7 @@ method is-move-bad(Str $move) {
             return '
 The move does not conform to the accepted move syntax, which is either
 something like "b2" or something like "c1-c3" You can also "pass" or
-"resign" on any move, and "swap" on the second move of the game.'.substr(1);
+"resign" on any move, and "swap" on the second move of the game.'.trim-leading;
         }
     }
 
@@ -166,12 +167,12 @@ method is-lintel-move-bad(Int $row_1, Int $row_2,
         unless $.heights[$row_1][$column_1];
 
     return 'A lintel must rest on exactly two pieces of its own color'
-        unless 2 == elems grep { $_ == $color },
+        unless 2 == (grep { $_ == $color },
             $.colors[$row_1][$column_1],        # one end...
             $.colors[$row_2][$column_2],        # ...other end...
             $.heights[$row_m][$column_m] == $.heights[$row_1][$column_1]
                 ?? $.colors[$row_m][$column_m]  # ...middle piece only if
-                !! ();                          # it's level with both ends
+                !! ()).elems;                   # it's level with both ends
 
     return False; # The move is fine.
 }
@@ -187,14 +188,14 @@ method make-move(Str $move) {
     my $color = $!player-to-move;
 
     given $move {
-        when $.sarsen-move {
+        when Druid::Move.parse($_, :rule<sarsen-move>) {
             my Int ($row, $column) = self.extract-coords($<coords>);
 
             my $height     = @!heights[$row][$column];
             @pieces-to-put = $height, $row, $column;
         }
 
-        when $.lintel-move {
+        when Druid::Move.parse($_, :rule<lintel-move>) {
             my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
             my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
@@ -207,17 +208,17 @@ method make-move(Str $move) {
                              $height, $row_2, $column_2;
         }
 
-        when $.pass {
-            if $!latest-move ~~ $.pass {
+        when Druid::Move.parse($_, :rule<pass>) {
+            if Druid::Move.parse($!latest-move, :rule<pass>) {
                 $!finished = True;
             }
         }
 
-        when $.swap {
+        when Druid::Move.parse($_, :rule<swap>) {
             .swap() for @!observers;
         }
 
-        when $.resign {
+        when Druid::Move.parse($_, :rule<resign>) {
             $!finished = True;
         }
     }
@@ -237,7 +238,7 @@ method make-move(Str $move) {
 
     $!latest-move = $move;
     $!player-to-move = $color == 1 ?? 2 !! 1
-        unless $move ~~ $.swap;
+        unless Druid::Move.parse($move, :rule<swap>);
     $!moves-so-far++;
 
     if self.move-was-winning() {
@@ -252,8 +253,8 @@ method make-move(Str $move) {
 submethod move-was-winning() {
 
     my ($row, $col) = self.extract-coords(
-        $!latest-move ~~ $.sarsen-move ?? $<coords>    !!
-        $!latest-move ~~ $.lintel-move ?? $<coords>[0] !!
+        Druid::Move.parse($!latest-move, :rule<sarsen-move>) ?? $<coords>    !!
+        Druid::Move.parse($!latest-move, :rule<lintel-move>) ?? $<coords>[0] !!
         return False # swap or pass or other kind of move
     );
 
