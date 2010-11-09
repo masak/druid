@@ -41,6 +41,7 @@ submethod BUILD(:$size = 3) {
     @!heights = map { [ 0 xx $size ] }, ^$size;
     @!colors  = map { [ 0 xx $size ] }, ^$size;
     $!player-to-move = 1;
+    $!moves-so-far = 0;
     # RAKUDO: These attributes should be auto-initialized
     $!size = $size;
 }
