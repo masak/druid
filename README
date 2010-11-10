@@ -22,7 +22,7 @@ This is how a typical board might look:
       A     B     C     D     E
 
 Rules and a bit of strategy can be found at
-<http://www.cameronius.com/games/druid/>.
+http://www.cameronius.com/games/druid/
 
 Druid presently only runs with the old branch of Rakudo, known as 'alpha'. It
 is recommended to install the 'alpha' branch (or the January 2010 release)
@@ -40,7 +40,7 @@ see 'Installing via proto' below.
 == Get Rakudo
 
 You need Rakudo to run the Perl 6 code in Druid -- instructions
-here: <http://www.perlfoundation.org/perl6/index.cgi?rakudo>.
+here: http://rakudo.org
 
 == Set some environment variables
 
@@ -67,7 +67,7 @@ Proto is a no-fuss installer of Perl 6 projects. One of the advantages of this
 way of installing Druid is that if you don't already have Rakudo Perl 6, proto
 installs it for you.
 
-1. Get proto from <https://github.com/masak/proto>
+1. Get proto from https://github.com/masak/proto
 2. Run './proto' and optionally review the settings in the created config file
 3. Run './proto install druid'
 4. 'export PERL6LIB=`pwd`/projects/druid/lib'
