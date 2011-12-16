@@ -27,7 +27,7 @@ my $h-piece = '
 ';
 
 my $cover-right = '
-        
+
        #
        #
 ';
@@ -42,29 +42,29 @@ my $cover-top-right = '
 
 #=[Returns a string containing an ASCII picture of an empty Druid board of
 the given size.]
-sub make-empty-board($size) { 
+sub make-empty-board($size) {
     # The 'join $sep, gather { ... }' pattern allows us to put a long
     # string together, without having to refer to the same variable over
     # and over.
-    return join "\n", gather { 
-        take ''; 
-        take my $heading 
-            = [~] '   ', map {"   $_  "}, map {chr($_+ord('A'))}, ^$size; 
-        take my $line = [~] '   ', '+-----' x $size, '+'; 
+    return join "\n", gather {
+        take '';
+        take my $heading
+            = [~] '   ', map {"   $_  "}, map {chr($_+ord('A'))}, ^$size;
+        take my $line = [~] '   ', '+-----' x $size, '+';
         for (1..$size).reverse -> $r {
             take [~] (sprintf '%2d |', $r),
                      '      ' x ($size) - 1,
                      "     | $r";
-            take [~] '   |', '      ' x ($size) - 1,  '     |'; 
-            if $r > 1 { 
-                take [~] '   +', '     +' x $size; 
-            } 
-        } 
-        take $line; 
-        take $heading; 
-        take ''; 
-    }; 
-} 
+            take [~] '   |', '      ' x ($size) - 1,  '     |';
+            if $r > 1 {
+                take [~] '   +', '     +' x $size;
+            }
+        }
+        take $line;
+        take $heading;
+        take '';
+    };
+}
 
 submethod BUILD() {
     $!cached-board = make-empty-board($!game.size);
