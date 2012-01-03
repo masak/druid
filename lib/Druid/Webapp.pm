@@ -3,7 +3,7 @@ use v6;
 use Web::Request;
 use Web::Response;
 
-use Druid::Game; 
+use Druid::Game;
 use Druid::View::Text;
 
 class Druid::Webapp does Callable {
