@@ -87,96 +87,96 @@ our sub the-player-to-move-alternates-with-every-move {
 }
 
 our sub a-sarsen-move-must-have-a-certain-syntax {
-    ok !defined $^game.make-move("1a"),
+    ok (!defined $^game.make-move("1a")),
         "a sarsen move must have a certain syntax";
 }
 
 our sub a-sarsen-move-must-be-within-the-limits-of-the-board {
-    ok !defined $^game.make-move("a5"),
+    ok (!defined $^game.make-move("a5")),
         "a sarsen move must be within the limits of the board";
 }
 
 our sub a-sarsen-move-can-be-made-directly-on-the-ground {
-    ok defined $^game.make-move("b2"),
+    ok (defined $^game.make-move("b2")),
         "a sarsen move can be made directly on the ground";
 }
 
 our sub a-sarsen-move-can-be-made-on-top-of-the-same-color {
     $^game.make-move($_) for <b2 a1>;
-    ok defined $game.make-move("b2"),
+    ok (defined $game.make-move("b2")),
         "a sarsen move can be made on top of the same color";
 }
 
 our sub a-sarsen-move-can-not-be-made-on-top-of-another-color {
     $^game.make-move($_) for <b2 a1>;
-    ok !defined $game.make-move("a1"),
+    ok (!defined $game.make-move("a1")),
         "a sarsen move can not be made on top of another color";
 }
 
 our sub a-lintel-move-must-have-a-certain-syntax {
-    ok !defined $^game.make-move("a3-3c"),
+    ok (!defined $^game.make-move("a3-3c")),
         "a lintel move must have a certain syntax";
 }
 
 our sub a-lintel-move-must-be-within-the-limits-of-the-board {
-    ok !defined $^game.make-move("a4-c4"),
+    ok (!defined $^game.make-move("a4-c4")),
         "a lintel move must be within the limits of the board";
 }
 
 our sub a-lintel-move-can-not-be-made-directly-on-the-ground {
-    ok !defined $^game.make-move("a1-c1"),
+    ok (!defined $^game.make-move("a1-c1")),
         "a lintel move can not be made directly on the ground";
 }
 
 our sub a-lintel-move-must-be-made-two-units-apart {
     $^game.make-move($_) for <a1 a3 b1>;
-    ok !defined $game.make-move("a1-b1"),
+    ok (!defined $game.make-move("a1-b1")),
         "a lintel move must be made two units apart";
 }
 
 our sub a-lintel-move-must-have-support-at-both-ends {
     $^game.make-move($_) for <a1 a3>;
-    ok !defined $game.make-move("a1-c1"),
+    ok (!defined $game.make-move("a1-c1")),
         "a lintel move must have support at both ends";
 }
 
 our sub a-lintel-move-can-not-have-less-than-two-friendly-stones-under-it {
     $^game.make-move($_) for <a1 b1 a3 c1>;
-    ok !defined $game.make-move('a1-c1'),
+    ok (!defined $game.make-move('a1-c1')),
         "a lintel move can not have less than two friendly stones under it";
 }
 
 our sub a-lintel-move-can-not-have-more-than-two-friendly-stones-under-it {
     $^game.make-move($_) for <a1 a3 b1 b3 c1 c3>;
-    ok !defined $game.make-move('a1-c1'),
+    ok (!defined $game.make-move('a1-c1')),
         "a lintel move can not have more than two friendly stones under it";
 }
 
 our sub a-lintel-move-can-form-a-bridge {
     $^game.make-move($_) for <a2 a1 c2 c1>;
-    ok defined $game.make-move('a2-c2'), "a lintel move can form a bridge";
+    ok (defined $game.make-move('a2-c2')), "a lintel move can form a bridge";
 }
 
 our sub a-lintel-move-can-claim-enemy-territory {
     $^game.make-move($_) for <a1 a3 b1 c1>;
-    ok defined $game.make-move('a1-c1'),
+    ok (defined $game.make-move('a1-c1')),
         "a lintel move can claim enemy territory";
 }
 
 our sub swapping-is-allowed-as-the-second-move {
     $^game.make-move('a1');
-    ok defined $game.make-move('swap'),
+    ok (defined $game.make-move('swap')),
         "swapping is allowed as the second move";
 }
 
 our sub swapping-is-not-allowed-as-the-first-move {
-    ok !defined $^game.make-move('swap'),
+    ok (!defined $^game.make-move('swap')),
         "swapping is not allowed as the first move";
 }
 
 our sub swapping-is-not-allowed-after-the-second-move {
     $^game.make-move($_) for <a1 a2>;
-    ok !defined $^game.make-move('swap'),
+    ok (!defined $^game.make-move('swap')),
         "swapping is not allowed after the second move";
 }
 
@@ -215,7 +215,7 @@ our sub passing-twice-ends-the-game {
 }
 
 our sub resigning-must-have-a-certain-syntax {
-    ok defined $^game.make-move('resign'),
+    ok (defined $^game.make-move('resign')),
         "resigning must have a certain syntax";
 }
 
