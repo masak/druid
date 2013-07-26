@@ -183,7 +183,7 @@ method colors-and-heights() {
     my &format-colors  = { <. v h>[$^color] };
     my &format-heights = { $^height || '.' };
 
-    my $letters = 'A'..chr(ord('A') + $.size - 1);
+    my $letters = ('A'..'Z')[^$.size];
 
     my $inter-board-space
         = ' ' x (1 + 6*$.size - 2*$.size - 2*($.size-1) - 14);
