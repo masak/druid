@@ -14,10 +14,7 @@ sub inject-subs-in-file($file) {
     my @tests = find-all-tests-in-declaration($declaration);
     for @tests -> $test {
         my $subname = $test.subst(' ', '-', :global);
-        # RAKUDO: Can't interpolate strings in regexes [perl #63892]
-        #next if $code ~~ /'sub ' $subname/; # already in there
-        my $subname-escaped = $subname.subst("'", "\\'", :global);
-        next if $code ~~ eval("/'$subname-escaped'/"); # already in there
+        next if $code ~~ /'sub ' $subname/; # already in there
         my $sub =
             sprintf (join "\n", 'sub %s {', '    ok 0, "%s";', '}', ''),
                                      $subname,          $test;
