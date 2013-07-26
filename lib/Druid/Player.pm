@@ -17,11 +17,10 @@ method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
     self.bless(*, :$game, :$color);
 }
 
-#method BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
-method BUILD() {
+submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
+    $!game = $game;
+    $!color = $color;
     $!game.attach(self);
-    #$.game = $game;
-    #$.color = $color;
 }
 
 method choose-move() { ... }
