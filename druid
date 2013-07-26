@@ -5,78 +5,68 @@ use Druid::View::Text;
 use Druid::Player::Human;
 use Druid::Player::Computer;
 
-if any(@*ARGS) eq '--help' {
-    # RAKUDO: Heredocs.
-    say .substr(4) for split "\n", '
-    Druid. Implementation © Carl Mäsak 2008-2009. Rules © Cameron Browne.
-
-    Usage:
-        % perl6 druid [switches]
-
-        --size=<size>       Give the board a size between 3 and 26.
-        --computer=[1|2]    The computer controls player one or two.
-        --help              Display this help text.
-    ';
-
-    exit(0);
-}
-
-my $board-size = 8;
-for @*ARGS -> $argument {
-    if $argument ~~ / '--size=' (\d+) / {
-        if $0 < (my $MIN_SIZE = 3) {
-            say "The board size may not be smaller than $MIN_SIZE.";
-            exit(1);
+sub MAIN(Int :$board-size = 8, Int :$computer) {
+    given $board-size {
+        when * < (my $MIN_SIZE = 3) {
+            say "The board size may not be smaller than $MIN_SIZE";
+            return 1;
         }
-        elsif $0 > (my $MAX_SIZE = 26) {
+        when (my $MAX_SIZE = 26) ... * {
             say "The board size may not be larger than $MAX_SIZE.";
-            exit(1);
+            return 1;
         }
-        $board-size = +$0;
     }
-}
 
-my Druid::Game $game .= new(:size($board-size));
-my Druid::View $view = Druid::View::Text.new(:$game);
+    given $computer {
+        when Mu {
+            say "no computer players";
+        }
+        when (3..*) | (* < 1) {
+            say "computer must be 1 or 2";
+            return 1;
+        }
+    }
 
-die 'Druid currently does not support computer-vs-computer play.'
-    if any(@*ARGS) eq '--computer=1'&'--computer=2';
-my Druid::Player ($player1, $player2);
-$player1 = any(@*ARGS) eq '--computer=1'
-    ?? Druid::Player::Computer.new(:$game, :color(1))
-    !! Druid::Player::Human.new(   :$game, :color(1));
-$player2 = any(@*ARGS) eq '--computer=2'
-    ?? Druid::Player::Computer.new(:$game, :color(2))
-    !! Druid::Player::Human.new(   :$game, :color(2));
+    my Druid::Game $game .= new(:size($board-size));
+    my Druid::View $view = Druid::View::Text.new($game);
 
-my $pass = /^ 'pass' | 'p' $/;
+    my Druid::Player ($player1, $player2);
+    $player1 = $computer // 0 == 1
+        ?? Druid::Player::Computer.new(:$game, :color(1))
+        !! Druid::Player::Human.new(   :$game, :color(1));
+    $player2 = $computer // 0 == 2
+        ?? Druid::Player::Computer.new(:$game, :color(2))
+        !! Druid::Player::Human.new(   :$game, :color(2));
 
-my $passes-in-a-row = 0;
-loop {
-    for $player1, $player2 -> $player {
+    my $pass = /^ 'pass' | 'p' $/;
 
-        $view.show();
+    my $passes-in-a-row = 0;
+    loop {
+        for $player1, $player2 -> $player {
 
-        my $move = $player.choose-move();
+            $view.show();
 
-        if $move ~~ $pass {
-            if ++$passes-in-a-row >= 2 {
-                say "It's a draw.";
+            my $move = $player.choose-move();
+
+            if $move ~~ $pass {
+                if ++$passes-in-a-row >= 2 {
+                    say "It's a draw.";
+                    exit(0);
+                }
+            }
+            elsif $move !~~ $pass {
+                $passes-in-a-row = 0;
+            }
+
+            $player.make-move($move);
+
+            if $game.finished() {
+                $view.show();
+                print "\n";
+
+                say "$player won.";
                 exit(0);
             }
-        }
-        elsif $move !~~ $pass {
-            $passes-in-a-row = 0;
-        }
-
-        $player.make-move($move);
-
-        if $game.finished() {
-            $view.show();
-            print "\n";
-
-            say "$player won.";
-            exit(0);
         }
     }
 }
