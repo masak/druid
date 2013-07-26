@@ -10,11 +10,11 @@ method choose-move() {
     return $move;
 }
 
-submethod input-valid-move() {
+method input-valid-move() {
     my $move = prompt("\n{self}: ");
     say '' and exit(1) if $*IN.eof;
 
-    if $!game.is-move-bad($move) -> $reason {
+    if $.game.is-move-bad($move) -> $reason {
         say $reason;
         return;
     }

@@ -1,7 +1,5 @@
 use v6;
 
-class Druid::Game { ... } # RAKUDO: Workaround for [perl #75852]
-
 use Druid::Base;
 use Druid::Game::Subject;
 
@@ -62,7 +60,7 @@ multi method melt(Str $ice) {
     #      that a solution using YAML or equivalent technology would be a much
     #      better fit. But this works for now.
     eval($ice);
-    .reset() for @!observers;
+    .reset() for @.observers;
 }
 
 #| Reports C<False> if the move is permissible in the given state of
@@ -75,7 +73,7 @@ method is-move-bad(Str $move) {
         when Druid::Move.parse($_, :rule<sarsen-move>) {
             my Int ($row, $column) = self.extract-coords($<coords>);
 
-            return $reason if my $reason
+            return my $reason if $reason
                 = self.is-sarsen-move-bad($row, $column, $color);
         }
 
@@ -83,7 +81,7 @@ method is-move-bad(Str $move) {
             my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
             my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
-            return $reason if my $reason
+            return my $reason if $reason
                 = self.is-lintel-move-bad($row_1, $row_2,
                                           $column_1, $column_2,
                                           $color);
@@ -182,8 +180,8 @@ method is-lintel-move-bad(Int $row_1, Int $row_2,
 #| of this C<Druid::Game>. C<fail>s if the move isn't valid.
 method make-move(Str $move) {
 
-    fail $reason
-        if my $reason = self.is-move-bad($move);
+    fail my $reason
+        if $reason = self.is-move-bad($move);
 
     my @pieces-to-put;
     my $color = $!player-to-move;
@@ -216,7 +214,7 @@ method make-move(Str $move) {
         }
 
         when Druid::Move.parse($_, :rule<swap>) {
-            .swap() for @!observers;
+            .swap() for @.observers;
         }
 
         when Druid::Move.parse($_, :rule<resign>) {
@@ -234,7 +232,7 @@ method make-move(Str $move) {
             = $color;
         @!heights[$row][$column] = $height + 1;
 
-        .add-piece($height, $row, $column, $color) for @!observers;
+        .add-piece($height, $row, $column, $color) for @.observers;
     }
 
     $!latest-move = $move;

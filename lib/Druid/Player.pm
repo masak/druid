@@ -9,24 +9,32 @@ use Druid::Game::Observer;
 class Druid::Player is Druid::Base does Druid::Game::Observer;
 
 #| The game this C<Druid::Player> is playing.
-has Druid::Game $!game handles <size layers colors heights make-move>;
+has Druid::Game $.game handles <size layers colors heights make-move>;
 # RAKUDO: Need parens here as a workaround for [perl #75858]
 #| The color of this C<Druid::Player>'s pieces.
 has (Int $.color where 1|2);
 
-submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
-    $game.attach(self);
-    # RAKUDO: These attributes should be auto-initialized
-    $!game = $game;
-    $!color = $color;
+method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
+    self.bless(*, :$game, :$color);
+}
+
+#method BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
+method BUILD() {
+    $!game.attach(self);
+    #$.game = $game;
+    #$.color = $color;
 }
 
 method choose-move() { ... }
 
+method add-piece() { ... }
+
+method reset() { ... }
+
 method swap() {
-    $!color = $!color == 1 ?? 2 !! 1;
+    $.color = $.color == 1 ?? 2 !! 1;
 }
 
-method Str() { return <Vertical Horizontal>[$!color-1] }
+method Str() { return <Vertical Horizontal>[$.color-1] }
 
 # vim: filetype=perl6

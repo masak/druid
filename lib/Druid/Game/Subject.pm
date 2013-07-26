@@ -13,14 +13,14 @@ role Druid::Game::Subject;
 
 # RAKUDO: Typed arrays don't really work yet
 #has Druid::Game::Observer @!observers;
-has @!observers;
+has @.observers;
 
 #| Attaches a C<Druid::Game::Observer> to this object. From now on,
 #| notifications going out to all listening objects will also go out to the
 #| added C<Druid::Game::Observer>.
 method attach(Druid::Game::Observer $observer) {
-    unless any(@!observers) === $observer {
-        @!observers.push($observer);
+    unless any(@.observers) === $observer {
+        @.observers.push($observer);
     }
 }
 
