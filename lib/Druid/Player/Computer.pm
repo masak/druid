@@ -20,7 +20,7 @@ method choose-move() {
                      $last-column+1, $last-column+2) -> $column {
 
                     next unless 0 <= $column < $.size;
-                    next unless $.colors[$last-row][$column] == 0 | $!color;
+                    next unless $.colors[$last-row][$column] == 0 | $.color;
                     my $move = chr(ord('a')+$column) ~ ($last-row+1);
                     say '';
                     say "The computer moves $move";
@@ -33,7 +33,7 @@ method choose-move() {
                      $last-row+1, $last-row+2) -> $row {
 
                     next unless 0 <= $row < $.size;
-                    next unless $.colors[$row][$last-column] == 0 | $!color;
+                    next unless $.colors[$row][$last-column] == 0 | $.color;
                     my $move = chr(ord('a')+$last-column) ~ ($row+1);
                     say '';
                     say "The computer moves $move";
@@ -49,7 +49,7 @@ method choose-move() {
     repeat {
         $row    = (^$.size).pick;
         $column = (^$.size).pick;
-    } until $.colors[$row][$column] == 0 | $!color;
+    } until $.colors[$row][$column] == 0 | $.color;
 
     my $move = chr(ord('a')+$column) ~ ($row+1);
 
