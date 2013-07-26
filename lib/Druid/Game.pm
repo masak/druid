@@ -208,7 +208,8 @@ method make-move(Str $move) {
         }
 
         when Druid::Move.parse($_, :rule<pass>) {
-            if Druid::Move.parse($!latest-move, :rule<pass>) {
+            if $!latest-move.defined &&
+                    Druid::Move.parse($!latest-move, :rule<pass>) {
                 $!finished = True;
             }
         }
