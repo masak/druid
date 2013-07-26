@@ -92,9 +92,8 @@ method build-layers($board is copy, $from) {
     my @layers = @.layers[$from .. @.layers.end];
     for @layers.kv -> $relheight, $layer {
         my $height = $relheight + $from;
-        for $layer.kv.reverse -> $line, $row {
-            for $line.kv.reverse -> $cell, $column {
-
+        for $layer.kv.reverse -> $row, $line {
+            for $line.kv.reverse -> $column, $cell {
                 next if $cell == 0;
 
                 given ($v-piece, $h-piece)[$cell-1] -> $piece {
