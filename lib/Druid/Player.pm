@@ -25,7 +25,7 @@ submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
 
 method choose-move() { ... }
 
-method add-piece() { ... }
+method add-piece(|) { ... }
 
 method reset() { ... }
 
