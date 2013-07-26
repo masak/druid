@@ -197,9 +197,8 @@ our sub passing-does-not-change-the-board {
     my @heights-snapshot = $game.heights;
     my @colors-snapshot  = $game.colors;
     $game.make-move('pass');
-    # RAKUDO: eqv would be nicer here
-    ok @heights-snapshot eq $game.heights
-       || @colors-snapshot eq $game.colors,
+    ok @heights-snapshot eqv $game.heights
+       || @colors-snapshot eqv $game.colors,
         "passing does not change the board";
 }
 
@@ -224,9 +223,8 @@ our sub resigning-does-not-change-the-board {
     my @heights-snapshot = $game.heights;
     my @colors-snapshot  = $game.colors;
     $game.make-move('resign');
-    # RAKUDO: eqv would be nicer here
-    ok @heights-snapshot eq $game.heights
-       || @colors-snapshot eq $game.colors,
+    ok @heights-snapshot eqv $game.heights
+       || @colors-snapshot eqv $game.colors,
         "resigning does not change the board";
 }
 

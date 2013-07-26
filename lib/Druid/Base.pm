@@ -15,10 +15,8 @@ grammar Druid::Move {
 class Druid::Base {
     # = Returns (zero-based) row and column, given a C<Match> object
     method extract-coords(Match $m) {
-        # RAKUDO: Hoping these explicit (...).Int conversions won't be
-        #         necessary in the long run.
-        my Int $row    = ($m<row_number> - 1).Int;
-        my Int $column = (ord($m<col_letter>) - ord('a')).Int;
+        my Int $row    = $m<row_number> - 1;
+        my Int $column = ord($m<col_letter>) - ord('a');
 
         return ($row, $column);
     }

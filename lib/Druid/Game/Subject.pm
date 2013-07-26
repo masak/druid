@@ -11,9 +11,7 @@ use Druid::Game::Observer;
 #| are classes derived from C<Druid::View> or C<Druid::Player>.
 role Druid::Game::Subject;
 
-# RAKUDO: Typed arrays don't really work yet
-#has Druid::Game::Observer @!observers;
-has @.observers;
+has Druid::Game::Observer @.observers;
 
 #| Attaches a C<Druid::Game::Observer> to this object. From now on,
 #| notifications going out to all listening objects will also go out to the

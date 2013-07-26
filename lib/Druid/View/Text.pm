@@ -158,11 +158,10 @@ sub put($piece, $board, $height, $row, $column) {
 #|     octothorpes '#' insert actual spaces, i.e. act as a sort of
 #|     escape character for spaces.
 sub merge($old, $new, $start) {
-    my @old = $old.split('');
-    my @new = $new.split('');
+    my @old = $old.comb;
+    my @new = $new.comb;
 
-    # RAKUDO: xx and push don't seem to work as advertised.
-    push @old, ' ' for ^($start + $new.chars - $old.chars);
+    push @old, ' ' xx $start + @new - @old;
 
     for @new.kv -> $i, $char {
         @old[$start + $i] = $char unless $char eq ' ';
