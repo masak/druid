@@ -10,9 +10,8 @@ class Druid::Player is Druid::Base does Druid::Game::Observer;
 
 #| The game this C<Druid::Player> is playing.
 has Druid::Game $.game handles <size layers colors heights make-move>;
-# RAKUDO: Need parens here as a workaround for [perl #75858]
 #| The color of this C<Druid::Player>'s pieces.
-has (Int $.color where 1|2);
+has Int $.color where 1|2;
 
 method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
     self.bless(*, :$game, :$color);
