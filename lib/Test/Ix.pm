@@ -49,7 +49,15 @@ multi sub traverse-tests(@tests, Code $leaf-action, $prefix) {
                            sprintf('%s%s ', $prefix, $test.key));
         }
         elsif $test ~~ Str {
-            $leaf-action($prefix ~ $test);
+            try {
+                $leaf-action($prefix ~ $test);
+                CATCH {
+                    default {
+                        ok 0, "{$prefix.trim-trailing}/$test";
+                        note $_;
+                    }
+                }
+            }
         }
         else {
             die "Don't understand a {$test.WHAT} in the declaration.";
@@ -76,25 +84,25 @@ sub first-index(Code $cond, @array) {
     return ();
 }
 
-our sub count-tests(@tests) {
+sub count-tests(@tests) is export {
     return +traverse-tests(@tests, { take $_ });
 }
 
-our sub run-tests(@tests) {
+sub run-tests(@tests) is export {
+    my \PKG := CALLER::;
     my &runtest = {
         my $subname = $_.subst(' ', '-', :global);
-        my $sub = eval( '&' ~ $subname );
+        my $sub = PKG{'&'~$subname};
         if $sub ~~ Nil {
             ok 0, sprintf 'tried to run %s but it did not exist', $subname;
             return;
         }
-        my @arguments = eval('&before') ~~ Sub # is there a &before sub?
-                            ?? before().list[ 0 ..^ $sub.arity ]
+        my @arguments = PKG{'&before'} ~~ Sub # is there a &before sub?
+                            ?? PKG{'&before'}().list[ 0 ..^ $sub.arity ]
                             !! Any xx $sub.arity;
         $sub(|@arguments);
-        eval('&after') ~~ Sub
-            and after();
+        PKG{'&after'} ~~ Sub
+            and PKG{'&after'}();
     };
-    # RAKUDO: When we have sink context, we don't need @sink here.
-    my @sink = traverse-tests(@tests, &runtest);
+    traverse-tests(@tests, &runtest);
 }
