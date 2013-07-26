@@ -29,12 +29,12 @@ Instructions on getting Druid running:
 * Get Rakudo Star or install Rakudo and Panda manually.
 * Call 'panda install druid'.
 
-== Get Rakudo
+## Get Rakudo
 
 You need Rakudo to run the Perl 6 code in Druid -- instructions
 here: <http://rakudo.org/how-to-get-rakudo/>.
 
-== Call 'perl6 druid'
+## Call 'perl6 druid'
 
 Yup, you're ready to go.
 
@@ -42,7 +42,7 @@ Yup, you're ready to go.
     % perl6 -Ilib bin/druid --size=10 --computer=1
     % perl6 -Ilib bin/druid --help
 
-== For those who want to compile things
+## For those who want to compile things
 
 (After all, compilation does make startup a little faster.)
 
@@ -51,7 +51,7 @@ Install ufo with panda or get it from github. Then run
     % ufo
     % make
 
-== Installing via panda
+## Installing via panda
 
 Panda is a no-fuss installer of Perl 6 projects. You have it already if you
 have installed the Rakudo Star distribution, but otherwike you can install
@@ -63,7 +63,7 @@ it like so:
 
 ...and you're ready to run. Just run "druid" in your shell.
 
-== Future plans
+## Future plans
 
 * Add an SVG renderer.
 
@@ -82,7 +82,7 @@ it like so:
   users. This will likely require a real databse instead of the short-term
   file solution used now.
 
-== License
+## License
 
 This Druid implementation is released under Artistic 2.0. See LICENSE.
 Permission to release the game graciously given by the game author.
