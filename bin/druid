@@ -31,10 +31,10 @@ sub MAIN(Int :$board-size = 8, Int :$computer) {
     my Druid::View $view = Druid::View::Text.new($game);
 
     my Druid::Player ($player1, $player2);
-    $player1 = $computer // 0 == 1
+    $player1 = ($computer // 0) == 1
         ?? Druid::Player::Computer.new(:$game, :color(1))
         !! Druid::Player::Human.new(   :$game, :color(1));
-    $player2 = $computer // 0 == 2
+    $player2 = ($computer // 0) == 2
         ?? Druid::Player::Computer.new(:$game, :color(2))
         !! Druid::Player::Human.new(   :$game, :color(2));
 
