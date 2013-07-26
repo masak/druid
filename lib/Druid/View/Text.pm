@@ -42,7 +42,7 @@ my $cover-top-right = '
 
 #| Returns a string containing an ASCII picture of an empty Druid board of
 #| the given size.
-sub make-empty-board($size) { 
+sub make-empty-board($size) {
     # The 'join $sep, gather { ... }' pattern allows us to put a long
     # string together, without having to refer to the same variable over
     # and over.
