@@ -30,7 +30,7 @@ method add-piece(|) { ... }
 method reset() { ... }
 
 method swap() {
-    $.color = $.color == 1 ?? 2 !! 1;
+    $!color = $!color == 1 ?? 2 !! 1;
 }
 
 method Str() { return <Vertical Horizontal>[$.color-1] }
