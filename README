@@ -15,7 +15,7 @@ This is how a typical board might look:
    +     /-----/     /| v v |    +
  2 |             +-----+-----+-----+
    |      +-----/| h h   h h   h h |
-   +     /| v v || h h   h h   h h |   
+   +     /| v v || h h   h h   h h |
  1 |     || v v |+-----+-----+-----+
    |     |+-----/-----/-----/-----/
    +-----/-----/-----/-----/-----/
@@ -24,56 +24,44 @@ This is how a typical board might look:
 Rules and a bit of strategy can be found at
 <http://www.cameronius.com/games/druid/>.
 
-Druid presently only runs with the old branch of Rakudo, known as 'alpha'. It
-is recommended to install the 'alpha' branch (or the January 2010 release)
-and to make sure the installed executable is called 'alpha'.
-
 Instructions on getting Druid running:
 
-* Get Rakudo.
-* Set some environment variables.
-* Call 'alpha druid'.
-
-There's also a an installer called 'proto' that you can use to install druid;
-see 'Installing via proto' below.
+* Get Rakudo Star or install Rakudo and Panda manually.
+* Call 'panda install druid'.
 
 == Get Rakudo
 
 You need Rakudo to run the Perl 6 code in Druid -- instructions
-here: <http://www.perlfoundation.org/perl6/index.cgi?rakudo>.
-
-== Set some environment variables
-
- export PERL6LIB=/your/path/to/druid/lib
+here: <http://rakudo.org/how-to-get-rakudo/>.
 
 == Call 'perl6 druid'
 
 Yup, you're ready to go.
 
-% alpha druid
-% alpha druid --size=10 --computer=1
-% alpha druid --help
+    % perl6 -Ilib bin/druid
+    % perl6 -Ilib bin/druid --size=10 --computer=1
+    % perl6 -Ilib bin/druid --help
 
 == For those who want to compile things
 
 (After all, compilation does make startup a little faster.)
 
-% ufo
-% make
+Install ufo with panda or get it from github. Then run
 
-== Installing via proto
+    % ufo
+    % make
 
-Proto is a no-fuss installer of Perl 6 projects. One of the advantages of this
-way of installing Druid is that if you don't already have Rakudo Perl 6, proto
-installs it for you.
+== Installing via panda
 
-1. Get proto from <https://github.com/masak/proto>
-2. Run './proto' and optionally review the settings in the created config file
-3. Run './proto install druid'
-4. 'export PERL6LIB=`pwd`/projects/druid/lib'
-5. 'cd projects/druid'
+Panda is a no-fuss installer of Perl 6 projects. You have it already if you
+have installed the Rakudo Star distribution, but otherwike you can install
+it like so:
 
-...and you're ready to run. See "Call 'perl6 druid'" above.
+1. Get panda from <https://github.com/tadzik/panda>
+2. Run './bootstrap' and make sure to set your PATH as it instructs you to.
+3. Run 'panda install druid'
+
+...and you're ready to run. Just run "druid" in your shell.
 
 == Future plans
 
