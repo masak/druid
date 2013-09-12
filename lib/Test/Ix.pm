@@ -14,9 +14,9 @@ sub inject-subs-in-file($file) {
     my @tests = find-all-tests-in-declaration($declaration);
     for @tests -> $test {
         my $subname = $test.subst(' ', '-', :global);
-        next if $code ~~ /'sub ' $subname/; # already in there
+        next if $code ~~ /'my &*' $subname/; # already in there
         my $sub =
-            sprintf (join "\n", 'sub %s {', '    ok 0, "%s";', '}', ''),
+            sprintf (join "\n", 'my &*%s = sub {', '    ok 0, "%s";', '}', ''),
                                      $subname,          $test;
         $code = inject $sub, :into($code);
     }
@@ -89,17 +89,17 @@ sub run-tests(@tests) is export {
     my \PKG := CALLER::;
     my &runtest = {
         my $subname = $_.subst(' ', '-', :global);
-        my $sub = PKG{'&'~$subname};
-        if $sub ~~ Nil {
+        my $sub = PKG{'&*'~$subname};
+        if $sub ~~ :!defined {
             ok 0, sprintf 'tried to run %s but it did not exist', $subname;
-            return;
+        } else {
+            my @arguments = PKG{'&*before'} ~~ Sub # is there a &before sub?
+                                ?? PKG{'&*before'}().list[ 0 ..^ $sub.arity ]
+                                !! Any xx $sub.arity;
+            $sub(|@arguments);
+            PKG{'&*after'} ~~ Sub
+                and PKG{'&*after'}();
         }
-        my @arguments = PKG{'&before'} ~~ Sub # is there a &before sub?
-                            ?? PKG{'&before'}().list[ 0 ..^ $sub.arity ]
-                            !! Any xx $sub.arity;
-        $sub(|@arguments);
-        PKG{'&after'} ~~ Sub
-            and PKG{'&after'}();
     };
     traverse-tests(@tests, &runtest);
 }
