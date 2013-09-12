@@ -13,7 +13,7 @@ method reset() { ... }
 method swap() { ... }
 
 submethod BUILD() {
-    $game.attach(self);
+    $!game.attach(self);
 }
 
 # vim: filetype=perl6
