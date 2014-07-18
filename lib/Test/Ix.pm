@@ -25,7 +25,7 @@ sub inject-subs-in-file($file) {
 
 sub find-all-tests-in-declaration($declaration) {
     my @tests;
-    eval($declaration); # see what's going on here? :) aye, evil eval, I know.
+    EVAL($declaration); # see what's going on here? :) aye, evil eval, I know.
 
     return find-all-tests(@tests)
 }

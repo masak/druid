@@ -48,18 +48,18 @@ submethod BUILD(:$size = 3) {
 #| stored, later to be recreated into an object again with the C<.melt> method.
 multi method gelatinize() {
     return join '; ', map { $^attr ~ ' = '
-                            ~ eval($^attr).perl.subst(/^ '[' (.*) ']' $/,
+                            ~ EVAL($^attr).perl.subst(/^ '[' (.*) ']' $/,
                                                       {"($0)"}) },
                       <$!size @!layers @!heights @!colors $!player-to-move
                        $!moves-so-far $!finished $!latest-move>;
 }
 
 multi method melt(Str $ice) {
-    # XXX: There are all sorts of security hazards involved in just eval-ing
+    # XXX: There are all sorts of security hazards involved in just EVAL-ing
     #      an unknown string like this. Discussing it on #perl6, we concluded
     #      that a solution using YAML or equivalent technology would be a much
     #      better fit. But this works for now.
-    eval($ice);
+    EVAL($ice);
     .reset() for @.observers;
 }
 
