@@ -14,7 +14,7 @@ has Druid::Game $.game handles <size layers colors heights make-move>;
 has Int $.color where 1|2;
 
 method new(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {
-    self.bless(*, :$game, :$color);
+    self.bless(:$game, :$color);
 }
 
 submethod BUILD(Druid::Game :$game!, Int :$color! where { $_ == 1|2 }) {

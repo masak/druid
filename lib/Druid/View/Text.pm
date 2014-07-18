@@ -67,7 +67,7 @@ sub make-empty-board($size) {
 }
 
 submethod new($game) {
-    self.bless(*, :$game);
+    self.bless(:$game);
 }
 
 method BUILD() {
