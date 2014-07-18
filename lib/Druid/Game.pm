@@ -69,40 +69,34 @@ multi method melt(Str $ice) {
 method is-move-bad(Str $move) {
     my $color = $!player-to-move;
 
-    given $move {
-        when Druid::Move.parse($_, :rule<sarsen-move>) {
-            my Int ($row, $column) = self.extract-coords($<coords>);
+    if Druid::Move.parse($move, :rule<sarsen-move>) {
+        my Int ($row, $column) = self.extract-coords($<coords>);
 
-            return my $reason if $reason
-                = self.is-sarsen-move-bad($row, $column, $color);
-        }
+        return my $reason if $reason
+            = self.is-sarsen-move-bad($row, $column, $color);
+    }
+    elsif Druid::Move.parse($move, :rule<lintel-move>) {
+        my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
+        my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
-        when Druid::Move.parse($_, :rule<lintel-move>) {
-            my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
-            my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
-
-            return my $reason if $reason
-                = self.is-lintel-move-bad($row_1, $row_2,
-                                          $column_1, $column_2,
-                                          $color);
-        }
-
-        when Druid::Move.parse($_, :rule<swap>) {
-            return 'Swap is only allowed on second move'
-                if $!moves-so-far != 1;
-        }
-
-        when Druid::Move.parse($_, :rule<pass>)
-             || Druid::Move.parse($move, :rule<resign>) {
-            # those are always OK
-        }
-
-        default {
-            return '
+        return my $reason if $reason
+            = self.is-lintel-move-bad($row_1, $row_2,
+                                      $column_1, $column_2,
+                                      $color);
+    }
+    elsif Druid::Move.parse($move, :rule<swap>) {
+        return 'Swap is only allowed on second move'
+            if $!moves-so-far != 1;
+    }
+    elsif Druid::Move.parse($move, :rule<pass>)
+         || Druid::Move.parse($move, :rule<resign>) {
+        # those are always OK
+    }
+    else {
+        return '
 The move does not conform to the accepted move syntax, which is either
 something like "b2" or something like "c1-c3" You can also "pass" or
 "resign" on any move, and "swap" on the second move of the game.'.trim-leading;
-        }
     }
 
     return False; # move is OK
@@ -186,41 +180,35 @@ method make-move(Str $move) {
     my @pieces-to-put;
     my $color = $!player-to-move;
 
-    given $move {
-        when Druid::Move.parse($_, :rule<sarsen-move>) {
-            my Int ($row, $column) = self.extract-coords($<coords>);
+    if Druid::Move.parse($move, :rule<sarsen-move>) {
+        my Int ($row, $column) = self.extract-coords($<coords>);
 
-            my $height     = @!heights[$row][$column];
-            @pieces-to-put = $height, $row, $column;
-        }
+        my $height     = @!heights[$row][$column];
+        @pieces-to-put = $height, $row, $column;
+    }
+    elsif Druid::Move.parse($move, :rule<lintel-move>) {
+        my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
+        my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
 
-        when Druid::Move.parse($_, :rule<lintel-move>) {
-            my Int ($row_1, $column_1) = self.extract-coords($<coords>[0]);
-            my Int ($row_2, $column_2) = self.extract-coords($<coords>[1]);
+        my $height   = @!heights[$row_1][$column_1];
+        my $row_m    = ($row_1    + $row_2   ) div 2;
+        my $column_m = ($column_1 + $column_2) div 2;
 
-            my $height   = @!heights[$row_1][$column_1];
-            my $row_m    = ($row_1    + $row_2   ) div 2;
-            my $column_m = ($column_1 + $column_2) div 2;
-
-            @pieces-to-put = $height, $row_1, $column_1,
-                             $height, $row_m, $column_m,
-                             $height, $row_2, $column_2;
-        }
-
-        when Druid::Move.parse($_, :rule<pass>) {
-            if $!latest-move.defined &&
-                    Druid::Move.parse($!latest-move, :rule<pass>) {
-                $!finished = True;
-            }
-        }
-
-        when Druid::Move.parse($_, :rule<swap>) {
-            .swap() for @.observers;
-        }
-
-        when Druid::Move.parse($_, :rule<resign>) {
+        @pieces-to-put = $height, $row_1, $column_1,
+                         $height, $row_m, $column_m,
+                         $height, $row_2, $column_2;
+    }
+    elsif Druid::Move.parse($move, :rule<pass>) {
+        if $!latest-move.defined &&
+                Druid::Move.parse($!latest-move, :rule<pass>) {
             $!finished = True;
         }
+    }
+    elsif Druid::Move.parse($move, :rule<swap>) {
+        .swap() for @.observers;
+    }
+    elsif Druid::Move.parse($move, :rule<resign>) {
+        $!finished = True;
     }
 
     for @pieces-to-put -> $height, $row, $column {
