@@ -292,7 +292,7 @@ submethod move-was-winning() {
             my ($r, $c) = .<row>, .<col> given $pos;
             if direction($pos) -> $neighbor {
 
-                if !%visited.exists(~$neighbor)
+                if %visited{~$neighbor} :!exists
                    && @!colors[$neighbor<row>][$neighbor<col>]
                       == $latest-color {
 
