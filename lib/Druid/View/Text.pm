@@ -6,7 +6,7 @@ use Druid::View;
 #| A textual view of a C<Druid::Game>. Draws a large isometric 3D view, with
 #| the pieces rendered as ASCII blocks, and two smaller 2D views giving
 #| information about the colors and heights of the pieces on the board.
-class Druid::View::Text is Druid::View;
+unit class Druid::View::Text is Druid::View;
 
 has $!cached-board;
 

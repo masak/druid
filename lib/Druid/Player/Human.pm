@@ -3,7 +3,7 @@ use Druid::Player;
 
 #| A human player, i.e. a C<Druid::Player> whose moves are typed in on C<$*IN>
 #| by a human.
-class Druid::Player::Human is Druid::Player;
+unit class Druid::Player::Human is Druid::Player;
 
 method choose-move() {
     do Whatever until my $move = self.input-valid-move();

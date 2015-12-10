@@ -4,11 +4,10 @@ use Druid::Game;
 use Druid::Game::Observer;
 
 #= Base class for classes that represent a C<Druid::Game> visually.
-class Druid::View is Druid::Base does Druid::Game::Observer;
+unit class Druid::View is Druid::Base does Druid::Game::Observer;
 
 has Druid::Game $.game handles <size layers colors heights>;
 
-method add-piece() { ... }
 method reset() { ... }
 method swap() { ... }
 

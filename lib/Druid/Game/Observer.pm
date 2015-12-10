@@ -7,20 +7,20 @@
 #|
 #| Examples of classes which might want to observe a C<Druid::Game::Subject>
 #| are classes derived from C<Druid::View> or C<Druid::Player>.
-role Druid::Game::Observer;
+unit role Druid::Game::Observer;
 
 #| Gets called any time the C<Druid::Game::Subject> adds a piece to its game
 #| board. Note that, for the purposes of this method, lintels are considered
 #| to be three adjacent (but separate) pieces.
-method add-piece($height, $row, $column, $color) { ... };
+method add-piece($height, $row, $column, $color) {  };
 
 #| Gets called when the C<Druid::Game::Subject> swaps positions between the
 #| two players.
-method swap() { ... }
+method swap() { }
 
 #| Gets called when the C<Druid::Game::Subject> changes so fundamentally
 #| that it's not feasible to track individual piece changes. This tells the
 #| observer to recalculate everything from scratch.
-method reset() { ... }
+method reset() {  }
 
 # vim: filetype=perl6

@@ -5,7 +5,7 @@ use Druid::Player;
 #| A computer player. It currently tries to move close to its opponent's
 #| last move or, failing that, entirely randomly. Thus it is almost
 #| ridiculously easily defeatable.
-class Druid::Player::Computer is Druid::Player;
+unit class Druid::Player::Computer is Druid::Player;
 
 has $!last-move;
 

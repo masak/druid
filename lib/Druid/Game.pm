@@ -13,7 +13,7 @@ use Druid::Game::Subject;
 #| The class does the role C<Druid::Game::Subject>, making it possible for
 #| instances of other classes to subscribe to updates from instances of this
 #| class, in an B<observer> pattern.
-class Druid::Game is Druid::Base does Druid::Game::Subject;
+unit class Druid::Game is Druid::Base does Druid::Game::Subject;
 
 #| The size of a side of the (always quadratic) board.
 has $.size;
