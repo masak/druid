@@ -2,6 +2,18 @@
     "name"        : "Druid",
     "version"     : "*",
     "description" : "A connection-oriented board game written in Perl 6",
+    "provides"    : {
+        "Test::Ix"                : "lib/Test/Ix.pm",
+        "Druid::Game"             : "lib/Druid/Game.pm",
+        "Druid::View"             : "lib/Druid/View.pm",
+        "Druid::Base"             : "lib/Druid/Base.pm",
+        "Druid::Player"           : "lib/Druid/Player.pm",
+        "Druid::View::Text"       : "lib/Druid/View/Text.pm",
+        "Druid::Player::Computer" : "lib/Druid/Player/Computer.pm",
+        "Druid::Player::Human"    : "lib/Druid/Player/Human.pm",
+        "Druid::Game::Observer"   : "lib/Druid/Game/Observer.pm",
+        "Druid::Game::Subject"    : "lib/Druid/Game/Subject.pm"
+    },
     "depends" : [ ],
     "source-url" : "git://github.com/masak/druid.git"
 }
