@@ -9,7 +9,7 @@ use Druid::Game::Observer;
 #|
 #| Examples of classes which might want to observe a C<Druid::Game::Subject>
 #| are classes derived from C<Druid::View> or C<Druid::Player>.
-role Druid::Game::Subject;
+unit role Druid::Game::Subject;
 
 has Druid::Game::Observer @.observers;
 
