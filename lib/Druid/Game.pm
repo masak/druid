@@ -47,6 +47,7 @@ submethod BUILD(:$size = 3) {
 #| Turns the state of this C<Druid::Game> into a string which can then be
 #| stored, later to be recreated into an object again with the C<.melt> method.
 multi method gelatinize() {
+    use MONKEY-SEE-NO-EVAL;
     return join '; ', map { $^attr ~ ' = '
                             ~ EVAL($^attr).perl.subst(/^ '[' (.*) ']' $/,
                                                       {"($0)"}) },
@@ -55,6 +56,7 @@ multi method gelatinize() {
 }
 
 multi method melt(Str $ice) {
+    use MONKEY-SEE-NO-EVAL;
     # XXX: There are all sorts of security hazards involved in just EVAL-ing
     #      an unknown string like this. Discussing it on #perl6, we concluded
     #      that a solution using YAML or equivalent technology would be a much
