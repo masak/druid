@@ -49,7 +49,7 @@ sub make-empty-board($size) {
     return join "\n", gather {
         take '';
         take my $heading
-            = [~] '   ', map {"   $_ "}, map {chr($_+ord('A'))}, ^$size;
+            = [~] '   ', map {"   $_ "}, ("A".."Z")[^$size];
         take my $line = [~] '   ', '+-----' x $size, '+';
         for (1..$size).reverse -> $r {
             take [~] (sprintf '%2d |', $r),
