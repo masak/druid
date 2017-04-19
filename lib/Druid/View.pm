@@ -11,7 +11,7 @@ has Druid::Game $.game handles <size layers colors heights>;
 method reset() { ... }
 method swap() { ... }
 
-submethod BUILD() {
+submethod BUILD(:$!game) {
     $!game.attach(self);
 }
 
