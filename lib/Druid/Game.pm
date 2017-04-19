@@ -263,13 +263,13 @@ submethod move-was-winning() {
     # hash or C<Bool::False> if the position would be outside of
     # the board.
     my &above
-        = { .<row> < $!size - 1 && { :row(.<row> + 1), :col(.<col>) } };
+        = { .<row> < $!size - 1 && %( :row(.<row> + 1), :col(.<col>) ) };
     my &below
-        = { .<row> > 0          && { :row(.<row> - 1), :col(.<col>) } };
+        = { .<row> > 0          && %( :row(.<row> - 1), :col(.<col>) ) };
     my &right
-        = { .<col> < $!size - 1 && { :row(.<row>), :col(.<col> + 1) } };
+        = { .<col> < $!size - 1 && %( :row(.<row>), :col(.<col> + 1) ) };
     my &left
-        = { .<col> > 0          && { :row(.<row>), :col(.<col> - 1) } };
+        = { .<col> > 0          && %( :row(.<row>), :col(.<col> - 1) ) };
 
     my %visited;
     my $reached-one-end   = False;
