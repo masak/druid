@@ -253,7 +253,7 @@ submethod move-was-winning() {
     # must by necessity contain the last move, this is equivalent to
     # asking 'was the last move winning?'.
 
-    my @pos-queue = { :$row, :$col };
+    my @pos-queue = { :$row, :$col },;
 
     my $latest-color = @!colors[$row][$col];
 
