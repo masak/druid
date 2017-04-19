@@ -70,9 +70,8 @@ submethod new($game) {
     self.bless(:$game);
 }
 
-method BUILD() {
-    $.game.attach: self;
-    $!cached-board = make-empty-board($.game.size);
+submethod BUILD(:$game) {
+    $!cached-board = make-empty-board($game.size);
 }
 
 #| Prints the 3D game board and the two smaller sub-boards, reflecting the
