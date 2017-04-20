@@ -1,6 +1,6 @@
 {
     "name"        : "Druid",
-    "version"     : "*",
+    "version"     : "0.1",
     "description" : "A connection-oriented board game written in Perl 6",
     "provides"    : {
         "Test::Ix"                : "lib/Test/Ix.pm",
