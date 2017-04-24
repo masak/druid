@@ -1,4 +1,5 @@
 {
+    "perl"        : "6.*",
     "name"        : "Druid",
     "version"     : "0.1",
     "description" : "A connection-oriented board game written in Perl 6",
