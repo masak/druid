@@ -1,6 +1,7 @@
 {
     "perl"        : "6.*",
     "name"        : "Druid",
+    "license"     : "Artistic-2.0",
     "version"     : "0.1",
     "description" : "A connection-oriented board game written in Perl 6",
     "provides"    : {
